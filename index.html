@@ -45,6 +45,26 @@
             height: 100%;
             object-fit: cover;
         }
+        
+        /* 게시판 이동 버튼 스타일 */
+        .btn-board {
+            margin-top: 30px;
+            display: inline-block;
+            padding: 15px 40px;
+            background-color: #d63384;
+            color: white;
+            text-decoration: none;
+            border-radius: 30px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            box-shadow: 0 4px 15px rgba(214, 51, 132, 0.3);
+            transition: all 0.3s ease;
+        }
+        .btn-board:hover {
+            background-color: #b0266a;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(214, 51, 132, 0.4);
+        }
     </style>
 </head>
 <body>
@@ -56,7 +76,9 @@
         <p style="font-size: 0.9rem; color: #999;">여기에 배우님 사진을<br>넣어볼까요?</p>
     </div>
 
-    <p style="font-size: 1rem; color: #d63384;">현재 페이지 꾸미기 진행 중 ✨</p>
+    <a href="board.html" class="btn-board">자유게시판 놀러가기 ✨</a>
+
+    <p style="font-size: 0.9rem; color: #d63384; margin-top: 20px;">현재 페이지 꾸미기 진행 중 ✨</p>
 
 </body>
 </html>
