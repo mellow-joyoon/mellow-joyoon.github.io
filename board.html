@@ -53,15 +53,16 @@
         
         onSnapshot(q, (snapshot) => {
             const postList = document.getElementById("post-list");
-            postList.innerHTML = ""; // 기존 목록 비우기
+            postList.innerHTML = ""; 
             
             let number = snapshot.size;
             snapshot.forEach((doc) => {
                 const data = doc.data();
                 const date = data.createdAt ? new Date(data.createdAt.seconds * 1000).toLocaleDateString() : "-";
                 
+                // [수정된 부분] tr 태그에 클릭 시 해당 글의 ID를 가지고 view.html로 이동하는 기능을 넣었습니다.
                 const row = `
-                    <tr>
+                    <tr onclick="location.href='view.html?id=${doc.id}'">
                         <td>${number--}</td>
                         <td style="text-align:left;">${data.title}</td>
                         <td>${data.author}</td>
