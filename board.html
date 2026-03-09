@@ -10,7 +10,7 @@
         
         /* 게시판 제목과 상단 바 */
         .board-header { border-bottom: 2px solid #333; padding-bottom: 10px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
-        .board-header h2 { margin: 0; font-size: 1.5rem; color: #d63384; } /* 핑크 포인트는 유지! */
+        .board-header h2 { margin: 0; font-size: 1.5rem; color: #d63384; }
         
         /* 네이버 카페 스타일 표 */
         table { width: 100%; border-collapse: collapse; font-size: 13px; }
@@ -18,8 +18,9 @@
         td { border-bottom: 1px solid #eee; padding: 12px 10px; text-align: center; color: #333; }
         
         .title-column { text-align: left; padding-left: 20px; width: 50%; }
-        .title-column a { text-decoration: none; color: #333; cursor: pointer; }
-        .title-column a:hover { text-decoration: underline; }
+        /* 제목 클릭 시 손가락 모양 커서와 밑줄 효과 */
+        .title-column span { cursor: pointer; }
+        .title-column span:hover { text-decoration: underline; color: #d63384; }
         
         .btn-write { background: #fff; border: 1px solid #ccc; color: #333; padding: 5px 15px; text-decoration: none; font-size: 12px; border-radius: 2px; }
         .btn-write:hover { background: #f2f2f2; }
@@ -39,7 +40,7 @@
                     <th style="width: 8%;">번호</th>
                     <th>제목</th>
                     <th style="width: 15%;">작성자</th>
-                    <th style="width: 12%;">날짜</th>
+                    <th style="width: 15%;">날짜</th>
                     <th style="width: 8%;">조회</th>
                 </tr>
             </thead>
@@ -64,11 +65,38 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // 조회수 올리고 상세페이지로 이동하는 함수 (쫌좀님, 이 부분이 핵심이에요!)
-        window.viewPost = async (id) => {
-            const postRef = doc(db, "posts", id);
-            try {
-                await updateDoc(postRef, {
-                    views: increment(1) // 서버에서 조회수 1 증가!
-                });
-                location.
+        // 글 목록 실시간으로 불러오기
+        const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
+
+        onSnapshot(q, (snapshot) => {
+            const postList = document.getElementById("post-list");
+            postList.innerHTML = ""; // 기존 목록 비우기
+            
+            let index = snapshot.size; // 번호를 역순으로 매기기 위해 사용
+
+            snapshot.forEach((doc) => {
+                const data = doc.data();
+                const date = data.createdAt ? new Date(data.createdAt.seconds * 1000).toLocaleDateString() : "-";
+                
+                const row = `
+                    <tr>
+                        <td>${index--}</td>
+                        <td class="title-column">
+                            <span onclick="goToView('${doc.id}')">${data.title}</span>
+                        </td>
+                        <td>${data.author}</td>
+                        <td>${date}</td>
+                        <td>${data.views || 0}</td>
+                    </tr>
+                `;
+                postList.innerHTML += row;
+            });
+        });
+
+        // 제목 클릭 시 상세페이지로 이동 (global function)
+        window.goToView = (id) => {
+            location.href = `view.html?id=${id}`;
+        };
+    </script>
+</body>
+</html>
