@@ -2,23 +2,96 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mellow Joyoon | 팬 로그인</title>
     <style>
-        body { background-color: #f6f6f6; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .login-container { background: white; padding: 40px; border: 1px solid #ddd; width: 350px; text-align: center; }
-        h2 { color: #d63384; margin-bottom: 30px; }
-        input { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ccc; box-sizing: border-box; }
-        .btn-login { width: 100%; background: #d63384; color: white; border: none; padding: 12px; cursor: pointer; font-weight: bold; }
-        .btn-login:hover { background: #c12a74; }
-        .signup-link { margin-top: 20px; font-size: 13px; color: #666; }
-        .signup-link a { color: #d63384; text-decoration: none; }
+        body { 
+            background-color: #fdf2f4; /* index와 맞춘 부드러운 분홍 배경 */
+            font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+            margin: 0; 
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        
+        /* 📱 컨테이너: 모바일에서 너무 작지 않게 너비 조절 */
+        .login-container { 
+            background: white; 
+            padding: 40px 30px; 
+            border: 1px solid #eee; 
+            width: 100%;
+            max-width: 380px; 
+            text-align: center; 
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(214, 51, 132, 0.1);
+        }
+
+        h2 { 
+            color: #d63384; 
+            margin-bottom: 30px; 
+            font-size: 1.5rem;
+            letter-spacing: -1px;
+        }
+
+        /* 📱 입력창: iOS 자동 확대 방지를 위해 16px 이상으로 설정 */
+        input { 
+            width: 100%; 
+            padding: 14px; 
+            margin-bottom: 15px; 
+            border: 1px solid #ddd; 
+            box-sizing: border-box; 
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border-color 0.2s;
+        }
+        input:focus {
+            border-color: #d63384;
+            outline: none;
+        }
+
+        /* 📱 로그인 버튼: 터치하기 좋게 높이 조절 */
+        .btn-login { 
+            width: 100%; 
+            background: #d63384; 
+            color: white; 
+            border: none; 
+            padding: 15px; 
+            cursor: pointer; 
+            font-weight: bold; 
+            font-size: 16px;
+            border-radius: 6px;
+            box-shadow: 0 4px 10px rgba(214, 51, 132, 0.2);
+            transition: background 0.2s;
+        }
+        .btn-login:active { 
+            background: #c12a74; 
+            transform: scale(0.98);
+        }
+
+        .signup-link { 
+            margin-top: 25px; 
+            font-size: 14px; 
+            color: #777; 
+        }
+        .signup-link a { 
+            color: #d63384; 
+            text-decoration: none; 
+            font-weight: bold;
+            margin-left: 5px;
+        }
+        .signup-link a:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
     <div class="login-container">
         <h2>팬 로그인</h2>
-        <input type="email" id="email" placeholder="이메일 주소">
-        <input type="password" id="password" placeholder="비밀번호">
+        <input type="email" id="email" placeholder="이메일 주소" autocomplete="username">
+        <input type="password" id="password" placeholder="비밀번호" autocomplete="current-password">
         <button class="btn-login" id="loginBtn">로그인하기</button>
         
         <div class="signup-link">
@@ -44,7 +117,7 @@
         const auth = getAuth(app);
 
         document.getElementById("loginBtn").addEventListener("click", async () => {
-            const email = document.getElementById("email").value;
+            const email = document.getElementById("email").value.trim();
             const password = document.getElementById("password").value;
 
             if (!email || !password) {
@@ -53,10 +126,9 @@
             }
 
             try {
-                // 로그인 진행
                 await signInWithEmailAndPassword(auth, email, password);
                 alert("어서오세요! 조윤 배우님 팬페이지에 오신 걸 환영합니다. ✨");
-                location.href = "board.html"; // 로그인 성공 시 게시판으로 이동
+                location.href = "board.html"; 
             } catch (error) {
                 console.error(error);
                 alert("로그인에 실패했어요. 이메일이나 비밀번호를 다시 확인해주세요!");
