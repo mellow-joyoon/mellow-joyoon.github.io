@@ -4,10 +4,10 @@
     <meta charset="UTF-8">
     <title>Mellow Joyoon | 글 보기</title>
     <style>
+        /* 네이버 카페 스타일의 정갈한 디자인 */
         body { background-color: #f6f6f6; font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; padding: 20px; color: #333; }
         .view-container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border: 1px solid #ddd; }
         
-        /* 카페 본문 헤더 */
         .post-header { border-bottom: 1px solid #eee; padding-bottom: 20px; margin-bottom: 20px; }
         .post-category { color: #d63384; font-size: 13px; font-weight: bold; margin-bottom: 8px; }
         .post-title { font-size: 22px; font-weight: bold; margin-bottom: 15px; }
@@ -15,15 +15,11 @@
         .post-info .author { color: #333; font-weight: bold; margin-right: 15px; }
         .post-info span { margin-right: 10px; }
 
-        /* 본문 내용 */
         .post-content { line-height: 1.8; font-size: 15px; min-height: 300px; white-space: pre-wrap; padding: 10px 0; }
 
-        /* 하단 조회수/좋아요 영역 */
         .post-footer { border-top: 1px solid #eee; padding-top: 20px; margin-top: 40px; display: flex; justify-content: space-between; align-items: center; }
-        .stat-area { font-size: 13px; color: #666; }
-        .btn-like { background: none; border: 1px solid #eee; padding: 5px 12px; cursor: pointer; border-radius: 15px; font-size: 13px; transition: 0.2s; }
-        .btn-like:hover { background: #fff0f3; border-color: #d63384; color: #d63384; }
-
+        .btn-like { background: #fff; border: 1px solid #eee; padding: 8px 15px; cursor: pointer; border-radius: 20px; font-size: 13px; display: flex; align-items: center; gap: 5px; }
+        .btn-like:hover { background: #fff0f3; border-color: #d63384; }
         .btn-list { background: #fff; border: 1px solid #ccc; color: #333; padding: 7px 15px; text-decoration: none; font-size: 13px; }
     </style>
 </head>
@@ -44,7 +40,7 @@
             <div class="post-content" id="content"></div>
 
             <div class="post-footer">
-                <div class="stat-area">
+                <div>
                     <button class="btn-like" id="likeBtn">❤️ 좋아요 <span id="likeCount">0</span></button>
                 </div>
                 <a href="board.html" class="btn-list">목록보기</a>
@@ -74,7 +70,6 @@
         if (postId) {
             const postRef = doc(db, "posts", postId);
             
-            // 데이터 가져오기
             getDoc(postRef).then((docSnap) => {
                 if (docSnap.exists()) {
                     const data = docSnap.data();
@@ -90,12 +85,8 @@
                 }
             });
 
-            // 좋아요 버튼 클릭 이벤트
             document.getElementById("likeBtn").addEventListener("click", async () => {
-                await updateDoc(postRef, {
-                    likes: increment(1)
-                });
-                // 화면의 숫자도 바로 올리기
+                await updateDoc(postRef, { likes: increment(1) });
                 const countSpan = document.getElementById("likeCount");
                 countSpan.innerText = parseInt(countSpan.innerText) + 1;
                 alert("이 글을 좋아합니다! ❤️");
