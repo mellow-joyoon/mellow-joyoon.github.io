@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>Mellow Joyoon | 팬 로그인</title>
+    <style>
+        body { background-color: #f6f6f6; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .login-container { background: white; padding: 40px; border: 1px solid #ddd; width: 350px; text-align: center; }
+        h2 { color: #d63384; margin-bottom: 30px; }
+        input { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ccc; box-sizing: border-box; }
+        .btn-login { width: 100%; background: #d63384; color: white; border: none; padding: 12px; cursor: pointer; font-weight: bold; }
+        .btn-login:hover { background: #c12a74; }
+        .signup-link { margin-top: 20px; font-size: 13px; color: #666; }
+        .signup-link a { color: #d63384; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h2>팬 로그인</h2>
+        <input type="email" id="email" placeholder="이메일 주소">
+        <input type="password" id="password" placeholder="비밀번호">
+        <button class="btn-login" id="loginBtn">로그인하기</button>
+        
+        <div class="signup-link">
+            아직 회원이 아니신가요? <a href="signup.html">회원가입하기</a>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+        // 쫌좀님의 파이어베이스 설정
+        const firebaseConfig = {
+          apiKey: "AIzaSyCP4Ur--4UGGpNSK_P7qRvnVFDZbqn436A",
+          authDomain: "mellow-joyoon.firebaseapp.com",
+          projectId: "mellow-joyoon",
+          storageBucket: "mellow-joyoon.firebasestorage.app",
+          messagingSenderId: "556097417487",
+          appId: "1:556097417487:web:0dca0eb26ba28d893c4e7a"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        document.getElementById("loginBtn").addEventListener("click", async () => {
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
+
+            if (!email || !password) {
+                alert("이메일과 비밀번호를 모두 입력해주세요!");
+                return;
+            }
+
+            try {
+                // 로그인 진행
+                await signInWithEmailAndPassword(auth, email, password);
+                alert("어서오세요! 조윤 배우님 팬페이지에 오신 걸 환영합니다. ✨");
+                location.href = "board.html"; // 로그인 성공 시 게시판으로 이동
+            } catch (error) {
+                console.error(error);
+                alert("로그인에 실패했어요. 이메일이나 비밀번호를 다시 확인해주세요!");
+            }
+        });
+    </script>
+</body>
+</html>
