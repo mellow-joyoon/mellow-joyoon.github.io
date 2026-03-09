@@ -26,6 +26,14 @@
         
         .btn-list { background: #fff; border: 1px solid #ccc; color: #333; padding: 8px 18px; text-decoration: none; font-size: 13px; border-radius: 2px; }
         .btn-list:hover { background: #f9f9f9; }
+
+        /* 수정/삭제 버튼 스타일 */
+        .admin-buttons { display: none; gap: 5px; }
+        .btn-edit, .btn-delete { 
+            background: #fff; border: 1px solid #ddd; padding: 5px 10px; 
+            font-size: 12px; cursor: pointer; color: #666; 
+        }
+        .btn-delete:hover { background: #ffeded; color: #d63384; border-color: #d63384; }
     </style>
 </head>
 <body>
@@ -34,7 +42,13 @@
         
         <div id="post-detail" style="display:none;">
             <div class="post-header">
-                <div class="post-category">자유게시판</div>
+                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                    <div class="post-category">자유게시판</div>
+                    <div class="admin-buttons" id="adminButtons">
+                        <button class="btn-edit" id="editBtn">수정</button>
+                        <button class="btn-delete" id="deleteBtn">삭제</button>
+                    </div>
+                </div>
                 <h1 class="post-title" id="title"></h1>
                 <div class="post-info">
                     <span class="author" id="author"></span>
@@ -56,7 +70,8 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, doc, getDoc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, updateDoc, increment, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
         const firebaseConfig = {
           apiKey: "AIzaSyCP4Ur--4UGGpNSK_P7qRvnVFDZbqn436A",
@@ -69,66 +84,84 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+        const auth = getAuth(app);
 
         const urlParams = new URLSearchParams(window.location.search);
         const postId = urlParams.get('id');
 
+        // 쫌좀님의 관리자 이메일을 여기에 적어주세요!
+        const ADMIN_EMAIL = "zzomzom@example.com"; 
+
         if (postId) {
             const postRef = doc(db, "posts", postId);
             
-            // 1. 페이지 접속 시 조회수 즉시 증가
             async function initPost() {
                 try {
-                    // 조회수 1 증가 (서버 업데이트)
-                    await updateDoc(postRef, {
-                        views: increment(1)
-                    });
+                    // 1. 조회수 1 증가
+                    await updateDoc(postRef, { views: increment(1) });
 
-                    // 데이터 가져와서 화면에 그리기
+                    // 2. 데이터 가져오기
                     const docSnap = await getDoc(postRef);
                     if (docSnap.exists()) {
                         const data = docSnap.data();
                         document.getElementById("title").innerText = data.title;
                         document.getElementById("author").innerText = data.author;
                         document.getElementById("content").innerText = data.content;
-                        document.getElementById("viewCount").innerText = data.views || 0;
+                        document.getElementById("viewCount").innerText = (data.views || 0) + 1;
                         document.getElementById("likeCount").innerText = data.likes || 0;
                         
-                        // 날짜 예쁘게 변환
                         const dateObj = data.createdAt ? new Date(data.createdAt.seconds * 1000) : new Date();
                         document.getElementById("date").innerText = dateObj.toLocaleString();
 
-                        // 로딩 숨기고 본문 표시
+                        // 3. 권한 체크 (관리자이거나 작성자 본인인가?)
+                        onAuthStateChanged(auth, (user) => {
+                            if (user) {
+                                if (user.email === ADMIN_EMAIL || user.displayName === data.author) {
+                                    document.getElementById("adminButtons").style.display = "flex";
+                                }
+                            }
+                        });
+
                         document.getElementById("loading").style.display = "none";
                         document.getElementById("post-detail").style.display = "block";
                     } else {
-                        alert("삭제된 게시글이거나 존재하지 않습니다.");
+                        alert("존재하지 않는 게시글입니다.");
                         location.href = 'board.html';
                     }
                 } catch (error) {
-                    console.error("데이터 로딩 중 에러:", error);
+                    console.error("로딩 에러:", error);
                 }
             }
 
             initPost();
 
-            // 2. 좋아요 버튼 클릭 이벤트
-            document.getElementById("likeBtn").addEventListener("click", async () => {
-                try {
-                    await updateDoc(postRef, {
-                        likes: increment(1)
-                    });
-                    
-                    // 화면 숫자 즉시 반영
-                    const likeSpan = document.getElementById("likeCount");
-                    likeSpan.innerText = parseInt(likeSpan.innerText) + 1;
-                    
-                    document.getElementById("likeBtn").classList.add("active");
-                    alert("이 글을 좋아합니다! ❤️");
-                } catch (e) {
-                    console.error("좋아요 업데이트 실패:", e);
+            // 좋아요 기능
+            document.getElementById("likeBtn").onclick = async () => {
+                await updateDoc(postRef, { likes: increment(1) });
+                const likeSpan = document.getElementById("likeCount");
+                likeSpan.innerText = parseInt(likeSpan.innerText) + 1;
+                document.getElementById("likeBtn").classList.add("active");
+                alert("이 글을 좋아합니다! ❤️");
+            };
+
+            // 삭제 기능
+            document.getElementById("deleteBtn").onclick = async () => {
+                if (confirm("정말로 이 글을 삭제하시겠습니까? 다시 복구할 수 없습니다.")) {
+                    try {
+                        await deleteDoc(postRef);
+                        alert("글이 삭제되었습니다.");
+                        location.href = "board.html";
+                    } catch (e) {
+                        alert("삭제 권한이 없거나 오류가 발생했습니다.");
+                    }
                 }
-            });
+            };
+
+            // 수정 페이지로 이동 (나중에 edit.html 만드시면 연결됩니다)
+            document.getElementById("editBtn").onclick = () => {
+                location.href = `edit.html?id=${postId}`;
+            };
+
         } else {
             location.href = 'board.html';
         }
