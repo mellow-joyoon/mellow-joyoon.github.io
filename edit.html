@@ -2,29 +2,96 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mellow Joyoon | 글 수정하기</title>
     <style>
-        body { background-color: #f6f6f6; font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; padding: 20px; color: #333; }
-        .edit-container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border: 1px solid #ddd; }
-        h2 { color: #d63384; border-bottom: 2px solid #d63384; padding-bottom: 10px; margin-bottom: 25px; }
-        
-        input[type="text"], textarea { 
-            width: 100%; padding: 12px; margin-bottom: 15px; 
-            border: 1px solid #ddd; box-sizing: border-box; font-size: 14px;
+        body { 
+            background-color: #f6f6f6; 
+            font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; 
+            padding: 15px; /* 모바일 여백 고려 */
+            color: #333; 
+            margin: 0;
         }
-        textarea { height: 450px; resize: none; line-height: 1.6; }
+        
+        /* 📱 컨테이너: 모바일에서 화면을 꽉 채우도록 설정 */
+        .edit-container { 
+            width: 100%;
+            max-width: 800px; 
+            margin: 0 auto; 
+            background: white; 
+            padding: 20px; 
+            border: 1px solid #ddd; 
+            box-sizing: border-box;
+            border-radius: 8px;
+        }
+        
+        h2 { 
+            color: #d63384; 
+            font-size: clamp(1.2rem, 5vw, 1.5rem); 
+            border-bottom: 2px solid #d63384; 
+            padding-bottom: 10px; 
+            margin-bottom: 20px; 
+        }
+        
+        /* 📱 입력창: 터치하기 편하도록 높이와 폰트 크기(16px) 조절 */
+        input[type="text"], textarea { 
+            width: 100%; 
+            padding: 12px; 
+            margin-bottom: 12px; 
+            border: 1px solid #ddd; 
+            box-sizing: border-box; 
+            font-size: 16px; 
+            border-radius: 4px;
+        }
+        input:focus, textarea:focus { border-color: #d63384; outline: none; }
+        
+        textarea { 
+            height: 350px; 
+            min-height: 250px;
+            resize: none; 
+            line-height: 1.6; 
+        }
 
-        .btn-area { display: flex; justify-content: flex-end; gap: 10px; }
-        .btn { padding: 10px 25px; border: none; font-weight: bold; cursor: pointer; font-size: 13px; border-radius: 2px; }
+        /* 📱 버튼 영역: 모바일에서 버튼이 나란히 꽉 차도록 설정 */
+        .btn-area { 
+            display: flex; 
+            justify-content: flex-end; 
+            gap: 10px; 
+            margin-top: 10px;
+        }
+        
+        .btn { 
+            flex: 1;
+            max-width: 120px;
+            padding: 12px 0; 
+            border: none; 
+            font-weight: bold; 
+            cursor: pointer; 
+            font-size: 14px; 
+            border-radius: 4px;
+            text-align: center;
+        }
+        
         .btn-submit { background: #d63384; color: white; }
-        .btn-cancel { background: #eee; color: #333; text-decoration: none; display: flex; align-items: center; }
+        .btn-cancel { 
+            background: #eee; 
+            color: #333; 
+            text-decoration: none; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+        }
         .btn:hover { opacity: 0.8; }
+
+        @media (max-width: 480px) {
+            .btn-cancel, .btn-submit { max-width: none; }
+        }
     </style>
 </head>
 <body>
     <div class="edit-container">
         <h2>게시글 수정</h2>
-        <div id="loading" style="text-align:center; padding:50px;">기존 내용을 불러오는 중입니다...</div>
+        <div id="loading" style="text-align:center; padding:50px; font-size: 14px;">기존 내용을 불러오는 중입니다...</div>
         
         <div id="edit-form" style="display:none;">
             <input type="text" id="editTitle" placeholder="제목을 입력하세요" autocomplete="off">
@@ -57,8 +124,6 @@
 
         const urlParams = new URLSearchParams(window.location.search);
         const postId = urlParams.get('id');
-
-        // 👑 쫌좀님의 관리자 이메일 (마스터 키!)
         const ADMIN_EMAIL = "yun786692@gmail.com"; 
 
         if (!postId) {
@@ -66,7 +131,6 @@
             location.href = "board.html";
         }
 
-        // 1. 로그인 체크 및 기존 데이터 불러오기
         onAuthStateChanged(auth, async (user) => {
             if (!user) {
                 alert("로그인이 필요한 서비스입니다.");
@@ -81,7 +145,6 @@
                 if (docSnap.exists()) {
                     const data = docSnap.data();
                     
-                    // 🛡️ 권한 체크: 관리자(이메일)이거나 작성자 본인인가?
                     if (user.email === ADMIN_EMAIL || user.displayName === data.author) {
                         document.getElementById("editTitle").value = data.title;
                         document.getElementById("editContent").value = data.content;
@@ -102,7 +165,6 @@
             }
         });
 
-        // 2. 수정 완료 버튼 클릭 이벤트
         document.getElementById("updateBtn").onclick = async () => {
             const newTitle = document.getElementById("editTitle").value.trim();
             const newContent = document.getElementById("editContent").value.trim();
@@ -118,7 +180,7 @@
                     await updateDoc(docRef, {
                         title: newTitle,
                         content: newContent,
-                        updatedAt: new Date() // 수정된 시각 기록
+                        updatedAt: new Date()
                     });
                     alert("수정이 완료되었습니다! ✨");
                     location.href = `view.html?id=${postId}`;
