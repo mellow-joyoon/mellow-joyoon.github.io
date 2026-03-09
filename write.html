@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>Mellow Joyoon | 글쓰기</title>
+    <style>
+        body { background-color: #fdf2f4; font-family: sans-serif; padding: 20px; }
+        .write-container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 12px; }
+        input, textarea { width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
+        textarea { height: 300px; }
+        .btn-save { background: #d63384; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; float: right; }
+    </style>
+</head>
+<body>
+    <div class="write-container">
+        <h2>자유게시판 글쓰기</h2>
+        <input type="text" id="title" placeholder="제목을 입력하세요 (예: 조윤 배우님 사랑해요!)">
+        <input type="text" id="author" placeholder="작성자 이름 (닉네임)">
+        <textarea id="content" placeholder="내용을 입력하세요. 사진이나 영상 링크도 환영입니다!"></textarea>
+        <button class="btn-save" onclick="savePost()">등록하기</button>
+    </div>
+
+    <script>
+        function savePost() {
+            alert("지금은 디자인 단계입니다! 곧 Firebase 서버를 연결해서 진짜로 등록되게 해드릴게요.");
+            location.href = 'board.html';
+        }
+    </script>
+</body>
+</html>
