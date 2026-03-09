@@ -4,27 +4,43 @@
     <meta charset="UTF-8">
     <title>Mellow Joyoon | 자유게시판</title>
     <style>
-        body { background-color: #fdf2f4; font-family: sans-serif; padding: 20px; }
-        .board-container { max-width: 900px; margin: 0 auto; background: white; padding: 30px; border-radius: 12px; }
-        h2 { color: #d63384; text-align: center; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border-bottom: 1px solid #eee; padding: 15px; text-align: center; }
-        th { background-color: #fff0f3; color: #d63384; }
-        .btn-write { background: #d63384; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; float: right; margin-bottom: 15px; }
-        tr:hover { background-color: #f9f9f9; cursor: pointer; }
+        /* 네이버 카페 느낌의 깔끔한 배경과 폰트 */
+        body { background-color: #f6f6f6; font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; padding: 20px; color: #333; }
+        .board-container { max-width: 1000px; margin: 0 auto; background: white; padding: 20px; border: 1px solid #ddd; border-radius: 0; }
+        
+        /* 게시판 제목과 상단 바 */
+        .board-header { border-bottom: 2px solid #333; padding-bottom: 10px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+        .board-header h2 { margin: 0; font-size: 1.5rem; color: #d63384; } /* 핑크 포인트는 유지! */
+        
+        /* 네이버 카페 스타일 표 */
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        th { border-top: 1px solid #eee; border-bottom: 1px solid #eee; background: #f9f9f9; padding: 10px; color: #666; font-weight: normal; }
+        td { border-bottom: 1px solid #eee; padding: 12px 10px; text-align: center; color: #333; }
+        
+        .title-column { text-align: left; padding-left: 20px; width: 50%; }
+        .title-column a { text-decoration: none; color: #333; cursor: pointer; }
+        .title-column a:hover { text-decoration: underline; }
+        
+        .btn-write { background: #fff; border: 1px solid #ccc; color: #333; padding: 5px 15px; text-decoration: none; font-size: 12px; border-radius: 2px; }
+        .btn-write:hover { background: #f2f2f2; }
+        
+        tr:hover { background-color: #fdfdfd; }
     </style>
 </head>
 <body>
     <div class="board-container">
-        <h2>조윤 배우님 자유게시판</h2>
-        <a href="write.html" class="btn-write">글쓰기</a>
+        <div class="board-header">
+            <h2>자유게시판</h2>
+            <a href="write.html" class="btn-write">글쓰기</a>
+        </div>
         <table>
             <thead>
                 <tr>
-                    <th>번호</th>
+                    <th style="width: 8%;">번호</th>
                     <th>제목</th>
-                    <th>작성자</th>
-                    <th>날짜</th>
+                    <th style="width: 15%;">작성자</th>
+                    <th style="width: 12%;">날짜</th>
+                    <th style="width: 8%;">조회</th>
                 </tr>
             </thead>
             <tbody id="post-list">
@@ -34,7 +50,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, query, orderBy, onSnapshot, doc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
           apiKey: "AIzaSyCP4Ur--4UGGpNSK_P7qRvnVFDZbqn436A",
@@ -48,30 +64,11 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // 장부에서 글 목록 실시간으로 가져오기
-        const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
-        
-        onSnapshot(q, (snapshot) => {
-            const postList = document.getElementById("post-list");
-            postList.innerHTML = ""; 
-            
-            let number = snapshot.size;
-            snapshot.forEach((doc) => {
-                const data = doc.data();
-                const date = data.createdAt ? new Date(data.createdAt.seconds * 1000).toLocaleDateString() : "-";
-                
-                // [수정된 부분] tr 태그에 클릭 시 해당 글의 ID를 가지고 view.html로 이동하는 기능을 넣었습니다.
-                const row = `
-                    <tr onclick="location.href='view.html?id=${doc.id}'">
-                        <td>${number--}</td>
-                        <td style="text-align:left;">${data.title}</td>
-                        <td>${data.author}</td>
-                        <td>${date}</td>
-                    </tr>
-                `;
-                postList.innerHTML += row;
-            });
-        });
-    </script>
-</body>
-</html>
+        // 조회수 올리고 상세페이지로 이동하는 함수 (쫌좀님, 이 부분이 핵심이에요!)
+        window.viewPost = async (id) => {
+            const postRef = doc(db, "posts", id);
+            try {
+                await updateDoc(postRef, {
+                    views: increment(1) // 서버에서 조회수 1 증가!
+                });
+                location.
