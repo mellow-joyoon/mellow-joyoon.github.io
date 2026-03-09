@@ -38,7 +38,7 @@
 </head>
 <body>
     <div class="view-container">
-        <div id="loading" style="text-align:center; padding:50px;">카페 글을 불러오는 중입니다...</div>
+        <div id="loading" style="text-align:center; padding:50px;">보안 확인 및 글을 불러오는 중입니다...</div>
         
         <div id="post-detail" style="display:none;">
             <div class="post-header">
@@ -88,54 +88,65 @@
 
         const urlParams = new URLSearchParams(window.location.search);
         const postId = urlParams.get('id');
-
-        // 👑 쫌좀님의 실제 관리자 이메일로 수정 완료!
         const ADMIN_EMAIL = "yun786692@gmail.com"; 
 
-        if (postId) {
-            const postRef = doc(db, "posts", postId);
-            
-            async function initPost() {
-                try {
-                    // 1. 조회수 1 증가
-                    await updateDoc(postRef, { views: increment(1) });
-
-                    // 2. 데이터 가져오기
-                    const docSnap = await getDoc(postRef);
-                    if (docSnap.exists()) {
-                        const data = docSnap.data();
-                        document.getElementById("title").innerText = data.title;
-                        document.getElementById("author").innerText = data.author;
-                        document.getElementById("content").innerText = data.content;
-                        document.getElementById("viewCount").innerText = (data.views || 0) + 1;
-                        document.getElementById("likeCount").innerText = data.likes || 0;
-                        
-                        const dateObj = data.createdAt ? new Date(data.createdAt.seconds * 1000) : new Date();
-                        document.getElementById("date").innerText = dateObj.toLocaleString();
-
-                        // 3. 권한 체크 (관리자이거나 작성자 본인인가?)
-                        onAuthStateChanged(auth, (user) => {
-                            if (user) {
-                                // 이메일이 yun786692@gmail.com이거나 닉네임이 작성자와 같을 때
-                                if (user.email === ADMIN_EMAIL || user.displayName === data.author) {
-                                    document.getElementById("adminButtons").style.display = "flex";
-                                }
-                            }
-                        });
-
-                        document.getElementById("loading").style.display = "none";
-                        document.getElementById("post-detail").style.display = "block";
-                    } else {
-                        alert("존재하지 않는 게시글입니다.");
-                        location.href = 'board.html';
-                    }
-                } catch (error) {
-                    console.error("로딩 에러:", error);
+        // 🛡️ [핵심 보안] 페이지 열리자마자 로그인 여부 확인
+        onAuthStateChanged(auth, (user) => {
+            if (!user) {
+                // 로그인이 안 되어 있다면 즉시 차단
+                alert("쉿! 조윤 배우님과 팬들만의 비밀 공간입니다. 로그인 후 확인해 주세요! 😊");
+                location.href = "login.html";
+            } else {
+                // 로그인 된 사용자라면 글 로딩 시작
+                if (postId) {
+                    initPost(user);
+                } else {
+                    location.href = 'board.html';
                 }
             }
+        });
 
-            initPost();
+        async function initPost(currentUser) {
+            const postRef = doc(db, "posts", postId);
+            try {
+                // 1. 조회수 1 증가
+                await updateDoc(postRef, { views: increment(1) });
 
+                // 2. 데이터 가져오기
+                const docSnap = await getDoc(postRef);
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    document.getElementById("title").innerText = data.title;
+                    document.getElementById("author").innerText = data.author;
+                    document.getElementById("content").innerText = data.content;
+                    document.getElementById("viewCount").innerText = (data.views || 0) + 1;
+                    document.getElementById("likeCount").innerText = data.likes || 0;
+                    
+                    const dateObj = data.createdAt ? new Date(data.createdAt.seconds * 1000) : new Date();
+                    document.getElementById("date").innerText = dateObj.toLocaleString();
+
+                    // 3. 권한 체크 (관리자이거나 작성자 본인일 때만 버튼 노출)
+                    if (currentUser.email === ADMIN_EMAIL || currentUser.displayName === data.author) {
+                        document.getElementById("adminButtons").style.display = "flex";
+                    }
+
+                    // 모든 로딩이 끝나면 화면 표시
+                    document.getElementById("loading").style.display = "none";
+                    document.getElementById("post-detail").style.display = "block";
+
+                    // 버튼 이벤트 연결
+                    setupButtonEvents(postRef);
+                } else {
+                    alert("존재하지 않는 게시글입니다.");
+                    location.href = 'board.html';
+                }
+            } catch (error) {
+                console.error("로딩 에러:", error);
+                alert("글을 불러오는 중 오류가 발생했습니다.");
+            }
+        }
+
+        function setupButtonEvents(postRef) {
             // 좋아요 기능
             document.getElementById("likeBtn").onclick = async () => {
                 await updateDoc(postRef, { likes: increment(1) });
@@ -162,9 +173,6 @@
             document.getElementById("editBtn").onclick = () => {
                 location.href = `edit.html?id=${postId}`;
             };
-
-        } else {
-            location.href = 'board.html';
         }
     </script>
 </body>
