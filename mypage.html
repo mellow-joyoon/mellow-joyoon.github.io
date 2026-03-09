@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>Mellow Joyoon | 내 정보 수정</title>
+    <style>
+        body { background-color: #f6f6f6; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .profile-container { background: white; padding: 40px; border: 1px solid #ddd; width: 350px; text-align: center; }
+        h2 { color: #d63384; margin-bottom: 30px; }
+        .info-text { font-size: 14px; color: #666; margin-bottom: 20px; }
+        input { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ccc; box-sizing: border-box; }
+        .btn-update { width: 100%; background: #d63384; color: white; border: none; padding: 12px; cursor: pointer; font-weight: bold; }
+        .btn-update:hover { background: #c12a74; }
+        .back-link { margin-top: 20px; font-size: 13px; }
+        .back-link a { color: #666; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <div class="profile-container">
+        <h2>내 정보 수정</h2>
+        <p class="info-text">새로운 닉네임을 입력해 주세요.</p>
+        <input type="text" id="newNickname" placeholder="새 닉네임">
+        <button class="btn-update" id="updateBtn">닉네임 변경하기</button>
+        
+        <div class="back-link">
+            <a href="board.html">← 게시판으로 돌아가기</a>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+        const firebaseConfig = {
+          apiKey: "AIzaSyCP4Ur--4UGGpNSK_P7qRvnVFDZbqn436A",
+          authDomain: "mellow-joyoon.firebaseapp.com",
+          projectId: "mellow-joyoon",
+          storageBucket: "mellow-joyoon.firebasestorage.app",
+          messagingSenderId: "556097417487",
+          appId: "1:556097417487:web:0dca0eb26ba28d893c4e7a"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        // 현재 닉네임 미리 보여주기
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                document.getElementById("newNickname").value = user.displayName || "";
+            } else {
+                location.href = "login.html";
+            }
+        });
+
+        document.getElementById("updateBtn").addEventListener("click", async () => {
+            const newName = document.getElementById("newNickname").value.trim();
+            const user = auth.currentUser;
+
+            if (!newName) {
+                alert("닉네임을 입력해 주세요!");
+                return;
+            }
+
+            try {
+                // 파이어베이스 프로필 업데이트
+                await updateProfile(user, {
+                    displayName: newName
+                });
+                alert("🎉 닉네임이 성공적으로 변경되었습니다!");
+                location.reload(); // 화면 새로고침
+            } catch (error) {
+                alert("변경 중 오류가 발생했습니다: " + error.message);
+            }
+        });
+    </script>
+</body>
+</html>
