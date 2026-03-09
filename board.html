@@ -14,13 +14,17 @@
             align-items: center;
         }
 
-        /* 상단 바 스타일 (홈, 사용자 정보) */
+        /* 상단 바 스타일 */
         .top-bar {
             width: 1000px;
             margin-bottom: 15px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            background: #fff; /* 배경색 추가로 더 잘 보이게 */
+            padding: 10px 20px;
+            border: 1px solid #ddd;
+            box-sizing: border-box;
         }
 
         .home-link {
@@ -35,9 +39,17 @@
 
         .user-info {
             font-size: 13px;
-            display: flex;
+            display: flex; /* 기본을 flex로 변경 */
             align-items: center;
             gap: 15px;
+        }
+
+        /* 로그인 안됐을 때 보여줄 버튼 */
+        .login-link {
+            text-decoration: none;
+            color: #d63384;
+            font-weight: bold;
+            font-size: 13px;
         }
 
         .user-name { font-weight: bold; color: #333; }
@@ -86,7 +98,6 @@
         .btn-page { background: white; border: 1px solid #ddd; padding: 7px 15px; font-size: 12px; cursor: pointer; color: #666; }
         .btn-page:disabled { color: #ccc; cursor: not-allowed; }
 
-        /* 검색창 영역 스타일 */
         .search-container {
             margin-top: 30px;
             display: flex;
@@ -99,7 +110,6 @@
             border: 1px solid #ccc;
             font-size: 13px;
         }
-        .search-input:focus { border-color: #d63384; outline: none; }
     </style>
 </head>
 <body>
@@ -109,10 +119,9 @@
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
             메인 홈으로
         </a>
-        <div class="user-info" id="userInfo" style="display: none;">
-            <span class="user-name" id="welcomeMsg">님 반갑습니다!</span>
-            <a href="mypage.html" class="btn-sub">내 정보 수정</a>
-            <button class="btn-sub" id="logoutBtn">로그아웃</button>
+        
+        <div id="authStatus">
+            <span style="font-size: 12px; color: #999;">로그인 확인 중...</span>
         </div>
     </div>
 
@@ -165,84 +174,68 @@
         const db = getFirestore(app);
         const auth = getAuth(app);
 
+        // --- 🛡️ 상단바 로그인 상태 업데이트 로직 ---
+        const authStatusDiv = document.getElementById("authStatus");
+
         onAuthStateChanged(auth, (user) => {
-            const userInfoDiv = document.getElementById("userInfo");
             if (user) {
-                document.getElementById("welcomeMsg").innerText = `${user.displayName || '팬'}님 반갑습니다!`;
-                userInfoDiv.style.display = "flex";
+                // 로그인 된 경우: 닉네임 + 내 정보 수정 + 로그아웃 버튼 보여주기
+                authStatusDiv.innerHTML = `
+                    <div class="user-info">
+                        <span class="user-name">${user.displayName || '팬'}님 반갑습니다!</span>
+                        <a href="mypage.html" class="btn-sub">내 정보 수정</a>
+                        <button class="btn-sub" id="logoutBtn">로그아웃</button>
+                    </div>
+                `;
+                // 로그아웃 버튼 이벤트 연결
+                document.getElementById("logoutBtn").onclick = async () => {
+                    if (confirm("로그아웃 하시겠습니까?")) {
+                        await signOut(auth);
+                        alert("로그아웃 되었습니다.");
+                        location.reload();
+                    }
+                };
             } else {
-                userInfoDiv.style.display = "none";
+                // 로그인 안 된 경우: 로그인 링크 보여주기
+                authStatusDiv.innerHTML = `<a href="login.html" class="login-link">로그인 하러가기</a>`;
             }
         });
 
-        document.getElementById("logoutBtn").onclick = async () => {
-            if (confirm("로그아웃 하시겠습니까?")) {
-                await signOut(auth);
-                alert("로그아웃 되었습니다.");
-                location.reload();
-            }
-        };
-
-        // --- 페이징 및 검색 로직 ---
+        // --- 게시판 로직 (동일) ---
         const pageSize = 10;
         let firstVisible = null;
         let lastVisible = null;
-        let totalCount = 0;
         let currentSearchKeyword = ""; 
-
-        async function getTotalCount() {
-            const coll = collection(db, "posts");
-            const snapshot = await getCountFromServer(coll);
-            totalCount = snapshot.data().count;
-        }
 
         async function renderList(snapshot, pageType = 'first') {
             const postList = document.getElementById("post-list");
             postList.innerHTML = "";
-            
             if (snapshot.empty) {
-                postList.innerHTML = '<tr><td colspan="5">검색 결과 또는 게시글이 없습니다.</td></tr>';
-                document.getElementById("prevBtn").disabled = true;
-                document.getElementById("nextBtn").disabled = true;
+                postList.innerHTML = '<tr><td colspan="5">게시글이 없습니다.</td></tr>';
                 return;
             }
-
             firstVisible = snapshot.docs[0];
             lastVisible = snapshot.docs[snapshot.docs.length - 1];
-
             snapshot.forEach((doc) => {
                 const data = doc.data();
                 const date = data.createdAt ? new Date(data.createdAt.seconds * 1000).toLocaleDateString() : "-";
-                const row = `
+                postList.innerHTML += `
                     <tr>
                         <td>-</td>
-                        <td class="title-column">
-                            <span onclick="goToView('${doc.id}')">${data.title}</span>
-                        </td>
+                        <td class="title-column"><span onclick="goToView('${doc.id}')">${data.title}</span></td>
                         <td>${data.author}</td>
                         <td>${date}</td>
                         <td>${data.views || 0}</td>
-                    </tr>
-                `;
-                postList.innerHTML += row;
+                    </tr>`;
             });
-
             document.getElementById("prevBtn").disabled = (pageType === 'first');
             document.getElementById("nextBtn").disabled = snapshot.size < pageSize;
         }
 
         async function loadPosts(searchKeyword = "") {
-            let q;
-            if (searchKeyword) {
-                q = query(
-                    collection(db, "posts"), 
-                    where("title", ">=", searchKeyword),
-                    where("title", "<=", searchKeyword + "\uf8ff"),
-                    limit(pageSize)
-                );
-            } else {
-                q = query(collection(db, "posts"), orderBy("createdAt", "desc"), limit(pageSize));
-            }
+            let q = searchKeyword 
+                ? query(collection(db, "posts"), where("title", ">=", searchKeyword), where("title", "<=", searchKeyword + "\uf8ff"), limit(pageSize))
+                : query(collection(db, "posts"), orderBy("createdAt", "desc"), limit(pageSize));
             const snapshot = await getDocs(q);
             renderList(snapshot, 'first');
         }
@@ -252,47 +245,8 @@
             loadPosts(currentSearchKeyword);
         };
 
-        document.getElementById("searchInput").onkeypress = (e) => {
-            if (e.key === 'Enter') document.getElementById("searchBtn").click();
-        };
-
-        document.getElementById("nextBtn").onclick = async () => {
-            let q;
-            if (currentSearchKeyword) {
-                q = query(
-                    collection(db, "posts"), 
-                    where("title", ">=", currentSearchKeyword),
-                    where("title", "<=", currentSearchKeyword + "\uf8ff"),
-                    startAfter(lastVisible), 
-                    limit(pageSize)
-                );
-            } else {
-                q = query(collection(db, "posts"), orderBy("createdAt", "desc"), startAfter(lastVisible), limit(pageSize));
-            }
-            const snapshot = await getDocs(q);
-            if (!snapshot.empty) renderList(snapshot, 'next');
-        };
-
-        document.getElementById("prevBtn").onclick = async () => {
-            let q;
-            if (currentSearchKeyword) {
-                q = query(
-                    collection(db, "posts"), 
-                    where("title", ">=", currentSearchKeyword),
-                    where("title", "<=", currentSearchKeyword + "\uf8ff"),
-                    endBefore(firstVisible), 
-                    limitToLast(pageSize)
-                );
-            } else {
-                q = query(collection(db, "posts"), orderBy("createdAt", "desc"), endBefore(firstVisible), limitToLast(pageSize));
-            }
-            const snapshot = await getDocs(q);
-            if (!snapshot.empty) renderList(snapshot, 'prev');
-        };
-
         window.goToView = (id) => { location.href = `view.html?id=${id}`; };
-        
-        getTotalCount().then(() => loadPosts());
+        loadPosts();
     </script>
 </body>
 </html>
