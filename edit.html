@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>Mellow Joyoon | 글 수정하기</title>
+    <style>
+        body { background-color: #f6f6f6; font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; padding: 20px; color: #333; }
+        .edit-container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border: 1px solid #ddd; }
+        h2 { color: #d63384; border-bottom: 2px solid #d63384; padding-bottom: 10px; margin-bottom: 25px; }
+        
+        input[type="text"], textarea { 
+            width: 100%; padding: 12px; margin-bottom: 15px; 
+            border: 1px solid #ddd; box-sizing: border-box; font-size: 14px;
+        }
+        textarea { height: 450px; resize: none; line-height: 1.6; }
+
+        .btn-area { display: flex; justify-content: flex-end; gap: 10px; }
+        .btn { padding: 10px 25px; border: none; font-weight: bold; cursor: pointer; font-size: 13px; border-radius: 2px; }
+        .btn-submit { background: #d63384; color: white; }
+        .btn-cancel { background: #eee; color: #333; text-decoration: none; display: flex; align-items: center; }
+        .btn:hover { opacity: 0.8; }
+    </style>
+</head>
+<body>
+    <div class="edit-container">
+        <h2>게시글 수정</h2>
+        <div id="loading" style="text-align:center; padding:50px;">기존 내용을 불러오는 중입니다...</div>
+        
+        <div id="edit-form" style="display:none;">
+            <input type="text" id="editTitle" placeholder="제목을 입력하세요">
+            <textarea id="editContent" placeholder="내용을 입력하세요"></textarea>
+            
+            <div class="btn-area">
+                <a href="javascript:history.back();" class="btn btn-cancel">취소</a>
+                <button class="btn btn-submit" id="updateBtn">수정 완료</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+        const firebaseConfig = {
+          apiKey: "AIzaSyCP4Ur--4UGGpNSK_P7qRvnVFDZbqn436A",
+          authDomain: "mellow-joyoon.firebaseapp.com",
+          projectId: "mellow-joyoon",
+          storageBucket: "mellow-joyoon.firebasestorage.app",
+          messagingSenderId: "556097417487",
+          appId: "1:556097417487:web:0dca0eb26ba28d893c4e7a"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const postId = urlParams.get('id');
+
+        // 👑 쫌좀님의 관리자 이메일 (마스터 키!)
+        const ADMIN_EMAIL = "yun786692@gmail.com"; 
+
+        if (!postId) {
+            alert("잘못된 접근입니다.");
+            location.href = "board.html";
+        }
+
+        // 1. 로그인 체크 및 기존 데이터 불러오기
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) {
+                alert("로그인이 필요한 서비스입니다.");
+                location.href = "login.html";
+                return;
+            }
+
+            try {
+                const docRef = doc(db, "posts", postId);
+                const docSnap = await getDoc(docRef);
+
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    
+                    // 🛡️ 권한 체크: 관리자(이메일)이거나 작성자 본인인가?
+                    if (user.email === ADMIN_EMAIL || user.displayName === data.author) {
+                        document.getElementById("editTitle").value = data.title;
+                        document.getElementById("editContent").value = data.content;
+                        
+                        document.getElementById("loading").style.display = "none";
+                        document.getElementById("edit-form").style.display = "block";
+                    } else {
+                        alert("이 글을 수정할 권한이 없습니다.");
+                        location.href = "board.html";
+                    }
+                } else {
+                    alert("해당 글이 존재하지 않습니다.");
+                    location.href = "board.html";
+                }
+            } catch (e) {
+                console.error("데이터 로딩 중 오류:", e);
+                alert("내용을 불러오지 못했습니다.");
+            }
+        });
+
+        // 2. 수정 완료 버튼 클릭 이벤트
+        document.getElementById("updateBtn").onclick = async () => {
+            const newTitle = document.getElementById("editTitle").value.trim();
+            const newContent = document.getElementById("editContent").value.trim();
+
+            if (!newTitle || !newContent) {
+                alert("제목과 내용을 입력해주세요!");
+                return;
+            }
+
+            if (confirm("정말로 내용을 수정하시겠습니까?")) {
+                try {
+                    const docRef = doc(db, "posts", postId);
+                    await updateDoc(docRef, {
+                        title: newTitle,
+                        content: newContent,
+                        updatedAt: new Date() // 수정된 시각 기록
+                    });
+                    alert("수정이 완료되었습니다! ✨");
+                    location.href = `view.html?id=${postId}`;
+                } catch (error) {
+                    console.error("수정 오류:", error);
+                    alert("수정 중에 오류가 발생했습니다.");
+                }
+            }
+        };
+    </script>
+</body>
+</html>
