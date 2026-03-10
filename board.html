@@ -16,7 +16,7 @@
             margin: 0;
         }
 
-        /* 상단 바 스타일 - 반응형 적용 */
+        /* 상단 바 스타일 - 필모그래피 메뉴 추가 및 반응형 유지 */
         .top-bar {
             width: 100%;
             max-width: 1000px;
@@ -31,7 +31,14 @@
             border-radius: 8px;
         }
 
-        .home-link {
+        /* 왼쪽 링크 그룹핑 */
+        .nav-links {
+            display: flex;
+            gap: 15px; /* 홈과 필모 사이 간격 */
+            align-items: center;
+        }
+
+        .home-link, .film-link {
             text-decoration: none;
             color: #d63384;
             font-weight: bold;
@@ -39,7 +46,10 @@
             display: flex;
             align-items: center;
             gap: 5px;
+            transition: opacity 0.2s;
         }
+        
+        .home-link:hover, .film-link:hover { opacity: 0.7; }
 
         .user-info {
             font-size: 12px;
@@ -70,7 +80,7 @@
             border-radius: 4px;
         }
 
-        /* 게시판 컨테이너 - 반응형 적용 */
+        /* 게시판 컨테이너 */
         .board-container { 
             width: 100%;
             max-width: 1000px; 
@@ -92,23 +102,22 @@
         }
         .board-header h2 { margin: 0; font-size: 1.2rem; color: #d63384; }
         
-        /* 테이블 반응형 설정 */
+        /* 테이블 스타일 */
         table { width: 100%; border-collapse: collapse; font-size: 13px; table-layout: fixed; }
         th { border-top: 1px solid #eee; border-bottom: 1px solid #eee; background: #f9f9f9; padding: 10px 5px; color: #666; font-weight: normal; }
         td { border-bottom: 1px solid #eee; padding: 12px 5px; text-align: center; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         
-        /* 📱 모바일에서 덜 중요한 항목 숨기거나 조절 */
         .col-no { width: 40px; }
         .col-author { width: 80px; }
         .col-date { width: 90px; }
         .col-views { width: 50px; }
 
         @media (max-width: 600px) {
-            .col-no, .col-views { display: none; } /* 번호와 조회수는 모바일에서 숨김 */
+            .col-no, .col-views { display: none; }
             .col-date { width: 70px; font-size: 11px; }
             .col-author { width: 70px; font-size: 11px; }
             table { font-size: 12px; }
-            .title-column { padding-left: 5px; }
+            .nav-links { gap: 10px; } /* 모바일에서 간격 좁게 */
         }
 
         .title-column { text-align: left; padding-left: 10px; width: auto; }
@@ -138,10 +147,17 @@
 <body>
 
     <div class="top-bar">
-        <a href="index.html" class="home-link">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-            메인 홈
-        </a>
+        <div class="nav-links">
+            <a href="index.html" class="home-link">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                메인 홈
+            </a>
+            <a href="joyoon-list.html" class="film-link">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect><line x1="7" y1="2" x2="7" y2="22"></line><line x1="17" y1="2" x2="17" y2="22"></line><line x1="2" y1="12" x2="22" y2="12"></line><line x1="2" y1="7" x2="7" y2="7"></line><line x1="2" y1="17" x2="7" y2="17"></line><line x1="17" y1="17" x2="22" y2="17"></line><line x1="17" y1="7" x2="22" y2="7"></line></svg>
+                필모그래피
+            </a>
+        </div>
+
         <div id="authStatus">
             <span style="font-size: 11px; color: #999;">확인 중...</span>
         </div>
