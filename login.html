@@ -5,105 +5,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Mellow Joyoon | 팬 관리 센터</title>
     <style>
-        :root {
-            --main-pink: #d63384;
-            --soft-pink: #fdf2f4;
-            --dark-pink: #c12a74;
-        }
-
+        :root { --main-pink: #d63384; --soft-pink: #fdf2f4; --dark-pink: #c12a74; }
         body { 
-            background-color: var(--soft-pink);
-            font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            min-height: 100vh; 
-            margin: 0; 
-            padding: 20px;
-            box-sizing: border-box;
-            -webkit-font-smoothing: antialiased;
+            background-color: var(--soft-pink); font-family: 'Apple SD Gothic Neo', sans-serif; 
+            display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box;
         }
-        
         .login-container { 
-            background: white; 
-            padding: 40px 30px; 
-            border: 1px solid #eee; 
-            width: 100%;
-            max-width: 400px; 
-            text-align: center; 
-            border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(214, 51, 132, 0.08);
+            background: white; padding: 40px 30px; border-radius: 20px; width: 100%; max-width: 400px; text-align: center;
+            box-shadow: 0 10px 30px rgba(214, 51, 132, 0.1); border: 1px solid rgba(214, 51, 132, 0.1);
         }
-
-        h2 { 
-            color: var(--main-pink); 
-            margin-bottom: 25px; 
-            font-size: 1.6rem;
-            letter-spacing: -1px;
-        }
-
-        /* 섹션 전환 애니메이션 */
+        h2 { color: var(--main-pink); margin-bottom: 25px; letter-spacing: -1px; }
         .auth-section { display: none; }
         .auth-section.active { display: block; animation: fadeIn 0.3s ease; }
-
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         input { 
-            width: 100%; 
-            padding: 14px; 
-            margin-bottom: 12px; 
-            border: 1px solid #ddd; 
-            box-sizing: border-box; 
-            border-radius: 8px;
-            font-size: 16px; /* iOS 자동확대 방지 */
-            transition: all 0.2s;
+            width: 100%; padding: 15px; margin-bottom: 12px; border: 1px solid #ddd; border-radius: 10px; 
+            box-sizing: border-box; font-size: 16px; transition: 0.2s;
         }
         input:focus { border-color: var(--main-pink); outline: none; box-shadow: 0 0 0 3px rgba(214, 51, 132, 0.1); }
-
         button { 
-            width: 100%; 
-            background: var(--main-pink); 
-            color: white; 
-            border: none; 
-            padding: 15px; 
-            cursor: pointer; 
-            font-weight: bold; 
-            font-size: 16px;
-            border-radius: 8px;
-            margin-top: 5px;
-            transition: 0.2s;
+            width: 100%; background: var(--main-pink); color: white; border: none; padding: 16px; 
+            font-weight: bold; font-size: 16px; border-radius: 10px; cursor: pointer; transition: 0.2s;
         }
         button:active { background: var(--dark-pink); transform: scale(0.98); }
-
-        /* 하단 보조 링크 스타일 최적화 */
-        .helper-links {
-            margin-top: 20px;
-            display: flex;
-            justify-content: center;
-            gap: 12px;
-            font-size: 13px;
-            color: #888;
-            flex-wrap: wrap; /* 모바일 대응 */
-        }
-        .helper-links span { 
-            cursor: pointer; 
-            transition: 0.2s; 
-            padding: 4px 8px;
-            background: #f9f9f9;
-            border-radius: 4px;
-        }
-        .helper-links span:hover { color: var(--main-pink); background: #f0f0f0; }
-
-        .signup-link { 
-            margin-top: 25px; 
-            padding-top: 20px;
-            border-top: 1px dashed #eee;
-            font-size: 14px; 
-            color: #777; 
-        }
+        .helper-links { margin-top: 20px; display: flex; justify-content: center; gap: 15px; font-size: 13px; color: #888; }
+        .helper-links span { cursor: pointer; padding: 5px 10px; background: #f9f9f9; border-radius: 6px; }
+        .signup-link { margin-top: 25px; padding-top: 20px; border-top: 1px dashed #eee; font-size: 14px; }
         .signup-link a { color: var(--main-pink); text-decoration: none; font-weight: bold; }
-
-        #currentNicknameDisplay { color: var(--main-pink); font-weight: bold; }
     </style>
 </head>
 <body>
@@ -111,41 +39,26 @@
     <div class="login-container">
         <div id="loginSection" class="auth-section active">
             <h2>팬 로그인</h2>
-            <input type="email" id="email" placeholder="이메일 주소" autocomplete="username">
-            <input type="password" id="password" placeholder="비밀번호" autocomplete="current-password">
+            <input type="email" id="email" placeholder="이메일 주소">
+            <input type="password" id="password" placeholder="비밀번호">
             <button id="loginBtn">로그인하기</button>
-            
-            <div class="helper-links">
-                <span onclick="showSection('resetSection')">비밀번호 찾기</span>
-                <span onclick="checkAuthAndGoProfile()">닉네임 변경</span>
-            </div>
+            <div class="helper-links"><span onclick="showSection('resetSection')">비밀번호 찾기</span></div>
+            <div class="signup-link">아직 회원이 아니신가요? <a href="signup.html">회원가입하기</a></div>
+        </div>
 
-            <div class="signup-link">
-                아직 회원이 아니신가요? <a href="signup.html">회원가입하기</a>
-            </div>
+        <div id="profileSection" class="auth-section">
+            <h2>닉네임 설정</h2>
+            <p style="font-size:13px; color:#666; margin-bottom:20px;">현재 닉네임: <span id="currentNicknameDisplay" style="color:var(--main-pink); font-weight:bold;">-</span></p>
+            <input type="text" id="newNickname" placeholder="새로운 닉네임 입력">
+            <button id="changeNickBtn">변경 내용 저장</button>
+            <div class="helper-links"><span onclick="location.href='board.html'">게시판으로 돌아가기</span></div>
         </div>
 
         <div id="resetSection" class="auth-section">
             <h2>비밀번호 찾기</h2>
-            <p style="font-size: 13px; color: #666; margin-bottom: 20px;">가입하신 이메일로 비밀번호 재설정 링크를 보내드립니다.</p>
-            <input type="email" id="resetEmail" placeholder="가입한 이메일 입력">
+            <input type="email" id="resetEmail" placeholder="가입한 이메일">
             <button id="resetBtn">재설정 메일 보내기</button>
-            <div class="helper-links">
-                <span onclick="showSection('loginSection')">로그인으로 돌아가기</span>
-            </div>
-        </div>
-
-        <div id="profileSection" class="auth-section">
-            <h2>닉네임 변경</h2>
-            <p style="font-size: 13px; color: #666; margin-bottom: 20px;">
-                현재 닉네임: <span id="currentNicknameDisplay">확인 중...</span>
-            </p>
-            <input type="text" id="newNickname" placeholder="새로운 닉네임">
-            <button id="changeNickBtn">닉네임 변경 적용</button>
-            <div class="helper-links">
-                <span onclick="showSection('loginSection')">취소하고 돌아가기</span>
-                <span onclick="location.href='board.html'">게시판으로 가기</span>
-            </div>
+            <div class="helper-links"><span onclick="showSection('loginSection')">로그인으로 돌아가기</span></div>
         </div>
     </div>
 
@@ -153,7 +66,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail, updateProfile, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-        // 기존 파이어베이스 설정 유지
         const firebaseConfig = {
             apiKey: "AIzaSyCP4Ur--4UGGpNSK_P7qRvnVFDZbqn436A",
             authDomain: "mellow-joyoon.firebaseapp.com",
@@ -166,86 +78,50 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
 
-        // [핵심] 섹션 전환 함수
-        window.showSection = (sectionId) => {
+        window.showSection = (id) => {
             document.querySelectorAll('.auth-section').forEach(s => s.classList.remove('active'));
-            document.getElementById(sectionId).classList.add('active');
+            document.getElementById(id).classList.add('active');
         };
 
-        // [핵심] 로그인 체크 후 프로필 섹션 이동
-        window.checkAuthAndGoProfile = () => {
-            if (auth.currentUser) {
-                showSection('profileSection');
-            } else {
-                alert("로그인이 필요한 기능입니다. 먼저 로그인해주세요!");
-            }
+        // 엔터키 지원 함수
+        const setupEnterKey = (inputId, btnId) => {
+            document.getElementById(inputId).addEventListener("keypress", (e) => {
+                if (e.key === "Enter") document.getElementById(btnId).click();
+            });
         };
+        setupEnterKey("password", "loginBtn");
+        setupEnterKey("newNickname", "changeNickBtn");
+        setupEnterKey("resetEmail", "resetBtn");
 
-        // [기존] 로그인 로직
-        document.getElementById("loginBtn").addEventListener("click", async () => {
+        // 로그인 로직
+        document.getElementById("loginBtn").onclick = async () => {
             const email = document.getElementById("email").value.trim();
-            const password = document.getElementById("password").value;
-
-            if (!email || !password) {
-                alert("이메일과 비밀번호를 모두 입력해주세요!");
-                return;
-            }
-
+            const pw = document.getElementById("password").value;
             try {
-                await signInWithEmailAndPassword(auth, email, password);
-                alert("어서오세요! ✨");
-                location.href = "board.html"; 
-            } catch (error) {
-                alert("로그인에 실패했습니다. 정보를 다시 확인해주세요.");
-            }
-        });
+                await signInWithEmailAndPassword(auth, email, pw);
+                location.href = "board.html";
+            } catch (e) { alert("로그인 실패: 정보를 확인해주세요."); }
+        };
 
-        // [기존] 비밀번호 재설정
-        document.getElementById("resetBtn").addEventListener("click", async () => {
-            const email = document.getElementById("resetEmail").value.trim();
-            if (!email) { alert("이메일을 입력해주세요!"); return; }
-
+        // 닉네임 변경 로직
+        document.getElementById("changeNickBtn").onclick = async () => {
+            const name = document.getElementById("newNickname").value.trim();
+            if (!name) return alert("닉네임을 입력하세요.");
             try {
-                await sendPasswordResetEmail(auth, email);
-                alert("재설정 이메일을 보냈습니다. 메일함을 확인해주세요!");
-                showSection('loginSection');
-            } catch (error) {
-                alert("가입되지 않은 이메일이거나 오류가 발생했습니다.");
-            }
-        });
+                await updateProfile(auth.currentUser, { displayName: name });
+                alert("성공적으로 변경되었습니다!");
+                location.href = "board.html";
+            } catch (e) { alert("변경 실패"); }
+        };
 
-        // [기존] 사용자 상태 실시간 감시 (닉네임 표시용)
+        // 초기 모드 확인 (게시판에서 닉네임 클릭하고 왔을 때)
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                document.getElementById('currentNicknameDisplay').innerText = user.displayName || "설정된 닉네임 없음";
-            } else {
-                document.getElementById('currentNicknameDisplay').innerText = "로그인 필요";
+                document.getElementById("currentNicknameDisplay").innerText = user.displayName || "없음";
+                const urlParams = new URLSearchParams(window.location.search);
+                if (urlParams.get('mode') === 'profile') showSection('profileSection');
             }
         });
-
-        // [기존] 닉네임 변경 실행
-        document.getElementById("changeNickBtn").addEventListener("click", async () => {
-            const newName = document.getElementById("newNickname").value.trim();
-            if (!newName) { alert("새로운 닉네임을 입력해주세요!"); return; }
-
-            if (auth.currentUser) {
-                try {
-                    await updateProfile(auth.currentUser, { displayName: newName });
-                    alert("닉네임 변경이 완료되었습니다! ✨");
-                    document.getElementById('currentNicknameDisplay').innerText = newName;
-                    // 변경 후 게시판으로 이동시키거나 원하는 섹션으로 이동
-                } catch (error) {
-                    alert("닉네임 변경 중 오류가 발생했습니다.");
-                }
-            }
-        });
-
-        // URL 파라미터 체크 (다른 페이지에서 닉네임 변경하러 올 때)
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get('mode') === 'profile') {
-            setTimeout(() => { checkAuthAndGoProfile(); }, 500);
-        }
-
     </script>
 </body>
 </html>
