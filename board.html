@@ -13,7 +13,7 @@
             -webkit-font-smoothing: antialiased;
         }
 
-        /* 상단 바 - 반응형 및 디자인 개선 */
+        /* 상단 바 - 디자인 유지 */
         .top-bar {
             width: 100%; max-width: 1000px; margin: 15px 0;
             display: flex; justify-content: space-between; align-items: center;
@@ -29,8 +29,6 @@
         .home-link:hover, .film-link:hover { opacity: 0.7; }
 
         .user-info { font-size: 12px; display: flex; align-items: center; gap: 8px; }
-        
-        /* 닉네임 클릭 버튼 스타일 */
         .user-name { 
             font-weight: bold; color: #333; cursor: pointer; 
             padding: 4px 10px; background: #fdf2f4; border-radius: 6px; 
@@ -43,7 +41,7 @@
             border: 1px solid #ccc; background: white; cursor: pointer; border-radius: 6px;
         }
 
-        /* 게시판 본체 */
+        /* 게시판 본체 및 레이아웃 정렬 수정 */
         .board-container { 
             width: 100%; max-width: 1000px; background: white; padding: 15px; 
             border: 1px solid #ddd; border-radius: 12px; box-sizing: border-box;
@@ -53,22 +51,29 @@
         .board-header { border-bottom: 2px solid #333; padding-bottom: 15px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
         .board-header h2 { margin: 0; font-size: 1.2rem; color: #d63384; }
 
+        /* 테이블 정렬 및 가독성 핵심 수정 */
         table { width: 100%; border-collapse: collapse; font-size: 13px; table-layout: fixed; }
-        th { background: #f9f9f9; padding: 12px 5px; color: #666; font-weight: normal; border-bottom: 1px solid #eee; }
+        th { background: #f9f9f9; padding: 12px 5px; color: #666; font-weight: normal; border-bottom: 1px solid #eee; text-align: center; }
         td { border-bottom: 1px solid #eee; padding: 14px 5px; text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-        .title-column { text-align: left; padding-left: 10px; color: #333; cursor: pointer; font-weight: 500; }
+        /* 제목 컬럼: 쏠림 방지를 위해 왼쪽 정렬 유지 및 여백 확보 */
+        .title-column { text-align: left; padding-left: 20px; color: #333; cursor: pointer; font-weight: 500; }
         .title-column:hover { text-decoration: underline; color: #d63384; }
 
         .btn-write { background: #d63384; border: none; color: white; padding: 8px 16px; font-size: 12px; font-weight: bold; border-radius: 6px; text-decoration: none; }
 
-        /* 모바일 최적화 미디어 쿼리 */
+        /* 모바일/태블릿 반응형 대응 (아이폰, 갤럭시, 패드 전용) */
         @media (max-width: 600px) {
-            /* .col-views { display: none; } <- 모바일에서도 조회수를 보여주기 위해 이 부분을 삭제했습니다. */
             .top-bar { padding: 10px; border-radius: 0; margin-top: 0; border-left: none; border-right: none; }
             .user-name { font-size: 11px; padding: 3px 7px; }
-            table { font-size: 11px; } /* 좁은 화면에서 글자가 안 겹치도록 폰트만 살짝 조절 */
+            table { font-size: 11px; } 
             td { padding: 12px 3px; }
+            .title-column { padding-left: 10px; } /* 모바일에서 제목 여백 최적화 */
+            
+            /* 모바일에서 열 너비 강제 조정하여 치우침 방지 */
+            .col-author { width: 75px !important; }
+            .col-date { width: 55px !important; }
+            .col-views { width: 45px !important; }
         }
     </style>
 </head>
@@ -90,10 +95,10 @@
         <table>
             <thead>
                 <tr>
-                    <th>제목</th>
-                    <th class="col-author" style="width: 70px;">작성자</th>
-                    <th class="col-date" style="width: 50px;">날짜</th>
-                    <th class="col-views" style="width: 40px;">조회</th>
+                    <th style="width: auto;">제목</th>
+                    <th class="col-author" style="width: 100px;">작성자</th>
+                    <th class="col-date" style="width: 70px;">날짜</th>
+                    <th class="col-views" style="width: 60px;">조회</th>
                 </tr>
             </thead>
             <tbody id="post-list">
@@ -120,7 +125,7 @@
         const db = getFirestore(app);
         const auth = getAuth(app);
 
-        // 상단 인증 상태 관리
+        // 상단 인증 상태 관리 (기존 기능 유지)
         onAuthStateChanged(auth, (user) => {
             const authStatusDiv = document.getElementById("authStatus");
             if (user) {
@@ -138,7 +143,7 @@
             }
         });
 
-        // 게시글 리스트 불러오기
+        // 게시글 리스트 불러오기 (날짜 형식 수정 및 카테고리 최적화)
         async function loadPosts() {
             try {
                 const q = query(collection(db, "posts"), orderBy("createdAt", "desc"), limit(15));
@@ -154,7 +159,7 @@
                 snapshot.forEach((doc) => {
                     const data = doc.data();
                     
-                    // 날짜 형식 변경 (3. 15)
+                    // 날짜 형식 변경 (예: 3. 15)
                     let dateStr = "-";
                     if (data.createdAt) {
                         const dateObj = new Date(data.createdAt.seconds * 1000);
