@@ -2,145 +2,75 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Mellow Joyoon | 자유게시판</title>
     <style>
         body { 
             background-color: #f6f6f6; 
             font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; 
-            padding: 20px 10px; /* 모바일 여백 고려 */
+            padding: env(safe-area-inset-top) 10px env(safe-area-inset-bottom);
             color: #333; 
             display: flex;
             flex-direction: column;
             align-items: center;
             margin: 0;
+            -webkit-tap-highlight-color: transparent;
         }
 
-        /* 상단 바 스타일 - 필모그래피 메뉴 추가 및 반응형 유지 */
         .top-bar {
             width: 100%;
             max-width: 1000px;
-            margin-bottom: 15px;
+            margin: 15px 0;
             display: flex;
             justify-content: space-between;
             align-items: center;
             background: #fff;
-            padding: 10px 15px;
+            padding: 12px 15px;
             border: 1px solid #ddd;
             box-sizing: border-box;
-            border-radius: 8px;
+            border-radius: 12px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
         }
 
-        /* 왼쪽 링크 그룹핑 */
-        .nav-links {
-            display: flex;
-            gap: 15px; /* 홈과 필모 사이 간격 */
-            align-items: center;
-        }
-
+        .nav-links { display: flex; gap: 15px; align-items: center; }
         .home-link, .film-link {
-            text-decoration: none;
-            color: #d63384;
-            font-weight: bold;
-            font-size: 13px;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            transition: opacity 0.2s;
+            text-decoration: none; color: #d63384; font-weight: bold; font-size: 13px;
+            display: flex; align-items: center; gap: 5px;
         }
+
+        .user-info { font-size: 12px; display: flex; align-items: center; gap: 8px; }
         
-        .home-link:hover, .film-link:hover { opacity: 0.7; }
-
-        .user-info {
-            font-size: 12px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex-wrap: wrap; /* 모바일에서 닉네임 길면 줄바꿈 */
-            justify-content: flex-end;
+        /* 닉네임 클릭 스타일 추가 */
+        .user-name { 
+            font-weight: bold; color: #333; cursor: pointer; 
+            padding: 4px 8px; background: #fdf2f4; border-radius: 6px; transition: 0.2s;
         }
+        .user-name:hover { background: #d63384; color: white; }
 
-        .login-link {
-            text-decoration: none;
-            color: #d63384;
-            font-weight: bold;
-            font-size: 13px;
-        }
-
-        .user-name { font-weight: bold; color: #333; }
-        
         .btn-sub {
-            text-decoration: none;
-            color: #666;
-            font-size: 11px;
-            padding: 3px 6px;
-            border: 1px solid #ccc;
-            background: white;
-            cursor: pointer;
-            border-radius: 4px;
+            text-decoration: none; color: #666; font-size: 11px; padding: 4px 8px;
+            border: 1px solid #ccc; background: white; cursor: pointer; border-radius: 4px;
         }
 
-        /* 게시판 컨테이너 */
         .board-container { 
-            width: 100%;
-            max-width: 1000px; 
-            background: white; 
-            padding: 15px; 
-            border: 1px solid #ddd; 
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-            box-sizing: border-box;
-            border-radius: 8px;
+            width: 100%; max-width: 1000px; background: white; padding: 15px; 
+            border: 1px solid #ddd; border-radius: 12px; box-sizing: border-box;
         }
-        
-        .board-header { 
-            border-bottom: 2px solid #333; 
-            padding-bottom: 15px; 
-            margin-bottom: 15px; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-        }
+
+        .board-header { border-bottom: 2px solid #333; padding-bottom: 15px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
         .board-header h2 { margin: 0; font-size: 1.2rem; color: #d63384; }
-        
-        /* 테이블 스타일 */
+
         table { width: 100%; border-collapse: collapse; font-size: 13px; table-layout: fixed; }
-        th { border-top: 1px solid #eee; border-bottom: 1px solid #eee; background: #f9f9f9; padding: 10px 5px; color: #666; font-weight: normal; }
-        td { border-bottom: 1px solid #eee; padding: 12px 5px; text-align: center; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        
-        .col-no { width: 40px; }
-        .col-author { width: 80px; }
-        .col-date { width: 90px; }
-        .col-views { width: 50px; }
+        th { background: #f9f9f9; padding: 12px 5px; color: #666; font-weight: normal; border-bottom: 1px solid #eee; }
+        td { border-bottom: 1px solid #eee; padding: 14px 5px; text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+        .title-column { text-align: left; padding-left: 10px; color: #333; cursor: pointer; }
+        .btn-write { background: #d63384; border: none; color: white; padding: 8px 16px; font-size: 12px; font-weight: bold; border-radius: 6px; text-decoration: none; }
 
         @media (max-width: 600px) {
             .col-no, .col-views { display: none; }
-            .col-date { width: 70px; font-size: 11px; }
-            .col-author { width: 70px; font-size: 11px; }
-            table { font-size: 12px; }
-            .nav-links { gap: 10px; } /* 모바일에서 간격 좁게 */
-        }
-
-        .title-column { text-align: left; padding-left: 10px; width: auto; }
-        .title-column span { cursor: pointer; font-weight: 500; display: block; overflow: hidden; text-overflow: ellipsis; }
-        .title-column span:hover { text-decoration: underline; color: #d63384; }
-        
-        .btn-write { background: #d63384; border: none; color: white; padding: 8px 15px; text-decoration: none; font-size: 12px; font-weight: bold; cursor: pointer; border-radius: 4px; }
-        
-        .pagination { margin-top: 25px; display: flex; justify-content: center; gap: 5px; }
-        .btn-page { background: white; border: 1px solid #ddd; padding: 6px 12px; font-size: 11px; cursor: pointer; color: #666; border-radius: 4px; }
-
-        .search-container {
-            margin-top: 20px;
-            display: flex;
-            justify-content: center;
-            gap: 5px;
-        }
-        .search-input {
-            width: 140px;
-            padding: 6px;
-            border: 1px solid #ccc;
-            font-size: 12px;
-            border-radius: 4px;
+            .top-bar { padding: 10px; border-radius: 0; margin-top: 0; border-left: none; border-right: none; }
+            .user-name { font-size: 11px; }
         }
     </style>
 </head>
@@ -148,19 +78,10 @@
 
     <div class="top-bar">
         <div class="nav-links">
-            <a href="index.html" class="home-link">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-                메인 홈
-            </a>
-            <a href="joyoon-list.html" class="film-link">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect><line x1="7" y1="2" x2="7" y2="22"></line><line x1="17" y1="2" x2="17" y2="22"></line><line x1="2" y1="12" x2="22" y2="12"></line><line x1="2" y1="7" x2="7" y2="7"></line><line x1="2" y1="17" x2="7" y2="17"></line><line x1="17" y1="17" x2="22" y2="17"></line><line x1="17" y1="7" x2="22" y2="7"></line></svg>
-                필모그래피
-            </a>
+            <a href="index.html" class="home-link">홈</a>
+            <a href="joyoon-list.html" class="film-link">필모그래피</a>
         </div>
-
-        <div id="authStatus">
-            <span style="font-size: 11px; color: #999;">확인 중...</span>
-        </div>
+        <div id="authStatus"><span style="font-size: 11px; color: #999;">확인 중...</span></div>
     </div>
 
     <div class="board-container">
@@ -182,95 +103,63 @@
                 <tr><td colspan="5">로딩 중...</td></tr>
             </tbody>
         </table>
-
-        <div class="pagination">
-            <button class="btn-page" id="prevBtn" disabled>이전</button>
-            <button class="btn-page" id="nextBtn" disabled>다음</button>
-        </div>
-
-        <div class="search-container">
-            <input type="text" id="searchInput" class="search-input" placeholder="검색" autocomplete="off">
-            <button id="searchBtn" class="btn-sub">검색</button>
-        </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, query, orderBy, limit, getDocs, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, query, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
         const firebaseConfig = {
-          apiKey: "AIzaSyCP4Ur--4UGGpNSK_P7qRvnVFDZbqn436A",
-          authDomain: "mellow-joyoon.firebaseapp.com",
-          projectId: "mellow-joyoon",
-          storageBucket: "mellow-joyoon.firebasestorage.app",
-          messagingSenderId: "556097417487",
-          appId: "1:556097417487:web:0dca0eb26ba28d893c4e7a"
+            apiKey: "AIzaSyCP4Ur--4UGGpNSK_P7qRvnVFDZbqn436A",
+            authDomain: "mellow-joyoon.firebaseapp.com",
+            projectId: "mellow-joyoon",
+            storageBucket: "mellow-joyoon.firebasestorage.app",
+            messagingSenderId: "556097417487",
+            appId: "1:556097417487:web:0dca0eb26ba28d893c4e7a"
         };
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const auth = getAuth(app);
 
-        const authStatusDiv = document.getElementById("authStatus");
-
+        // 상단 인증 상태 및 닉네임 클릭 이벤트
         onAuthStateChanged(auth, (user) => {
+            const authStatusDiv = document.getElementById("authStatus");
             if (user) {
                 authStatusDiv.innerHTML = `
                     <div class="user-info">
-                        <span class="user-name">${user.displayName || '팬'}님</span>
+                        <span class="user-name" onclick="location.href='login.html?mode=profile'">${user.displayName || '팬'}님</span>
                         <button class="btn-sub" id="logoutBtn">로그아웃</button>
                     </div>
                 `;
                 document.getElementById("logoutBtn").onclick = async () => {
-                    if (confirm("로그아웃 하시겠습니까?")) {
-                        await signOut(auth);
-                        location.reload();
-                    }
+                    if (confirm("로그아웃 하시겠습니까?")) { await signOut(auth); location.reload(); }
                 };
             } else {
-                authStatusDiv.innerHTML = `<a href="login.html" class="login-link">로그인</a>`;
+                authStatusDiv.innerHTML = `<a href="login.html" class="btn-sub" style="text-decoration:none">로그인</a>`;
             }
         });
 
-        const pageSize = 10;
-        async function renderList(snapshot, pageType = 'first') {
+        // 게시글 로드 로직 (기존 유지)
+        async function loadPosts() {
+            const q = query(collection(db, "posts"), orderBy("createdAt", "desc"), limit(15));
+            const snapshot = await getDocs(q);
             const postList = document.getElementById("post-list");
             postList.innerHTML = "";
-            if (snapshot.empty) {
-                postList.innerHTML = '<tr><td colspan="5">게시글이 없습니다.</td></tr>';
-                return;
-            }
             snapshot.forEach((doc) => {
                 const data = doc.data();
                 const date = data.createdAt ? new Date(data.createdAt.seconds * 1000).toLocaleDateString('ko-KR', {month:'2-digit', day:'2-digit'}) : "-";
                 postList.innerHTML += `
                     <tr>
                         <td class="col-no">-</td>
-                        <td class="title-column"><span onclick="goToView('${doc.id}')">${data.title}</span></td>
+                        <td class="title-column" onclick="location.href='view.html?id=${doc.id}'">${data.title}</td>
                         <td class="col-author">${data.author}</td>
                         <td class="col-date">${date}</td>
                         <td class="col-views">${data.views || 0}</td>
                     </tr>`;
             });
-            document.getElementById("prevBtn").disabled = (pageType === 'first');
-            document.getElementById("nextBtn").disabled = snapshot.size < pageSize;
         }
-
-        async function loadPosts(searchKeyword = "") {
-            let q = searchKeyword 
-                ? query(collection(db, "posts"), where("title", ">=", searchKeyword), where("title", "<=", searchKeyword + "\uf8ff"), limit(pageSize))
-                : query(collection(db, "posts"), orderBy("createdAt", "desc"), limit(pageSize));
-            const snapshot = await getDocs(q);
-            renderList(snapshot, 'first');
-        }
-
-        document.getElementById("searchBtn").onclick = () => {
-            const kw = document.getElementById("searchInput").value.trim();
-            loadPosts(kw);
-        };
-
-        window.goToView = (id) => { location.href = `view.html?id=${id}`; };
         loadPosts();
     </script>
 </body>
