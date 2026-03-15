@@ -64,10 +64,11 @@
 
         /* 모바일 최적화 미디어 쿼리 */
         @media (max-width: 600px) {
-            .col-no, .col-views { display: none; }
+            /* .col-views { display: none; } <- 모바일에서도 조회수를 보여주기 위해 이 부분을 삭제했습니다. */
             .top-bar { padding: 10px; border-radius: 0; margin-top: 0; border-left: none; border-right: none; }
             .user-name { font-size: 11px; padding: 3px 7px; }
-            table { font-size: 12px; }
+            table { font-size: 11px; } /* 좁은 화면에서 글자가 안 겹치도록 폰트만 살짝 조절 */
+            td { padding: 12px 3px; }
         }
     </style>
 </head>
@@ -89,15 +90,14 @@
         <table>
             <thead>
                 <tr>
-                    <th class="col-no">번호</th>
                     <th>제목</th>
-                    <th class="col-author">작성자</th>
-                    <th class="col-date">날짜</th>
-                    <th class="col-views">조회</th>
+                    <th class="col-author" style="width: 70px;">작성자</th>
+                    <th class="col-date" style="width: 50px;">날짜</th>
+                    <th class="col-views" style="width: 40px;">조회</th>
                 </tr>
             </thead>
             <tbody id="post-list">
-                <tr><td colspan="5">데이터를 불러오는 중...</td></tr>
+                <tr><td colspan="4">데이터를 불러오는 중...</td></tr>
             </tbody>
         </table>
     </div>
@@ -147,25 +147,31 @@
                 postList.innerHTML = "";
                 
                 if(snapshot.empty) {
-                    postList.innerHTML = '<tr><td colspan="5">게시글이 없습니다.</td></tr>';
+                    postList.innerHTML = '<tr><td colspan="4">게시글이 없습니다.</td></tr>';
                     return;
                 }
 
                 snapshot.forEach((doc) => {
                     const data = doc.data();
-                    const date = data.createdAt ? new Date(data.createdAt.seconds * 1000).toLocaleDateString('ko-KR', {month:'2-digit', day:'2-digit'}) : "-";
+                    
+                    // 날짜 형식 변경 (3. 15)
+                    let dateStr = "-";
+                    if (data.createdAt) {
+                        const dateObj = new Date(data.createdAt.seconds * 1000);
+                        dateStr = `${dateObj.getMonth() + 1}. ${dateObj.getDate()}`;
+                    }
+
                     postList.innerHTML += `
                         <tr>
-                            <td class="col-no">-</td>
                             <td class="title-column" onclick="location.href='view.html?id=${doc.id}'">${data.title}</td>
                             <td class="col-author">${data.author}</td>
-                            <td class="col-date">${date}</td>
+                            <td class="col-date">${dateStr}</td>
                             <td class="col-views">${data.views || 0}</td>
                         </tr>`;
                 });
             } catch (e) {
                 console.error(e);
-                document.getElementById("post-list").innerHTML = '<tr><td colspan="5">오류가 발생했습니다.</td></tr>';
+                document.getElementById("post-list").innerHTML = '<tr><td colspan="4">오류가 발생했습니다.</td></tr>';
             }
         }
         loadPosts();
