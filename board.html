@@ -75,7 +75,6 @@
         .pg-btn.active { 
             background: #eee; color: #333; font-weight: bold; border: 1px solid #ddd;
         }
-        .pg-next { border: 1px solid #ddd; background: #fff; margin-left: 5px; }
 
         /* 검색바 디자인 */
         .search-container {
@@ -138,19 +137,7 @@
             </tbody>
         </table>
 
-        <div class="pagination">
-            <div class="pg-btn active">1</div>
-            <div class="pg-btn">2</div>
-            <div class="pg-btn">3</div>
-            <div class="pg-btn">4</div>
-            <div class="pg-btn">5</div>
-            <div class="pg-btn">6</div>
-            <div class="pg-btn">7</div>
-            <div class="pg-btn">8</div>
-            <div class="pg-btn">9</div>
-            <div class="pg-btn">10</div>
-            <div class="pg-btn pg-next">›</div>
-        </div>
+        <div class="pagination" id="pagination-container"></div>
 
         <div class="search-container">
             <select class="search-select" id="searchType">
@@ -168,9 +155,8 @@
     </div>
 
     <script type="module">
-        // 파이어베이스 모듈 로드 (이 페이지 안에서만 독립적으로 작동)
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, query, orderBy, limit, getDocs, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, query, orderBy, getDocs, where, startAfter, limit } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
         const firebaseConfig = {
@@ -186,6 +172,10 @@
         const db = getFirestore(app);
         const auth = getAuth(app);
 
+        let currentPage = 1;
+        const postsPerPage = 15; // 한 페이지당 15개씩
+        let lastVisible = null; // 다음 페이지를 위한 기준점
+
         // 상단 인증 상태 관리
         onAuthStateChanged(auth, (user) => {
             const authStatusDiv = document.getElementById("authStatus");
@@ -194,8 +184,7 @@
                     <div class="user-info">
                         <span class="user-name" onclick="location.href='login.html?mode=profile'">${user.displayName || '팬'}님</span>
                         <button class="btn-sub" id="logoutBtn">로그아웃</button>
-                    </div>
-                `;
+                    </div>`;
                 document.getElementById("logoutBtn").onclick = async () => {
                     if (confirm("로그아웃 하시겠습니까?")) { await signOut(auth); location.reload(); }
                 };
@@ -204,32 +193,42 @@
             }
         });
 
-        // 실시간 게시글 목록 및 검색 기능
-        async function loadPosts(searchKeyword = "", searchType = "title") {
+        // 실제 게시글 불러오기 함수
+        async function loadPosts(pageNum = 1, searchKeyword = "", searchType = "title") {
             try {
+                currentPage = pageNum;
                 const postList = document.getElementById("post-list");
                 postList.innerHTML = '<tr><td colspan="4">데이터를 불러오는 중...</td></tr>';
 
-                let q;
                 const postsCol = collection(db, "posts");
-                
+                let q;
+
+                // 1. 데이터 쿼리 설정
                 if (searchKeyword) {
-                    // 검색 필터 적용
-                    q = query(postsCol, where(searchType, ">=", searchKeyword), where(searchType, "<=", searchKeyword + "\uf8ff"), limit(15));
+                    q = query(postsCol, where(searchType, ">=", searchKeyword), where(searchType, "<=", searchKeyword + "\uf8ff"), limit(100));
                 } else {
-                    // 기본 정렬 (최신순)
-                    q = query(postsCol, orderBy("createdAt", "desc"), limit(15));
+                    q = query(postsCol, orderBy("createdAt", "desc"));
                 }
 
                 const snapshot = await getDocs(q);
-                postList.innerHTML = "";
+                const allDocs = snapshot.docs;
                 
-                if(snapshot.empty) {
+                // 2. 전체 페이지 계산 및 페이지네이션 UI 생성
+                const totalPosts = allDocs.length;
+                const totalPages = Math.ceil(totalPosts / postsPerPage);
+                renderPagination(totalPages, pageNum);
+
+                // 3. 현재 페이지에 해당하는 데이터만 자르기
+                const startIndex = (pageNum - 1) * postsPerPage;
+                const pageDocs = allDocs.slice(startIndex, startIndex + postsPerPage);
+
+                postList.innerHTML = "";
+                if(pageDocs.length === 0) {
                     postList.innerHTML = '<tr><td colspan="4">게시글이 없습니다.</td></tr>';
                     return;
                 }
 
-                snapshot.forEach((doc) => {
+                pageDocs.forEach((doc) => {
                     const data = doc.data();
                     let dateStr = "-";
                     if (data.createdAt) {
@@ -246,25 +245,40 @@
                         </tr>`;
                 });
             } catch (e) {
-                console.error("데이터 로드 오류:", e);
-                document.getElementById("post-list").innerHTML = '<tr><td colspan="4">오류가 발생했습니다. 다시 시도해주세요.</td></tr>';
+                console.error(e);
+                document.getElementById("post-list").innerHTML = '<tr><td colspan="4">오류가 발생했습니다.</td></tr>';
             }
         }
 
-        // 검색 실행
+        // 페이지네이션 번호 실시간 생성 함수
+        function renderPagination(totalPages, activePage) {
+            const container = document.getElementById("pagination-container");
+            container.innerHTML = "";
+
+            if (totalPages <= 0) return;
+
+            for (let i = 1; i <= totalPages; i++) {
+                const btn = document.createElement("div");
+                btn.className = `pg-btn ${i === activePage ? 'active' : ''}`;
+                btn.innerText = i;
+                btn.onclick = () => loadPosts(i, document.getElementById("searchInput").value, document.getElementById("searchType").value);
+                container.appendChild(btn);
+            }
+        }
+
+        // 검색 기능
         document.getElementById("searchBtn").onclick = () => {
             const keyword = document.getElementById("searchInput").value.trim();
             const type = document.getElementById("searchType").value;
-            loadPosts(keyword, type);
+            loadPosts(1, keyword, type);
         };
 
-        // 검색창 엔터키 대응
-        document.getElementById("searchInput").addEventListener("keypress", (e) => {
-            if (e.key === "Enter") document.getElementById("searchBtn").click();
-        });
+        document.getElementById("searchInput").onkeyup = (e) => {
+            if (e.key === 'Enter') document.getElementById("searchBtn").click();
+        };
 
-        // 초기 로드
-        loadPosts();
+        // 초기 실행
+        loadPosts(1);
     </script>
 </body>
 </html>
