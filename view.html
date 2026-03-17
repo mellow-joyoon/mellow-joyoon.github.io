@@ -2,33 +2,32 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Mellow Joyoon | 글 보기</title>
     <style>
         body { 
             background-color: #f6f6f6; 
             font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; 
-            padding: 15px; /* 모바일 여백 조절 */
+            padding: 15px;
             color: #333; 
             margin: 0;
+            -webkit-tap-highlight-color: transparent;
         }
-        /* 📱 컨테이너: 모바일에서는 너비를 가득 채우도록 변경 */
+        
         .view-container { 
             width: 100%;
             max-width: 800px; 
             margin: 0 auto; 
             background: white; 
-            padding: 20px; /* 내부 패딩 조절 */
+            padding: 20px; 
             border: 1px solid #ddd; 
             box-sizing: border-box;
             border-radius: 8px;
         }
         
-        /* 네이버 카페 본문 상단 스타일 */
         .post-header { border-bottom: 1px solid #eee; padding-bottom: 15px; margin-bottom: 20px; }
         .post-category { color: #d63384; font-size: 13px; font-weight: bold; margin-bottom: 8px; }
         
-        /* 📱 제목: 화면 크기에 따라 폰트 조절 */
         .post-title { 
             font-size: clamp(1.2rem, 5vw, 1.5rem); 
             font-weight: bold; 
@@ -39,7 +38,7 @@
         
         .post-info { 
             display: flex; 
-            flex-wrap: wrap; /* 📱 정보가 길면 다음 줄로 넘어가게 */
+            flex-wrap: wrap; 
             align-items: center; 
             font-size: 12px; 
             color: #999; 
@@ -47,30 +46,38 @@
         }
         .post-info .author { color: #333; font-weight: bold; }
 
-        /* 본문 내용 영역 */
         .post-content { 
             line-height: 1.8; 
             font-size: 15px; 
-            min-height: 300px; 
+            min-height: 100px; /* 이미지 영역을 위해 최소 높이 조절 */
             white-space: pre-wrap; 
             padding: 20px 0; 
-            border-bottom: 1px solid #eee;
-            word-break: break-all; /* 📱 긴 영문이나 링크가 밖으로 안 나가게 */
-        }
-        
-        /* 📱 본문 내 이미지가 있다면 화면에 맞게 조절 */
-        .post-content img {
-            max-width: 100%;
-            height: auto;
+            word-break: break-all;
         }
 
-        /* 하단 통계 및 버튼 */
+        /* 📸 본문 내 이미지 출력 스타일 */
+        #post-images {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        #post-images img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            display: block;
+            margin: 0 auto;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
         .post-footer { 
             padding-top: 20px; 
+            border-top: 1px solid #eee;
             display: flex; 
             justify-content: space-between; 
             align-items: center; 
-            flex-wrap: wrap; /* 📱 버튼이 많아지면 줄바꿈 */
+            flex-wrap: wrap; 
             gap: 15px;
         }
         .btn-like { 
@@ -88,7 +95,6 @@
             border-radius: 4px; 
         }
 
-        /* 수정/삭제 버튼 스타일 */
         .admin-buttons { display: none; gap: 5px; }
         .btn-edit, .btn-delete { 
             background: #fff; border: 1px solid #ddd; padding: 5px 10px; 
@@ -119,6 +125,8 @@
             </div>
             
             <div class="post-content" id="content"></div>
+
+            <div id="post-images"></div>
 
             <div class="post-footer">
                 <div>
@@ -151,10 +159,9 @@
         const postId = urlParams.get('id');
         const ADMIN_EMAIL = "yun786692@gmail.com"; 
 
-        // 🛡️ [핵심 보안] 페이지 열리자마자 로그인 여부 확인
         onAuthStateChanged(auth, (user) => {
             if (!user) {
-                alert("쉿! 조윤 배우님과 팬들만의 비밀 공간입니다. 로그인 후 확인해 주세요! 😊");
+                alert("로그인 후 확인해 주세요! 😊");
                 location.href = "login.html";
             } else {
                 if (postId) {
@@ -168,13 +175,12 @@
         async function initPost(currentUser) {
             const postRef = doc(db, "posts", postId);
             try {
-                // 1. 조회수 증가
                 await updateDoc(postRef, { views: increment(1) });
 
-                // 2. 데이터 가져오기
                 const docSnap = await getDoc(postRef);
                 if (docSnap.exists()) {
                     const data = docSnap.data();
+                    
                     document.getElementById("title").innerText = data.title;
                     document.getElementById("author").innerText = data.author;
                     document.getElementById("content").innerText = data.content;
@@ -184,7 +190,16 @@
                     const dateObj = data.createdAt ? new Date(data.createdAt.seconds * 1000) : new Date();
                     document.getElementById("date").innerText = dateObj.toLocaleString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });
 
-                    // 3. 권한 체크
+                    // 📸 이미지 데이터가 있으면 화면에 뿌려주는 로직
+                    const imageContainer = document.getElementById("post-images");
+                    if (data.images && Array.isArray(data.images)) {
+                        data.images.forEach(imgUrl => {
+                            const imgTag = document.createElement("img");
+                            imgTag.src = imgUrl;
+                            imageContainer.appendChild(imgTag);
+                        });
+                    }
+
                     if (currentUser.email === ADMIN_EMAIL || currentUser.displayName === data.author) {
                         document.getElementById("adminButtons").style.display = "flex";
                     }
@@ -213,7 +228,7 @@
             };
 
             document.getElementById("deleteBtn").onclick = async () => {
-                if (confirm("정말로 이 글을 삭제하시겠습니까? 다시 복구할 수 없습니다.")) {
+                if (confirm("정말로 이 글을 삭제하시겠습니까?")) {
                     try {
                         await deleteDoc(postRef);
                         alert("글이 삭제되었습니다.");
