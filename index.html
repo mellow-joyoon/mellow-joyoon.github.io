@@ -5,214 +5,185 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Mellow Joyoon | 배우 조윤 팬페이지</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@700;800&family=Pretendard:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@900&family=Pretendard:wght@300;700&display=swap" rel="stylesheet">
 
     <style>
         :root {
-            --primary-color: #ff7eb9;
-            --accent-color: #ff2d55;
-            --bg-gradient: linear-gradient(135deg, #fff5f6 0%, #ffe3e8 100%);
-            --glass-bg: rgba(255, 255, 255, 0.4);
-            --safe-area-inset-bottom: env(safe-area-inset-bottom);
+            --point-pink: #ff2d55;
+            --soft-pink: #ffe3e8;
+            --bg-white: #ffffff;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         html, body {
-            width: 100%;
-            height: 100%;
-            overflow: hidden; /* 대문은 깔끔하게 한 화면에 유지 */
-            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: var(--bg-gradient);
+            width: 100%; height: 100%;
+            overflow: hidden;
+            background: var(--bg-white);
+            font-family: 'Pretendard', sans-serif;
         }
 
-        body {
+        /* 📱 배경에서 흐르는 텍스트 (Marquee) */
+        .scrolling-text {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            white-space: nowrap;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 15vh;
+            font-weight: 900;
+            color: rgba(255, 45, 85, 0.05); /* 아주 연하게 배경처럼 */
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .scroll-content {
+            display: inline-block;
+            animation: scrollText 20s linear infinite;
+        }
+
+        @keyframes scrollText {
+            from { transform: translateX(0); }
+            to { transform: translateX(-50%); }
+        }
+
+        /* 📱 중앙 메인 콘텐츠 박스 */
+        .container {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            height: 100%;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            min-height: 100vh;
             padding: 20px;
         }
 
-        /* 📱 배경 효과: 움직이는 은은한 빛 */
-        body::before {
-            content: '';
-            position: absolute;
-            width: 300px;
-            height: 300px;
-            background: radial-gradient(circle, rgba(255,126,185,0.2) 0%, rgba(255,255,255,0) 70%);
-            top: 10%;
-            left: 10%;
-            z-index: -1;
-            animation: float 10s infinite alternate;
-        }
-
-        @keyframes float {
-            from { transform: translate(0, 0); }
-            to { transform: translate(50px, 100px); }
-        }
-
-        .main-card {
-            width: 100%;
-            max-width: 450px;
-            background: var(--glass-bg);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            border-radius: 40px;
-            padding: 40px 20px;
-            box-shadow: 0 25px 50px rgba(214, 51, 132, 0.1);
-            text-align: center;
-            animation: fadeInUp 1.2s cubic-bezier(0.22, 1, 0.36, 1);
-        }
-
-        @keyframes fadeInUp {
-            0% { opacity: 0; transform: translateY(30px); }
-            100% { opacity: 1; transform: translateY(0); }
-        }
-
-        .title-area {
+        .main-visual {
+            position: relative;
+            width: 280px;
+            height: 380px;
             margin-bottom: 30px;
+            animation: floating 3s ease-in-out infinite;
         }
+
+        @keyframes floating {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .photo-frame {
+            width: 100%;
+            height: 100%;
+            background: #eee;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 30px 60px rgba(255, 45, 85, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+        }
+
+        .photo-frame img { width: 100%; height: 100%; object-fit: cover; }
+
+        /* 📱 글자가 고정되지 않고 흩어지는 효과 */
+        .text-overlay {
+            position: absolute;
+            top: -20px;
+            right: -30px;
+            background: var(--point-pink);
+            color: white;
+            padding: 10px 20px;
+            font-weight: 900;
+            transform: rotate(5deg);
+            box-shadow: 10px 10px 20px rgba(255, 45, 85, 0.2);
+            font-size: 1.2rem;
+        }
+
+        .title-group { text-align: center; margin-bottom: 40px; }
 
         .main-title {
-            font-family: 'Nanum Myeongjo', serif;
-            font-size: clamp(2.2rem, 8vw, 2.8rem);
-            color: var(--accent-color);
-            letter-spacing: -0.5px;
-            margin-bottom: 12px;
-            text-shadow: 0 4px 10px rgba(255, 45, 85, 0.1);
+            font-size: clamp(2.5rem, 10vw, 4rem);
+            font-weight: 900;
+            color: #222;
+            letter-spacing: -2px;
+            margin-bottom: 5px;
         }
 
         .sub-title {
-            font-size: clamp(0.9rem, 4vw, 1.05rem);
-            color: #777;
-            line-height: 1.6;
-            font-weight: 300;
+            font-size: 1rem;
+            color: var(--point-pink);
+            font-weight: 700;
+            letter-spacing: 5px;
+            text-transform: uppercase;
         }
 
-        /* 📱 프로필 이미지 박스 (홈마 스타일) */
-        .image-container {
-            width: 220px;
-            height: 220px;
-            margin: 0 auto 35px;
-            position: relative;
-            z-index: 1;
-        }
-
-        .image-frame {
-            width: 100%;
-            height: 100%;
-            border-radius: 50% 50% 5% 50%; /* 유니크한 쉐입 */
-            overflow: hidden;
-            border: 8px solid #fff;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-            background: #fff;
-            transition: transform 0.4s ease;
-        }
-
-        .image-frame:hover {
-            transform: scale(1.05) rotate(2deg);
-        }
-
-        .image-frame img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        /* 사진 없을 때 아이콘 효과 */
-        .image-placeholder {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100%;
-            background: #fdf2f4;
-            color: var(--primary-color);
-            font-size: 0.8rem;
-            padding: 20px;
-        }
-
-        /* 📱 입장 버튼 (반응형 애니메이션) */
+        /* 📱 버튼 디자인: 마우스를 올리면 반응 */
         .enter-btn {
-            display: inline-block;
-            padding: 16px 50px;
-            background: var(--accent-color);
+            position: relative;
+            padding: 18px 60px;
+            background: #222;
             color: #fff;
             text-decoration: none;
-            border-radius: 100px;
-            font-weight: 600;
-            font-size: 1.1rem;
-            letter-spacing: 1px;
-            box-shadow: 0 10px 25px rgba(255, 45, 85, 0.3);
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            margin-bottom: 15px;
+            font-weight: 700;
+            border-radius: 5px;
+            overflow: hidden;
+            transition: 0.3s;
         }
 
-        .enter-btn:active {
-            transform: scale(0.92);
-            box-shadow: 0 5px 15px rgba(255, 45, 85, 0.4);
-        }
-
-        @media (min-width: 1024px) {
-            .enter-btn:hover {
-                transform: translateY(-5px);
-                box-shadow: 0 15px 30px rgba(255, 45, 85, 0.4);
-                background: #e6224a;
-            }
-        }
+        .enter-btn:hover { background: var(--point-pink); transform: scale(1.05); }
 
         .copyright {
+            position: absolute;
+            bottom: 30px;
             font-size: 0.75rem;
             color: #aaa;
-            margin-top: 30px;
-            letter-spacing: 0.5px;
+            letter-spacing: 1px;
         }
 
-        /* 📱 사파리/모바일 최적화 미디어 쿼리 */
-        @media screen and (max-height: 700px) {
-            .main-card { padding: 30px 20px; }
-            .image-container { width: 180px; height: 180px; margin-bottom: 25px; }
-            .main-title { margin-bottom: 8px; }
+        /* 반응형 모바일 최적화 */
+        @media (max-width: 480px) {
+            .main-visual { width: 220px; height: 300px; }
+            .scrolling-text { font-size: 10vh; }
         }
     </style>
 </head>
 <body>
 
-    <div class="main-card">
-        <div class="title-area">
-            <h1 class="main-title">Mellow Joyoon</h1>
-            <p class="sub-title">조윤의 사계절,<br>그 찬란한 행복의 기록</p>
+    <div class="scrolling-text">
+        <div class="scroll-content">
+            MELLOW JOY OON MELLOW JOY OON MELLOW JOY OON MELLOW JOY OON MELLOW JOY OON&nbsp;
         </div>
+        <div class="scroll-content">
+            MELLOW JOY OON MELLOW JOY OON MELLOW JOY OON MELLOW JOY OON MELLOW JOY OON&nbsp;
+        </div>
+    </div>
 
-        <div class="image-container">
-            <div class="image-frame">
-                <div class="image-placeholder">
-                    <span>EVERY MOMENT<br>WITH JOY OON ✨</span>
-                </div>
+    <div class="container">
+        <div class="main-visual">
+            <div class="photo-frame">
+                <div style="display:flex; height:100%; align-items:center; justify-content:center; color:#ccc;">PHOTO AREA</div>
             </div>
+            <div class="text-overlay">JOY OON MOMENT</div>
         </div>
 
-        <a href="board.html" class="enter-btn">ENTER VIEW</a>
+        <div class="title-group">
+            <h1 class="main-title">MELLOW</h1>
+            <p class="sub-title">Actress Jo Yoon</p>
+        </div>
+
+        <a href="board.html" class="enter-btn">ENTER BOARD</a>
 
         <p class="copyright">Copyright © Mellow Joyoon. All rights reserved.</p>
     </div>
 
     <script>
-        // 모바일 사파리 스크롤 방지 및 뷰포트 높이 보정
-        function setVh() {
-            let vh = window.innerHeight * 0.01;
-            document.documentElement.style.setProperty('--vh', `${vh}px`);
-        }
-        window.addEventListener('resize', setVh);
-        window.addEventListener('touchend', setVh);
-        setVh();
+        // 마우스 움직임에 따라 메인 이미지가 살짝 반응하는 효과
+        document.addEventListener('mousemove', (e) => {
+            const moveX = (e.clientX - window.innerWidth / 2) / 50;
+            const moveY = (e.clientY - window.innerHeight / 2) / 50;
+            const visual = document.querySelector('.main-visual');
+            visual.style.transform = `translate(${moveX}px, ${moveY}px) translateY(${Math.sin(Date.now()/1000)*10}px)`;
+        });
     </script>
-
 </body>
 </html>
