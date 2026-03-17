@@ -49,13 +49,12 @@
         .post-content { 
             line-height: 1.8; 
             font-size: 15px; 
-            min-height: 100px; /* 이미지 영역을 위해 최소 높이 조절 */
+            min-height: 100px; 
             white-space: pre-wrap; 
             padding: 20px 0; 
             word-break: break-all;
         }
 
-        /* 📸 본문 내 이미지 출력 스타일 */
         #post-images {
             display: flex;
             flex-direction: column;
@@ -125,7 +124,6 @@
             </div>
             
             <div class="post-content" id="content"></div>
-
             <div id="post-images"></div>
 
             <div class="post-footer">
@@ -159,15 +157,17 @@
         const postId = urlParams.get('id');
         const ADMIN_EMAIL = "yun786692@gmail.com"; 
 
+        // 🚨 조회수 중복 증가 방지를 위한 변수
+        let isViewCounted = false;
+
         onAuthStateChanged(auth, (user) => {
             if (!user) {
                 alert("로그인 후 확인해 주세요! 😊");
                 location.href = "login.html";
             } else {
-                if (postId) {
+                if (postId && !isViewCounted) {
+                    isViewCounted = true; // 실행 즉시 잠금
                     initPost(user);
-                } else {
-                    location.href = 'board.html';
                 }
             }
         });
@@ -175,8 +175,10 @@
         async function initPost(currentUser) {
             const postRef = doc(db, "posts", postId);
             try {
+                // 1. 조회수 1회만 정확히 증가
                 await updateDoc(postRef, { views: increment(1) });
 
+                // 2. 최신 데이터 가져오기
                 const docSnap = await getDoc(postRef);
                 if (docSnap.exists()) {
                     const data = docSnap.data();
@@ -184,13 +186,14 @@
                     document.getElementById("title").innerText = data.title;
                     document.getElementById("author").innerText = data.author;
                     document.getElementById("content").innerText = data.content;
-                    document.getElementById("viewCount").innerText = (data.views || 0) + 1;
+                    
+                    // DB에 반영된 최신 조회수를 화면에 표시
+                    document.getElementById("viewCount").innerText = data.views || 0;
                     document.getElementById("likeCount").innerText = data.likes || 0;
                     
                     const dateObj = data.createdAt ? new Date(data.createdAt.seconds * 1000) : new Date();
                     document.getElementById("date").innerText = dateObj.toLocaleString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });
 
-                    // 📸 이미지 데이터가 있으면 화면에 뿌려주는 로직
                     const imageContainer = document.getElementById("post-images");
                     if (data.images && Array.isArray(data.images)) {
                         data.images.forEach(imgUrl => {
@@ -214,7 +217,6 @@
                 }
             } catch (error) {
                 console.error("로딩 에러:", error);
-                alert("글을 불러오는 중 오류가 발생했습니다.");
             }
         }
 
