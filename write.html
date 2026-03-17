@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Mellow Joyoon | 글쓰기</title>
     <style>
-        /* 네이버 카페 스타일의 깔끔한 배경과 정갈한 입력창 */
         body { 
             background-color: #f6f6f6; 
             font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; 
@@ -47,7 +46,6 @@
         
         input#author { background-color: #f9f9f9; color: #777; cursor: not-allowed; }
 
-        /* 📸 사진 추가 영역 디자인 */
         .photo-upload-section {
             display: flex;
             align-items: center;
@@ -72,11 +70,8 @@
             cursor: pointer;
             transition: all 0.2s;
         }
-
         .photo-btn:hover { border-color: #00c73c; background: #f0fff4; }
-
         .photo-btn svg { width: 24px; height: 24px; fill: #00c73c; margin-bottom: 4px; }
-
         .photo-btn span { font-size: 11px; color: #666; }
 
         #photo-preview-container {
@@ -158,12 +153,12 @@
             border-radius: 4px;
         }
         
-        .btn-save:hover { background: #c12a74; }
-        .btn-cancel:hover { background: #f9f9f9; }
+        /* 등록 중 버튼 스타일 */
+        .btn-save:disabled { background: #edaecb; border-color: #edaecb; cursor: wait; }
+        .btn-save:hover:not(:disabled) { background: #c12a74; }
 
         @media (max-width: 480px) {
             .write-container { padding: 15px; }
-            h2 { margin-bottom: 15px; }
             .btn-cancel, .btn-save { max-width: none; }
         }
     </style>
@@ -210,19 +205,19 @@
         const auth = getAuth(app);
 
         let currentUserName = "";
-        let uploadedImages = []; // 이미지 데이터를 담을 배열
+        let uploadedImages = [];
+        let isSaving = false; // 🚨 중복 등록 방지 잠금 변수
 
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 currentUserName = user.displayName || "익명의 팬";
                 document.getElementById("author").value = currentUserName;
             } else {
-                alert("팬 로그인 후 이용 가능한 공간입니다. 😊");
+                alert("로그인 후 이용 가능합니다. 😊");
                 location.href = "login.html";
             }
         });
 
-        // 🖼 이미지 선택 및 미리보기 로직
         document.getElementById("image-upload").addEventListener("change", function(e) {
             const files = e.target.files;
             const previewContainer = document.getElementById("photo-preview-container");
@@ -242,9 +237,8 @@
                     div.className = "preview-box";
                     div.innerHTML = `
                         <img src="${base64String}">
-                        <div class="del-btn" onclick="this.parentElement.remove()">×</div>
+                        <div class="del-btn">×</div>
                     `;
-                    // 삭제 시 배열에서도 제거
                     div.querySelector(".del-btn").onclick = () => {
                         uploadedImages = uploadedImages.filter(img => img !== base64String);
                         div.remove();
@@ -256,6 +250,8 @@
         });
 
         document.getElementById("saveBtn").addEventListener("click", async () => {
+            if (isSaving) return; // 🚨 이미 저장 중이면 무시
+
             const title = document.getElementById("title").value.trim();
             const content = document.getElementById("content").value.trim();
             const author = document.getElementById("author").value;
@@ -266,14 +262,18 @@
             }
 
             try {
-                // 파이어베이스 Firestore에 게시글 저장 (이미지 포함)
+                isSaving = true; // 잠금 활성화
+                const saveBtn = document.getElementById("saveBtn");
+                saveBtn.disabled = true;
+                saveBtn.innerText = "등록 중...";
+
                 await addDoc(collection(db, "posts"), {
                     title: title,
                     author: author,
                     content: content,
-                    images: uploadedImages, // 사진 배열 추가
+                    images: uploadedImages,
                     createdAt: serverTimestamp(),
-                    views: 0,
+                    views: 0, // 초기 조회수 0으로 고정
                     likes: 0
                 });
                 
@@ -281,7 +281,10 @@
                 location.href = "board.html"; 
             } catch (e) {
                 console.error("등록 에러: ", e);
-                alert("서버 저장 실패. 네트워크를 확인해 주세요!");
+                alert("저장에 실패했습니다. 다시 시도해 주세요.");
+                isSaving = false; // 에러 발생 시 잠금 해제
+                document.getElementById("saveBtn").disabled = false;
+                document.getElementById("saveBtn").innerText = "등록하기";
             }
         });
     </script>
