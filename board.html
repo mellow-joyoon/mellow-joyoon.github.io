@@ -41,7 +41,7 @@
             border: 1px solid #ccc; background: white; cursor: pointer; border-radius: 6px;
         }
 
-        /* 게시판 본체 및 레이아웃 정렬 수정 */
+        /* 게시판 본체 */
         .board-container { 
             width: 100%; max-width: 1000px; background: white; padding: 15px; 
             border: 1px solid #ddd; border-radius: 12px; box-sizing: border-box;
@@ -51,26 +51,58 @@
         .board-header { border-bottom: 2px solid #333; padding-bottom: 15px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
         .board-header h2 { margin: 0; font-size: 1.2rem; color: #d63384; }
 
-        /* 테이블 정렬 및 가독성 핵심 수정 */
+        /* 테이블 */
         table { width: 100%; border-collapse: collapse; font-size: 13px; table-layout: fixed; }
         th { background: #f9f9f9; padding: 12px 5px; color: #666; font-weight: normal; border-bottom: 1px solid #eee; text-align: center; }
         td { border-bottom: 1px solid #eee; padding: 14px 5px; text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-        /* 제목 컬럼: 쏠림 방지를 위해 왼쪽 정렬 유지 및 여백 확보 */
         .title-column { text-align: left; padding-left: 20px; color: #333; cursor: pointer; font-weight: 500; }
         .title-column:hover { text-decoration: underline; color: #d63384; }
 
         .btn-write { background: #d63384; border: none; color: white; padding: 8px 16px; font-size: 12px; font-weight: bold; border-radius: 6px; text-decoration: none; }
 
-        /* 모바일/태블릿 반응형 대응 (아이폰, 갤럭시, 패드 전용) */
+        /* 페이지네이션 디자인 */
+        .pagination {
+            display: flex; justify-content: center; align-items: center;
+            gap: 5px; margin: 25px 0 15px;
+        }
+        .pg-btn {
+            width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;
+            border-radius: 4px; font-size: 13px; color: #666; cursor: pointer; transition: 0.2s;
+            border: 1px solid transparent;
+        }
+        .pg-btn:hover { background: #eee; }
+        .pg-btn.active { 
+            background: #eee; color: #333; font-weight: bold; border: 1px solid #ddd;
+        }
+        .pg-next { border: 1px solid #ddd; background: #fff; margin-left: 5px; }
+
+        /* 검색바 디자인 */
+        .search-container {
+            display: flex; justify-content: center; gap: 5px; margin-bottom: 10px; padding: 0 5px;
+        }
+        .search-select {
+            padding: 8px 10px; border: 1px solid #ddd; border-radius: 6px;
+            font-size: 13px; color: #333; background: #fff; outline: none;
+        }
+        .search-input-wrapper {
+            display: flex; flex: 1; max-width: 350px; border: 1px solid #ddd; border-radius: 6px; overflow: hidden;
+        }
+        .search-input {
+            flex: 1; border: none; padding: 8px 12px; font-size: 13px; outline: none;
+        }
+        .search-btn {
+            background: #00c73c; color: white; border: none; padding: 0 15px;
+            display: flex; align-items: center; justify-content: center; cursor: pointer;
+        }
+        .search-btn svg { width: 16px; height: 16px; fill: white; }
+
+        /* 반응형 대응 */
         @media (max-width: 600px) {
-            .top-bar { padding: 10px; border-radius: 0; margin-top: 0; border-left: none; border-right: none; }
-            .user-name { font-size: 11px; padding: 3px 7px; }
+            .top-bar { padding: 10px; border-radius: 0; margin-top: 0; }
             table { font-size: 11px; } 
             td { padding: 12px 3px; }
-            .title-column { padding-left: 10px; } /* 모바일에서 제목 여백 최적화 */
-            
-            /* 모바일에서 열 너비 강제 조정하여 치우침 방지 */
+            .title-column { padding-left: 10px; }
             .col-author { width: 75px !important; }
             .col-date { width: 55px !important; }
             .col-views { width: 45px !important; }
@@ -105,11 +137,40 @@
                 <tr><td colspan="4">데이터를 불러오는 중...</td></tr>
             </tbody>
         </table>
+
+        <div class="pagination">
+            <div class="pg-btn active">1</div>
+            <div class="pg-btn">2</div>
+            <div class="pg-btn">3</div>
+            <div class="pg-btn">4</div>
+            <div class="pg-btn">5</div>
+            <div class="pg-btn">6</div>
+            <div class="pg-btn">7</div>
+            <div class="pg-btn">8</div>
+            <div class="pg-btn">9</div>
+            <div class="pg-btn">10</div>
+            <div class="pg-btn pg-next">›</div>
+        </div>
+
+        <div class="search-container">
+            <select class="search-select" id="searchType">
+                <option value="title">제목만</option>
+                <option value="author">글작성자</option>
+                <option value="content">글내용</option>
+            </select>
+            <div class="search-input-wrapper">
+                <input type="text" class="search-input" placeholder="검색어를 입력해주세요" id="searchInput">
+                <button class="search-btn" id="searchBtn">
+                    <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+                </button>
+            </div>
+        </div>
     </div>
 
     <script type="module">
+        // 파이어베이스 모듈 로드 (이 페이지 안에서만 독립적으로 작동)
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, query, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, query, orderBy, limit, getDocs, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
         const firebaseConfig = {
@@ -125,13 +186,13 @@
         const db = getFirestore(app);
         const auth = getAuth(app);
 
-        // 상단 인증 상태 관리 (기존 기능 유지)
+        // 상단 인증 상태 관리
         onAuthStateChanged(auth, (user) => {
             const authStatusDiv = document.getElementById("authStatus");
             if (user) {
                 authStatusDiv.innerHTML = `
                     <div class="user-info">
-                        <span class="user-name" onclick="location.href='login.html?mode=profile'" title="닉네임 변경">${user.displayName || '팬'}님</span>
+                        <span class="user-name" onclick="location.href='login.html?mode=profile'">${user.displayName || '팬'}님</span>
                         <button class="btn-sub" id="logoutBtn">로그아웃</button>
                     </div>
                 `;
@@ -143,12 +204,24 @@
             }
         });
 
-        // 게시글 리스트 불러오기 (날짜 형식 수정 및 카테고리 최적화)
-        async function loadPosts() {
+        // 실시간 게시글 목록 및 검색 기능
+        async function loadPosts(searchKeyword = "", searchType = "title") {
             try {
-                const q = query(collection(db, "posts"), orderBy("createdAt", "desc"), limit(15));
-                const snapshot = await getDocs(q);
                 const postList = document.getElementById("post-list");
+                postList.innerHTML = '<tr><td colspan="4">데이터를 불러오는 중...</td></tr>';
+
+                let q;
+                const postsCol = collection(db, "posts");
+                
+                if (searchKeyword) {
+                    // 검색 필터 적용
+                    q = query(postsCol, where(searchType, ">=", searchKeyword), where(searchType, "<=", searchKeyword + "\uf8ff"), limit(15));
+                } else {
+                    // 기본 정렬 (최신순)
+                    q = query(postsCol, orderBy("createdAt", "desc"), limit(15));
+                }
+
+                const snapshot = await getDocs(q);
                 postList.innerHTML = "";
                 
                 if(snapshot.empty) {
@@ -158,8 +231,6 @@
 
                 snapshot.forEach((doc) => {
                     const data = doc.data();
-                    
-                    // 날짜 형식 변경 (예: 3. 15)
                     let dateStr = "-";
                     if (data.createdAt) {
                         const dateObj = new Date(data.createdAt.seconds * 1000);
@@ -175,10 +246,24 @@
                         </tr>`;
                 });
             } catch (e) {
-                console.error(e);
-                document.getElementById("post-list").innerHTML = '<tr><td colspan="4">오류가 발생했습니다.</td></tr>';
+                console.error("데이터 로드 오류:", e);
+                document.getElementById("post-list").innerHTML = '<tr><td colspan="4">오류가 발생했습니다. 다시 시도해주세요.</td></tr>';
             }
         }
+
+        // 검색 실행
+        document.getElementById("searchBtn").onclick = () => {
+            const keyword = document.getElementById("searchInput").value.trim();
+            const type = document.getElementById("searchType").value;
+            loadPosts(keyword, type);
+        };
+
+        // 검색창 엔터키 대응
+        document.getElementById("searchInput").addEventListener("keypress", (e) => {
+            if (e.key === "Enter") document.getElementById("searchBtn").click();
+        });
+
+        // 초기 로드
         loadPosts();
     </script>
 </body>
