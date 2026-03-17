@@ -2,25 +2,25 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Mellow Joyoon | 글쓰기</title>
     <style>
         /* 네이버 카페 스타일의 깔끔한 배경과 정갈한 입력창 */
         body { 
             background-color: #f6f6f6; 
             font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; 
-            padding: 15px; /* 모바일 테두리 여백 조절 */
+            padding: 15px;
             color: #333; 
             margin: 0;
+            -webkit-tap-highlight-color: transparent;
         }
         
-        /* 📱 컨테이너: 모바일에서 화면을 가득 채우도록 설정 */
         .write-container { 
             width: 100%;
             max-width: 800px; 
             margin: 0 auto; 
             background: white; 
-            padding: 20px; /* 내부 여백 조절 */
+            padding: 20px; 
             border: 1px solid #ddd; 
             box-sizing: border-box;
             border-radius: 8px;
@@ -34,21 +34,89 @@
             margin-bottom: 20px; 
         }
         
-        /* 📱 입력창: 모바일에서 터치하기 편하게 높이와 폰트 조절 */
         input, textarea { 
             width: 100%; 
             padding: 12px; 
             margin-bottom: 12px; 
             border: 1px solid #ccc; 
-            border-radius: 4px; /* 살짝 부드럽게 */
+            border-radius: 4px; 
             box-sizing: border-box; 
-            font-size: 16px; /* 📱 iOS에서 포커스 시 화면 확대 방지를 위해 16px 권장 */
+            font-size: 16px; 
         }
         input:focus, textarea:focus { border-color: #d63384; outline: none; }
         
         input#author { background-color: #f9f9f9; color: #777; cursor: not-allowed; }
 
-        /* 📱 본문 영역: 모바일에서는 높이를 조금 줄여서 자판 공간 확보 */
+        /* 📸 사진 추가 영역 디자인 */
+        .photo-upload-section {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+            padding: 10px;
+            border: 1px dashed #ccc;
+            border-radius: 6px;
+            background: #fafafa;
+        }
+
+        .photo-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 60px;
+            height: 60px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .photo-btn:hover { border-color: #00c73c; background: #f0fff4; }
+
+        .photo-btn svg { width: 24px; height: 24px; fill: #00c73c; margin-bottom: 4px; }
+
+        .photo-btn span { font-size: 11px; color: #666; }
+
+        #photo-preview-container {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            flex: 1;
+        }
+
+        .preview-box {
+            position: relative;
+            width: 60px;
+            height: 60px;
+            flex-shrink: 0;
+        }
+
+        .preview-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 4px;
+            border: 1px solid #eee;
+        }
+
+        .del-btn {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            width: 18px;
+            height: 18px;
+            background: rgba(0,0,0,0.6);
+            color: white;
+            border-radius: 50%;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
         textarea { 
             height: 350px; 
             min-height: 250px;
@@ -56,7 +124,6 @@
             line-height: 1.6; 
         }
         
-        /* 버튼 영역: 모바일에서 버튼이 나란히 배치되도록 */
         .button-group { 
             display: flex; 
             justify-content: flex-end; 
@@ -65,7 +132,7 @@
         }
         
         .btn-cancel { 
-            flex: 1; /* 모바일에서 버튼 너비 균등 배분 */
+            flex: 1; 
             max-width: 120px;
             background: #fff; 
             color: #333; 
@@ -94,11 +161,10 @@
         .btn-save:hover { background: #c12a74; }
         .btn-cancel:hover { background: #f9f9f9; }
 
-        /* 모바일용 작은 화면 대응 */
         @media (max-width: 480px) {
             .write-container { padding: 15px; }
             h2 { margin-bottom: 15px; }
-            .btn-cancel, .btn-save { max-width: none; } /* 모바일에선 버튼 크게 */
+            .btn-cancel, .btn-save { max-width: none; }
         }
     </style>
 </head>
@@ -107,6 +173,16 @@
         <h2>자유게시판 글쓰기</h2>
         <input type="text" id="title" placeholder="제목을 입력하세요" autocomplete="off">
         <input type="text" id="author" placeholder="작성자 닉네임 로딩 중..." readonly>
+
+        <div class="photo-upload-section">
+            <label for="image-upload" class="photo-btn">
+                <svg viewBox="0 0 24 24"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
+                <span>사진</span>
+            </label>
+            <input type="file" id="image-upload" accept="image/*" style="display:none" multiple>
+            <div id="photo-preview-container"></div>
+        </div>
+
         <textarea id="content" placeholder="조윤 배우님께 전할 메시지나 팬들의 따뜻한 이야기를 들려주세요!"></textarea>
         
         <div class="button-group">
@@ -134,15 +210,49 @@
         const auth = getAuth(app);
 
         let currentUserName = "";
+        let uploadedImages = []; // 이미지 데이터를 담을 배열
 
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 currentUserName = user.displayName || "익명의 팬";
                 document.getElementById("author").value = currentUserName;
             } else {
-                alert("팬 로그인 후 이용 가능한 공간입니다. 로그인 페이지로 이동합니다. 😊");
+                alert("팬 로그인 후 이용 가능한 공간입니다. 😊");
                 location.href = "login.html";
             }
+        });
+
+        // 🖼 이미지 선택 및 미리보기 로직
+        document.getElementById("image-upload").addEventListener("change", function(e) {
+            const files = e.target.files;
+            const previewContainer = document.getElementById("photo-preview-container");
+
+            Array.from(files).forEach(file => {
+                if (uploadedImages.length >= 5) {
+                    alert("사진은 최대 5장까지 가능합니다.");
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const base64String = event.target.result;
+                    uploadedImages.push(base64String);
+
+                    const div = document.createElement("div");
+                    div.className = "preview-box";
+                    div.innerHTML = `
+                        <img src="${base64String}">
+                        <div class="del-btn" onclick="this.parentElement.remove()">×</div>
+                    `;
+                    // 삭제 시 배열에서도 제거
+                    div.querySelector(".del-btn").onclick = () => {
+                        uploadedImages = uploadedImages.filter(img => img !== base64String);
+                        div.remove();
+                    };
+                    previewContainer.appendChild(div);
+                };
+                reader.readAsDataURL(file);
+            });
         });
 
         document.getElementById("saveBtn").addEventListener("click", async () => {
@@ -151,15 +261,17 @@
             const author = document.getElementById("author").value;
 
             if (!title || !content) {
-                alert("제목과 내용을 모두 입력해 주세요! 조윤 배우님이 기다리신답니다. 😉");
+                alert("제목과 내용을 모두 입력해 주세요! 😉");
                 return;
             }
 
             try {
+                // 파이어베이스 Firestore에 게시글 저장 (이미지 포함)
                 await addDoc(collection(db, "posts"), {
                     title: title,
                     author: author,
                     content: content,
+                    images: uploadedImages, // 사진 배열 추가
                     createdAt: serverTimestamp(),
                     views: 0,
                     likes: 0
@@ -168,8 +280,8 @@
                 alert("🎉 글이 성공적으로 등록되었습니다!");
                 location.href = "board.html"; 
             } catch (e) {
-                console.error("등록 중 에러 발생: ", e);
-                alert("앗, 서버에 저장하지 못했어요. 네트워크 연결을 확인해 주세요!");
+                console.error("등록 에러: ", e);
+                alert("서버 저장 실패. 네트워크를 확인해 주세요!");
             }
         });
     </script>
