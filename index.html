@@ -5,13 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Mellow Joyoon | 배우 조윤 팬페이지</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,wght@1,900&family=Montserrat:wght@900&family=Noto+Sans+KR:wght@100;300;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@700&family=Montserrat:wght@900&family=Noto+Sans+KR:wght@100;400;900&display=swap" rel="stylesheet">
 
     <style>
         :root {
             --main-pink: #ff2d55;
-            --bg-white: #ffffff;
-            --text-black: #111;
+            --bg-light: #fff;
+            --text-dark: #111;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -19,128 +19,108 @@
         html, body {
             width: 100%; height: 100%;
             overflow: hidden;
-            background: var(--bg-white);
+            background: var(--bg-light);
             font-family: 'Noto Sans KR', sans-serif;
         }
 
-        /* 📱 PC 양옆 휑함을 채우는 수직 텍스트 스트립 */
-        .side-strip {
+        /* 📱 PC 양옆 휑함을 해결하는 배경 반복 텍스트 패턴 */
+        .bg-pattern {
             position: absolute;
-            top: 0;
-            width: 40px;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 5;
+            top: 0; left: 0; width: 100%; height: 100%;
+            display: flex; flex-direction: column;
+            justify-content: space-around;
+            opacity: 0.03; /* 아주 연하게 배경처럼 */
+            z-index: 0;
+            user-select: none;
         }
-        .left-strip { left: 2%; border-right: 1px solid rgba(0,0,0,0.05); }
-        .right-strip { right: 2%; border-left: 1px solid rgba(0,0,0,0.05); }
 
-        .vertical-text {
-            transform: rotate(-90deg);
+        .pattern-row {
+            font-family: 'Syncopate', sans-serif;
+            font-size: 8vw;
             white-space: nowrap;
-            font-family: 'Montserrat', sans-serif;
-            font-size: 0.7rem;
-            letter-spacing: 5px;
-            color: #ccc;
-            text-transform: uppercase;
+            line-height: 1;
         }
 
-        .container {
+        /* 📱 메인 컨테이너 */
+        .main-wrapper {
             position: relative;
             z-index: 10;
             width: 100%; height: 100%;
             display: flex;
-            flex-direction: column;
-            justify-content: center;
+            align-items: center;
+            justify-content: flex-start; /* 왼쪽 정렬로 비대칭 시작 */
             padding: 0 10%;
         }
 
-        /* 📱 상단: 브랜드 네임 (아주 작고 세련되게) */
-        .brand-label {
-            font-family: 'Bodoni Moda', serif;
-            font-style: italic;
-            font-size: 1rem;
-            color: var(--main-pink);
-            letter-spacing: 2px;
-            margin-bottom: -10px; /* 메인 이름과 밀착 */
-            opacity: 0.8;
-            animation: fadeInDown 1s ease both;
-        }
-
-        /* 📱 중앙: 배우 이름 (압도적 크기) */
-        .actor-name {
-            font-family: 'Montserrat', sans-serif;
-            font-size: clamp(5rem, 15vw, 10rem);
-            font-weight: 900;
-            color: var(--text-black);
-            line-height: 0.8;
-            letter-spacing: -5px;
-            margin-bottom: 40px;
-            animation: fadeInLeft 1.2s cubic-bezier(0.22, 1, 0.36, 1) both;
-        }
-
-        .actor-name span {
-            display: block;
-            -webkit-text-stroke: 1.5px var(--text-black);
-            color: transparent;
-        }
-
-        /* 📱 메인 비주얼 영역 (비대칭 와이드) */
-        .visual-box {
-            position: absolute;
-            right: 10%;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 35vw;
-            height: 50vh;
-            z-index: -1; /* 이름 뒤로 깔리게 */
-        }
-
-        .main-image {
-            width: 100%;
-            height: 100%;
-            background: #f7f7f7;
-            overflow: hidden;
-            box-shadow: 60px 60px 0px var(--bg-white), 61px 61px 0px rgba(0,0,0,0.05);
-            transition: 0.5s;
-        }
-
-        .main-image img { width: 100%; height: 100%; object-fit: cover; }
-
-        .visual-box::after {
-            content: 'ACTRESS JO YOON';
-            position: absolute;
-            bottom: -30px; left: 0;
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 900;
-            font-size: 3rem;
-            color: rgba(255, 45, 85, 0.1);
-        }
-
-        /* 📱 입장 버튼: 하단이 아닌 흐름 중간에 배치 */
-        .entry-wrap {
-            margin-top: 20px;
-            animation: fadeInUp 1s ease 0.5s both;
-        }
-
-        .btn-enter {
-            display: inline-block;
-            padding: 20px 60px;
-            background: var(--text-black);
-            color: #fff;
-            text-decoration: none;
-            font-weight: 700;
-            letter-spacing: 3px;
-            font-size: 0.9rem;
-            transition: 0.3s;
+        .content-box {
             position: relative;
+            width: 100%;
+            max-width: 1200px;
+            display: flex;
+            align-items: flex-end;
         }
 
-        .btn-enter:hover {
-            background: var(--main-pink);
-            transform: translateX(10px);
+        /* 📱 브랜드 이름 (작게) */
+        .mellow-label {
+            position: absolute;
+            top: -50px; left: 0;
+            font-family: 'Syncopate', sans-serif;
+            font-size: 1.2rem;
+            color: var(--main-pink);
+            letter-spacing: 10px;
+            text-transform: uppercase;
+        }
+
+        /* 📱 배우 성함 (가장 크게, 주인공) */
+        .actor-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: clamp(5rem, 18vw, 15rem);
+            font-weight: 900;
+            color: var(--text-dark);
+            line-height: 0.8;
+            letter-spacing: -10px;
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        /* 📱 이미지 배치 (PC에서 오른쪽 여백을 채움) */
+        .image-visual {
+            position: absolute;
+            right: 0; bottom: 10%;
+            width: 30vw; height: 60vh;
+            background: #eee;
+            z-index: 1;
+            box-shadow: 0 50px 100px rgba(255, 45, 85, 0.1);
+            overflow: hidden;
+            border-radius: 10px;
+            transform: rotate(3deg); /* 살짝 비틀어 역동성 부여 */
+            transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .image-visual img { width: 100%; height: 100%; object-fit: cover; }
+        .image-visual:hover { transform: rotate(0deg) scale(1.05); z-index: 5; }
+
+        /* 📱 입장 버튼 */
+        .entry-section {
+            position: absolute;
+            right: 0; top: 0;
+            text-align: right;
+        }
+
+        .btn-link {
+            display: inline-block;
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 900;
+            font-size: 1.5rem;
+            border-bottom: 5px solid var(--main-pink);
+            padding-bottom: 5px;
+            transition: 0.3s;
+        }
+
+        .btn-link:hover {
+            color: var(--main-pink);
+            transform: translateX(-10px);
         }
 
         /* 저작권 문구 유지 */
@@ -149,71 +129,62 @@
             bottom: 40px;
             left: 10%;
             font-size: 0.75rem;
-            color: #aaa;
-            letter-spacing: 1px;
+            color: #ddd;
+            letter-spacing: 2px;
         }
-
-        /* 애니메이션 설정 */
-        @keyframes fadeInLeft { from { opacity: 0; transform: translateX(-100px); } to { opacity: 1; transform: translateX(0); } }
-        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
         /* 📱 모바일/태블릿 반응형 */
         @media (max-width: 1024px) {
-            .side-strip { display: none; }
-            .container { padding: 0 30px; }
-            .actor-name { font-size: 6rem; letter-spacing: -2px; }
-            .visual-box {
-                position: relative; right: auto; top: auto; transform: none;
-                width: 100%; height: 40vh; margin-bottom: 40px;
-            }
-            .visual-box::after { font-size: 1.5rem; bottom: -20px; }
+            .main-wrapper { padding: 0 40px; justify-content: center; }
+            .content-box { flex-direction: column; align-items: center; text-align: center; }
+            .actor-title { font-size: 6rem; letter-spacing: -2px; margin-top: 50px; }
+            .image-visual { position: relative; right: auto; bottom: auto; width: 80%; height: 40vh; margin: 30px 0; transform: none; }
+            .entry-section { position: relative; top: auto; right: auto; text-align: center; }
+            .mellow-label { left: 50%; transform: translateX(-50%); top: -30px; }
+            .bg-pattern { display: none; }
         }
 
         @media (max-width: 480px) {
-            .actor-name { font-size: 4.5rem; }
+            .actor-title { font-size: 4rem; }
         }
     </style>
 </head>
 <body>
 
-    <div class="side-strip left-strip">
-        <div class="vertical-text">SCROLL TO DISCOVER — JO YOON</div>
-    </div>
-    <div class="side-strip right-strip">
-        <div class="vertical-text">EST 2024 — MELLOW JOY OON</div>
+    <div class="bg-pattern">
+        <div class="pattern-row">JO YOON JO YOON JO YOON JO YOON</div>
+        <div class="pattern-row" style="padding-left: 10%">JO YOON JO YOON JO YOON JO YOON</div>
+        <div class="pattern-row" style="padding-left: 5%">JO YOON JO YOON JO YOON JO YOON</div>
+        <div class="pattern-row">JO YOON JO YOON JO YOON JO YOON</div>
     </div>
 
-    <div class="container">
-        <p class="brand-label">Mellow</p>
-        
-        <h1 class="actor-name">
-            JO<br><span>YOON</span>
-        </h1>
+    <div class="main-wrapper">
+        <div class="content-box">
+            <div class="mellow-label">Mellow</div>
 
-        <div class="visual-box">
-            <div class="main-image">
-                <div style="height:100%; display:flex; align-items:center; justify-content:center; color:#eee; font-weight:900; font-size:2rem;">IMAGE</div>
+            <h1 class="actor-title">JO<br>YOON</h1>
+
+            <div class="image-visual">
+                <div style="height:100%; display:flex; align-items:center; justify-content:center; color:#ccc; font-weight:900;">PHOTO</div>
             </div>
-        </div>
 
-        <div class="entry-wrap">
-            <a href="board.html" class="btn-enter">ENTER GALLERY</a>
+            <div class="entry-section">
+                <a href="board.html" class="btn-link">ENTER VIEW →</a>
+            </div>
         </div>
     </div>
 
     <p class="copyright">Copyright © Mellow Joyoon. All rights reserved.</p>
 
     <script>
-        // PC 화면에서 마우스 위치에 따라 이름이 미세하게 반대로 움직이는 패럴랙스 효과
+        // 마우스 움직임에 따라 배경 패턴이 미세하게 움직이는 효과
         document.addEventListener('mousemove', (e) => {
-            const name = document.querySelector('.actor-name');
-            const visual = document.querySelector('.visual-box');
-            const x = (window.innerWidth / 2 - e.clientX) / 70;
-            const y = (window.innerHeight / 2 - e.clientY) / 70;
-            
-            name.style.transform = `translate(${x}px, ${y}px)`;
-            visual.style.transform = `translate(${-x}px, ${-y}px) translateY(-50%)`;
+            const rows = document.querySelectorAll('.pattern-row');
+            const x = (e.clientX - window.innerWidth / 2) / 50;
+            rows.forEach((row, index) => {
+                const speed = (index + 1) * 0.5;
+                row.style.transform = `translateX(${x * speed}px)`;
+            });
         });
     </script>
 </body>
