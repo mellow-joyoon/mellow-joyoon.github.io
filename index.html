@@ -2,130 +2,217 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Mellow Joyoon | 배우 조윤 팬페이지</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@700;800&family=Pretendard:wght@300;400;600&display=swap" rel="stylesheet">
+
     <style>
-        /* 팬페이지 디자인 설정 */
+        :root {
+            --primary-color: #ff7eb9;
+            --accent-color: #ff2d55;
+            --bg-gradient: linear-gradient(135deg, #fff5f6 0%, #ffe3e8 100%);
+            --glass-bg: rgba(255, 255, 255, 0.4);
+            --safe-area-inset-bottom: env(safe-area-inset-bottom);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden; /* 대문은 깔끔하게 한 화면에 유지 */
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-gradient);
+        }
+
         body {
-            background-color: #fdf2f4; /* 부드러운 분홍색 배경 */
-            color: #333;
-            font-family: 'Apple SD Gothic Neo', 'Nanum Gothic', sans-serif;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
             min-height: 100vh;
-            margin: 0;
-            text-align: center;
             padding: 20px;
-            box-sizing: border-box;
-            /* 📱 배경에 은은한 그라데이션 추가 */
-            background: linear-gradient(135deg, #fdf2f4 0%, #fae1e6 100%);
         }
 
-        /* 📱 부드럽게 나타나는 애니메이션 */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        /* 📱 배경 효과: 움직이는 은은한 빛 */
+        body::before {
+            content: '';
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(255,126,185,0.2) 0%, rgba(255,255,255,0) 70%);
+            top: 10%;
+            left: 10%;
+            z-index: -1;
+            animation: float 10s infinite alternate;
         }
 
-        .main-content {
-            animation: fadeIn 1s ease-out;
+        @keyframes float {
+            from { transform: translate(0, 0); }
+            to { transform: translate(50px, 100px); }
         }
 
-        h1 {
-            font-size: clamp(2rem, 10vw, 3rem); /* 📱 글씨 크기 최적화 */
-            color: #d63384; 
-            margin-bottom: 10px;
-            word-break: keep-all;
-            letter-spacing: -1px;
+        .main-card {
+            width: 100%;
+            max-width: 450px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 40px;
+            padding: 40px 20px;
+            box-shadow: 0 25px 50px rgba(214, 51, 132, 0.1);
+            text-align: center;
+            animation: fadeInUp 1.2s cubic-bezier(0.22, 1, 0.36, 1);
         }
 
-        p {
-            font-size: clamp(1rem, 4.5vw, 1.25rem);
-            color: #555;
-            word-break: keep-all;
+        @keyframes fadeInUp {
+            0% { opacity: 0; transform: translateY(30px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        .title-area {
+            margin-bottom: 30px;
+        }
+
+        .main-title {
+            font-family: 'Nanum Myeongjo', serif;
+            font-size: clamp(2.2rem, 8vw, 2.8rem);
+            color: var(--accent-color);
+            letter-spacing: -0.5px;
+            margin-bottom: 12px;
+            text-shadow: 0 4px 10px rgba(255, 45, 85, 0.1);
+        }
+
+        .sub-title {
+            font-size: clamp(0.9rem, 4vw, 1.05rem);
+            color: #777;
             line-height: 1.6;
-            margin-top: 0;
+            font-weight: 300;
         }
 
-        .profile-box {
-            width: 70vw;
-            height: 70vw;
-            max-width: 280px;
-            max-height: 280px;
-            background-color: #fff;
-            border-radius: 50%;
-            margin: 30px auto;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 15px 35px rgba(214, 51, 132, 0.15); /* 📱 핑크빛 그림자 */
+        /* 📱 프로필 이미지 박스 (홈마 스타일) */
+        .image-container {
+            width: 220px;
+            height: 220px;
+            margin: 0 auto 35px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .image-frame {
+            width: 100%;
+            height: 100%;
+            border-radius: 50% 50% 5% 50%; /* 유니크한 쉐입 */
             overflow: hidden;
-            border: 6px solid #fff;
+            border: 8px solid #fff;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
             background: #fff;
+            transition: transform 0.4s ease;
         }
 
-        .profile-box img {
+        .image-frame:hover {
+            transform: scale(1.05) rotate(2deg);
+        }
+
+        .image-frame img {
             width: 100%;
             height: 100%;
             object-fit: cover;
         }
-        
-        /* 게시판 이동 버튼 스타일 */
-        .btn-board {
-            margin-top: 10px;
+
+        /* 사진 없을 때 아이콘 효과 */
+        .image-placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            background: #fdf2f4;
+            color: var(--primary-color);
+            font-size: 0.8rem;
+            padding: 20px;
+        }
+
+        /* 📱 입장 버튼 (반응형 애니메이션) */
+        .enter-btn {
             display: inline-block;
-            padding: 15px 45px;
-            background-color: #d63384;
-            color: white;
+            padding: 16px 50px;
+            background: var(--accent-color);
+            color: #fff;
             text-decoration: none;
-            border-radius: 50px;
-            font-weight: bold;
-            font-size: clamp(1rem, 4vw, 1.15rem);
-            box-shadow: 0 8px 20px rgba(214, 51, 132, 0.3);
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border-radius: 100px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+            box-shadow: 0 10px 25px rgba(255, 45, 85, 0.3);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            margin-bottom: 15px;
         }
 
-        /* 📱 모바일 터치 시 효과 */
-        .btn-board:active {
-            transform: scale(0.95);
-            box-shadow: 0 4px 10px rgba(214, 51, 132, 0.4);
+        .enter-btn:active {
+            transform: scale(0.92);
+            box-shadow: 0 5px 15px rgba(255, 45, 85, 0.4);
         }
 
-        @media (min-width: 768px) {
-            .btn-board:hover {
-                background-color: #b0266a;
+        @media (min-width: 1024px) {
+            .enter-btn:hover {
                 transform: translateY(-5px);
-                box-shadow: 0 12px 25px rgba(214, 51, 132, 0.4);
+                box-shadow: 0 15px 30px rgba(255, 45, 85, 0.4);
+                background: #e6224a;
             }
         }
 
-        .footer-text {
-            font-size: 0.85rem;
-            color: #d63384;
-            margin-top: 40px;
-            font-weight: 500;
-            opacity: 0.7;
+        .copyright {
+            font-size: 0.75rem;
+            color: #aaa;
+            margin-top: 30px;
+            letter-spacing: 0.5px;
+        }
+
+        /* 📱 사파리/모바일 최적화 미디어 쿼리 */
+        @media screen and (max-height: 700px) {
+            .main-card { padding: 30px 20px; }
+            .image-container { width: 180px; height: 180px; margin-bottom: 25px; }
+            .main-title { margin-bottom: 8px; }
         }
     </style>
 </head>
 <body>
 
-    <div class="main-content">
-        <h1>Mellow Joyoon</h1>
-        <p>배우 조윤님의 모든 순간을<br>기록하는 공간입니다.</p>
-
-        <div class="profile-box">
-            <p style="font-size: 0.9rem; color: #bbb; padding: 20px;">
-                여기에 조윤 배우님<br>사진이 들어갈 자리 ✨
-            </p>
+    <div class="main-card">
+        <div class="title-area">
+            <h1 class="main-title">Mellow Joyoon</h1>
+            <p class="sub-title">조윤의 사계절,<br>그 찬란한 행복의 기록</p>
         </div>
 
-        <a href="board.html" class="btn-board">게시판 입장하기 ✨</a>
+        <div class="image-container">
+            <div class="image-frame">
+                <div class="image-placeholder">
+                    <span>EVERY MOMENT<br>WITH JOY OON ✨</span>
+                </div>
+            </div>
+        </div>
 
-        <p class="footer-text">Copyright © Mellow Joyoon. All rights reserved.</p>
+        <a href="board.html" class="enter-btn">ENTER VIEW</a>
+
+        <p class="copyright">Copyright © Mellow Joyoon. All rights reserved.</p>
     </div>
+
+    <script>
+        // 모바일 사파리 스크롤 방지 및 뷰포트 높이 보정
+        function setVh() {
+            let vh = window.innerHeight * 0.01;
+            document.documentElement.style.setProperty('--vh', `${vh}px`);
+        }
+        window.addEventListener('resize', setVh);
+        window.addEventListener('touchend', setVh);
+        setVh();
+    </script>
 
 </body>
 </html>
