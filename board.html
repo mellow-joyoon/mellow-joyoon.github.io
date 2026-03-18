@@ -4,95 +4,110 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Mellow Joyoon | 자유게시판</title>
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
     <style>
+        :root {
+            --primary: #d63384;
+            --bg: #0b0b0b; /* 필모그래피 배경색 */
+            --card-bg: rgba(255, 255, 255, 0.05); /* 필모그래피 카드 스타일 */
+            --border: rgba(255, 255, 255, 0.1);
+        }
+
         body { 
-            background-color: #f6f6f6; 
-            font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; 
+            background-color: var(--bg); 
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif; 
             padding: env(safe-area-inset-top) 10px env(safe-area-inset-bottom);
-            color: #333; margin: 0; display: flex; flex-direction: column; align-items: center;
+            color: #eee; margin: 0; display: flex; flex-direction: column; align-items: center;
             -webkit-font-smoothing: antialiased;
             overflow-x: hidden;
             width: 100%;
         }
 
+        /* 상단 바 디자인 변경 */
         .top-bar {
             width: 100%; max-width: 1000px; margin: 15px 0;
             display: flex; justify-content: space-between; align-items: center;
-            background: #fff; padding: 12px 15px; border: 1px solid #ddd;
-            box-sizing: border-box; border-radius: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+            background: var(--card-bg); padding: 12px 15px; border: 1px solid var(--border);
+            box-sizing: border-box; border-radius: 12px; backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
         }
 
         .nav-links { display: flex; gap: 15px; align-items: center; }
         .home-link, .film-link {
-            text-decoration: none; color: #d63384; font-weight: bold; font-size: 13px;
+            text-decoration: none; color: var(--primary); font-weight: bold; font-size: 13px;
             display: flex; align-items: center; gap: 5px; transition: opacity 0.2s;
         }
         .home-link:hover, .film-link:hover { opacity: 0.7; }
 
         .user-info { font-size: 12px; display: flex; align-items: center; gap: 8px; }
         .user-name { 
-            font-weight: bold; color: #333; cursor: pointer; 
-            padding: 4px 10px; background: #fdf2f4; border-radius: 6px; 
-            transition: all 0.2s; border: 1px solid transparent;
+            font-weight: bold; color: #fff; cursor: pointer; 
+            padding: 4px 10px; background: rgba(214, 51, 132, 0.15); border-radius: 6px; 
+            transition: all 0.2s; border: 1px solid var(--primary);
         }
-        .user-name:hover { background: #d63384; color: white; border-color: #d63384; }
+        .user-name:hover { background: var(--primary); color: white; }
 
         .btn-sub {
-            text-decoration: none; color: #666; font-size: 11px; padding: 5px 10px;
-            border: 1px solid #ccc; background: white; cursor: pointer; border-radius: 6px;
+            text-decoration: none; color: #ccc; font-size: 11px; padding: 5px 10px;
+            border: 1px solid var(--border); background: transparent; cursor: pointer; border-radius: 6px;
         }
 
+        /* 게시판 컨테이너 다크화 */
         .board-container { 
-            width: 100%; max-width: 1000px; background: white; padding: 15px; 
-            border: 1px solid #ddd; border-radius: 12px; box-sizing: border-box;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-            margin-bottom: 20px;
+            width: 100%; max-width: 1000px; background: var(--card-bg); padding: 15px; 
+            border: 1px solid var(--border); border-radius: 12px; box-sizing: border-box;
+            margin-bottom: 20px; backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
         }
 
-        .board-header { border-bottom: 2px solid #333; padding-bottom: 15px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
-        .board-header h2 { margin: 0; font-size: 1.2rem; color: #d63384; }
+        .board-header { border-bottom: 1px solid var(--primary); padding-bottom: 15px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
+        .board-header h2 { margin: 0; font-size: 1.2rem; color: var(--primary); letter-spacing: -0.5px; }
 
         table { width: 100%; border-collapse: collapse; font-size: 13px; table-layout: fixed; }
-        th { background: #f9f9f9; padding: 12px 5px; color: #666; font-weight: normal; border-bottom: 1px solid #eee; text-align: center; }
-        td { border-bottom: 1px solid #eee; padding: 14px 5px; text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        th { background: rgba(255, 255, 255, 0.03); padding: 12px 5px; color: #aaa; font-weight: normal; border-bottom: 1px solid var(--border); text-align: center; }
+        td { border-bottom: 1px solid var(--border); padding: 14px 5px; text-align: center; color: #ddd; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-        .title-column { text-align: left; padding-left: 20px; color: #333; cursor: pointer; font-weight: 500; }
-        .title-column:hover { text-decoration: underline; color: #d63384; }
+        .title-column { text-align: left; padding-left: 20px; color: #fff; cursor: pointer; font-weight: 500; }
+        .title-column:hover { text-decoration: underline; color: var(--primary); }
 
-        .btn-write { background: #d63384; border: none; color: white; padding: 8px 16px; font-size: 12px; font-weight: bold; border-radius: 6px; text-decoration: none; }
+        .btn-write { background: var(--primary); border: none; color: white; padding: 8px 16px; font-size: 12px; font-weight: bold; border-radius: 6px; text-decoration: none; transition: 0.3s; }
+        .btn-write:hover { box-shadow: 0 0 15px rgba(214, 51, 132, 0.4); transform: translateY(-2px); }
 
+        /* 페이지네이션 색상 변경 */
         .pagination {
             display: flex; justify-content: center; align-items: center;
             gap: 5px; margin: 25px 0 15px; flex-wrap: wrap;
         }
         .pg-btn {
             width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;
-            border-radius: 4px; font-size: 13px; color: #666; cursor: pointer; transition: 0.2s;
+            border-radius: 4px; font-size: 13px; color: #888; cursor: pointer; transition: 0.2s;
             border: 1px solid transparent;
         }
-        .pg-btn:hover { background: #eee; }
+        .pg-btn:hover { background: rgba(255,255,255,0.1); color: #fff; }
         .pg-btn.active { 
-            background: #eee; color: #333; font-weight: bold; border: 1px solid #ddd;
+            background: rgba(214, 51, 132, 0.1); color: var(--primary); font-weight: bold; border: 1px solid var(--primary);
         }
 
+        /* 검색 영역 디자인 변경 */
         .search-container {
             display: flex; justify-content: center; gap: 5px; margin-bottom: 10px; padding: 0 5px;
             width: 100%; box-sizing: border-box;
         }
         .search-select {
-            padding: 8px 10px; border: 1px solid #ddd; border-radius: 6px;
-            font-size: 13px; color: #333; background: #fff; outline: none; flex-shrink: 0;
+            padding: 8px 10px; border: 1px solid var(--border); border-radius: 6px;
+            font-size: 13px; color: #fff; background: #222; outline: none; flex-shrink: 0;
         }
         .search-input-wrapper {
-            display: flex; flex: 1; max-width: 350px; border: 1px solid #ddd; border-radius: 6px; overflow: hidden;
+            display: flex; flex: 1; max-width: 350px; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; background: #222;
         }
         .search-input {
-            flex: 1; border: none; padding: 8px 12px; font-size: 13px; outline: none; width: 100%;
+            flex: 1; border: none; padding: 8px 12px; font-size: 13px; outline: none; width: 100%; background: transparent; color: #fff;
         }
         .search-btn {
-            background: #00c73c; color: white; border: none; padding: 0 15px;
-            display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;
+            background: #333; color: white; border: none; padding: 0 15px;
+            display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; transition: 0.2s;
         }
+        .search-btn:hover { background: var(--primary); }
         .search-btn svg { width: 16px; height: 16px; fill: white; }
 
         @media (max-width: 600px) {
@@ -117,7 +132,7 @@
             <a href="index.html" class="home-link">홈</a>
             <a href="joyoon-list.html" class="film-link">필모그래피</a>
         </div>
-        <div id="authStatus"><span style="font-size: 11px; color: #999;">확인 중...</span></div>
+        <div id="authStatus"><span style="font-size: 11px; color: #666;">확인 중...</span></div>
     </div>
 
     <div class="board-container">
@@ -135,7 +150,7 @@
                 </tr>
             </thead>
             <tbody id="post-list">
-                <tr><td colspan="4">데이터를 불러오는 중...</td></tr>
+                <tr><td colspan="4" style="color:#666;">데이터를 불러오는 중...</td></tr>
             </tbody>
         </table>
 
@@ -150,7 +165,7 @@
             <div class="search-input-wrapper">
                 <input type="text" class="search-input" placeholder="검색어를 입력해주세요" id="searchInput">
                 <button class="search-btn" id="searchBtn">
-                    <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+                    <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 10 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
                 </button>
             </div>
         </div>
