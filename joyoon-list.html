@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Mellow Joyoon | Filmography</title>
+    <title>Mellow JOYOON | Filmography</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@700&family=Noto+Sans+KR:wght@100;400;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@700&family=Montserrat:wght@900&family=Noto+Sans+KR:wght@100;400;900&display=swap" rel="stylesheet">
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     
     <style>
@@ -27,13 +27,12 @@
             overflow-x: hidden;
             -webkit-font-smoothing: antialiased;
             word-break: keep-all;
-            /* 스크롤바 숨김 */
             -ms-overflow-style: none;
             scrollbar-width: none;
         }
         body::-webkit-scrollbar { display: none; }
 
-        /* ✨ 대문 배경 구슬 효과 */
+        /* ✨ 배경 구슬 효과 */
         .deco-circle {
             position: fixed;
             border-radius: 50%;
@@ -47,7 +46,6 @@
         
         @keyframes float { from { transform: scale(1) translate(0, 0); } to { transform: scale(1.1) translate(20px, 20px); } }
 
-        /* 뒤로가기 버튼 */
         .back-to-board {
             position: fixed;
             top: calc(20px + var(--safe-top));
@@ -59,7 +57,6 @@
             padding: 10px 20px;
             background: var(--card-white);
             backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
             border: 2px solid #fff;
             border-radius: 50px;
             color: var(--happy-pink);
@@ -70,13 +67,7 @@
             transition: all 0.3s ease;
         }
 
-        .back-to-board:hover {
-            transform: scale(1.05);
-            background: var(--happy-pink);
-            color: #fff;
-        }
-
-        /* 헤더 디자인 */
+        /* 🎬 헤더 타이틀 수정: Montserrat 폰트 적용 */
         header {
             height: 60vh;
             display: flex;
@@ -88,24 +79,30 @@
         }
 
         .header-title {
-            font-family: 'Gaegu', cursive;
-            font-size: clamp(4rem, 15vw, 8rem);
-            line-height: 1;
-            color: var(--happy-pink);
+            font-family: 'Montserrat', sans-serif; /* 대문과 동일한 폰트 */
+            font-size: clamp(4rem, 15vw, 9rem);
+            font-weight: 900;
+            line-height: 0.9;
+            color: var(--text-main); /* 기본 색상을 어두운 회색으로 */
             margin: 0;
-            text-shadow: 4px 4px 0px #fff;
+            letter-spacing: -2px;
+            text-shadow: none; /* 깔끔한 느낌을 위해 쉐도우 제거 또는 조정 */
+        }
+
+        .header-title span {
+            color: var(--happy-pink); /* YOON 부분만 핑크색으로 포인트 */
         }
 
         .header-sub {
             font-size: clamp(1rem, 3vw, 1.2rem);
-            margin-top: 10px;
+            margin-top: 20px;
             letter-spacing: 0.2rem;
-            color: var(--text-main);
+            color: #666;
             font-weight: 400;
-            opacity: 0.7;
+            opacity: 0.8;
         }
 
-        /* 메인 컨텐츠 */
+        /* 메인 컨텐츠 영역 */
         .content-wrapper {
             max-width: 1200px;
             margin: 0 auto;
@@ -133,7 +130,6 @@
             border-radius: 50px;
         }
 
-        /* 필모그래피 그리드 */
         .filmo-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -143,24 +139,15 @@
         .work-card {
             position: relative;
             background: var(--card-white);
-            border-radius: 40px; /* 대문 구슬 느낌의 둥근 디자인 */
+            border-radius: 40px;
             overflow: hidden;
             border: 4px solid #fff;
             box-shadow: 0 15px 35px rgba(0,0,0,0.05);
             transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        .work-img-wrap {
-            aspect-ratio: 3 / 4;
-            overflow: hidden;
-        }
-
-        .work-img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.6s ease;
-        }
+        .work-img-wrap { aspect-ratio: 3 / 4; overflow: hidden; }
+        .work-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease; }
 
         .work-overlay {
             position: absolute;
@@ -175,35 +162,16 @@
         }
 
         @media (hover: hover) {
-            .work-card:hover {
-                transform: translateY(-15px) rotate(2deg);
-                box-shadow: 0 25px 50px rgba(255, 133, 161, 0.2);
-            }
+            .work-card:hover { transform: translateY(-15px) rotate(2deg); box-shadow: 0 25px 50px rgba(255, 133, 161, 0.2); }
             .work-card:hover .work-img { transform: scale(1.1); }
             .work-card:hover .work-overlay { opacity: 1; }
         }
 
         .year { color: var(--happy-pink); font-size: 1rem; font-weight: 900; margin-bottom: 5px; }
-        .title { 
-            font-family: 'Gaegu', cursive;
-            font-size: 1.8rem; 
-            font-weight: bold; 
-            margin: 0 0 5px 0; 
-            color: var(--text-main);
-        }
+        .title { font-family: 'Gaegu', cursive; font-size: 1.8rem; font-weight: bold; margin: 0 0 5px 0; color: var(--text-main); }
         .role { font-size: 0.95rem; color: #777; margin-bottom: 15px; }
-        .tags { display: flex; gap: 8px; flex-wrap: wrap; }
-        .tag { 
-            background: #fff;
-            color: var(--happy-pink);
-            padding: 5px 12px; 
-            border-radius: 50px; 
-            font-size: 0.75rem; 
-            font-weight: bold;
-            border: 1px solid var(--happy-pink);
-        }
+        .tag { background: #fff; color: var(--happy-pink); padding: 5px 12px; border-radius: 50px; font-size: 0.75rem; font-weight: bold; border: 1px solid var(--happy-pink); }
 
-        /* 커스텀 커서 (대문 스타일) */
         #cursor {
             width: 25px; height: 25px;
             background: var(--happy-pink);
@@ -218,7 +186,6 @@
 
         @media (hover: hover) and (pointer: fine) { #cursor { display: block; } }
 
-        /* 반응형 */
         @media (max-width: 1024px) {
             .filmo-grid { grid-template-columns: repeat(2, 1fr); }
             header { height: 50vh; }
@@ -226,13 +193,8 @@
 
         @media (max-width: 767px) {
             .filmo-grid { grid-template-columns: repeat(1, 1fr); gap: 30px; }
-            .work-overlay { 
-                opacity: 1; 
-                background: linear-gradient(to top, rgba(255,255,255,0.9) 0%, transparent 60%);
-                padding: 20px;
-            }
+            .work-overlay { opacity: 1; background: linear-gradient(to top, rgba(255,255,255,0.9) 0%, transparent 60%); padding: 20px; }
             .header-title { font-size: 5rem; }
-            .work-card { border-radius: 30px; }
         }
     </style>
 </head>
@@ -247,7 +209,9 @@
     </a>
 
     <header>
-        <div class="header-title" data-aos="zoom-in" data-aos-duration="1200">Joy Oon</div>
+        <div class="header-title" data-aos="zoom-in" data-aos-duration="1200">
+            JO<br><span>YOON</span>
+        </div>
         <div class="header-sub" data-aos="fade-up" data-aos-delay="400">나의 소중한 기록들</div>
     </header>
 
@@ -272,8 +236,7 @@
                     </div>
                 </div>
             </div>
-            
-            </div>
+        </div>
     </main>
 
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
@@ -285,16 +248,9 @@
             document.addEventListener('mousemove', (e) => {
                 cursor.style.transform = `translate(${e.clientX - 12}px, ${e.clientY - 12}px)`;
             });
-
             document.querySelectorAll('.work-card, .back-to-board').forEach(el => {
-                el.addEventListener('mouseenter', () => {
-                    cursor.style.transform += ' scale(3)';
-                    cursor.style.opacity = '0.1';
-                });
-                el.addEventListener('mouseleave', () => {
-                    cursor.style.transform = cursor.style.transform.replace(' scale(3)', '');
-                    cursor.style.opacity = '0.3';
-                });
+                el.addEventListener('mouseenter', () => { cursor.style.transform += ' scale(3)'; cursor.style.opacity = '0.1'; });
+                el.addEventListener('mouseleave', () => { cursor.style.transform = cursor.style.transform.replace(' scale(3)', ''); cursor.style.opacity = '0.3'; });
             });
         }
     </script>
