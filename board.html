@@ -5,8 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Mellow Joyoon | 자유게시판</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@700&family=Montserrat:wght@500;900&family=Noto+Sans+KR:wght@100;400;900&display=swap" rel="stylesheet">
-    <link href="https://webfontworld.github.io/gmarket/GmarketSans.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@700&family=Noto+Sans+KR:wght@100;400;900&display=swap" rel="stylesheet">
 
     <style>
         :root {
@@ -32,9 +31,13 @@
             min-height: 100vh;
         }
 
-        /* ✨ 배경 구슬 효과 (원본 유지) */
+        /* ✨ 대문 페이지의 배경 구슬 효과 */
         .deco-circle {
-            position: fixed; border-radius: 50%; z-index: -1; filter: blur(40px); opacity: 0.4;
+            position: fixed;
+            border-radius: 50%;
+            z-index: -1;
+            filter: blur(40px);
+            opacity: 0.4;
             animation: pulse 6s infinite alternate;
         }
         .circle-1 { width: 350px; height: 350px; background: var(--happy-pink); top: -100px; left: -100px; }
@@ -43,24 +46,38 @@
 
         @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.15); } }
 
-        /* 상단 바 디자인 (원본 유지) */
+        /* 상단 바 디자인 */
         .top-bar {
             width: 100%; max-width: 1000px; margin: 15px 0;
             display: flex; justify-content: space-between; align-items: center;
             background: var(--card-white); padding: 12px 20px; 
-            border: 2px solid #fff; border-radius: 50px; 
+            border: 2px solid #fff;
+            box-sizing: border-box; border-radius: 50px; 
             backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
             box-shadow: 0 5px 15px rgba(0,0,0,0.05);
         }
 
         .nav-links { display: flex; gap: 15px; align-items: center; }
         .home-link, .film-link {
-            text-decoration: none; color: var(--happy-pink); 
-            font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 14px;
+            text-decoration: none; color: var(--happy-pink); font-weight: 900; font-size: 14px;
             transition: 0.2s;
         }
+        .home-link:hover, .film-link:hover { transform: scale(1.1); }
 
-        /* 게시판 컨테이너 (원본 유지) */
+        .user-info { font-size: 13px; display: flex; align-items: center; gap: 8px; }
+        .user-name { 
+            font-weight: bold; color: var(--text-main); cursor: pointer; 
+            padding: 5px 15px; background: #fff; border-radius: 20px; 
+            border: 1px solid #eee; transition: all 0.2s;
+        }
+        .user-name:hover { background: var(--happy-pink); color: white; border-color: var(--happy-pink); }
+
+        .btn-sub {
+            text-decoration: none; color: #999; font-size: 12px; padding: 5px 10px;
+            border: none; background: transparent; cursor: pointer; font-weight: bold;
+        }
+
+        /* 게시판 컨테이너 */
         .board-container { 
             width: 100%; max-width: 1000px; background: var(--card-white); padding: 25px; 
             border: 2px solid #fff; border-radius: 30px; box-sizing: border-box;
@@ -69,35 +86,69 @@
         }
 
         .board-header { border-bottom: 2px solid #f0f0f0; padding-bottom: 20px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
-        
-        /* ✅ 수정 포인트: 자유게시판 글자 크기(1.5rem)와 굵기(500) 최적화 */
         .board-header h2 { 
-            margin: 0; 
-            font-size: 1.5rem; 
-            color: var(--text-main); 
-            font-family: 'Montserrat', 'GmarketSans', sans-serif; 
-            font-weight: 500; 
-            letter-spacing: -0.5px; 
+            margin: 0; font-size: 2rem; color: var(--happy-pink); 
+            font-family: 'Gaegu', cursive; letter-spacing: -1px; 
         }
-        .board-header h2 span { color: var(--happy-pink); font-weight: 700; }
 
         table { width: 100%; border-collapse: collapse; font-size: 14px; table-layout: fixed; }
-        th { 
-            padding: 15px 5px; color: #999; font-weight: bold; 
-            border-bottom: 2px solid #f9f9f9; text-align: center; 
-            font-family: 'Gaegu', cursive; font-size: 1.1rem;
-        }
+        th { padding: 15px 5px; color: #999; font-weight: bold; border-bottom: 2px solid #f9f9f9; text-align: center; }
         td { border-bottom: 1px solid #f9f9f9; padding: 16px 5px; text-align: center; color: #666; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
         .title-column { text-align: left; padding-left: 20px; color: var(--text-main); cursor: pointer; font-weight: 500; }
         .title-column:hover { color: var(--happy-pink); font-weight: bold; }
 
         .btn-write { 
-            background: var(--happy-pink); color: white; padding: 10px 25px; 
+            background: var(--happy-pink); color: white; padding: 10px 20px; 
             font-size: 14px; font-weight: 900; border-radius: 50px; 
             text-decoration: none; transition: 0.2s;
             box-shadow: 0 4px 0px #e05e7a;
-            font-family: 'Gaegu', cursive; font-size: 1.2rem;
+        }
+        .btn-write:active { transform: translateY(3px); box-shadow: 0 1px 0px #e05e7a; }
+
+        /* 페이지네이션 */
+        .pagination { display: flex; justify-content: center; align-items: center; gap: 8px; margin: 30px 0 10px; }
+        .pg-btn {
+            width: 35px; height: 35px; display: flex; align-items: center; justify-content: center;
+            border-radius: 50%; font-size: 14px; color: #aaa; cursor: pointer; transition: 0.2s;
+            background: #fff; border: 1px solid #eee;
+        }
+        .pg-btn:hover { background: #fef0f3; color: var(--happy-pink); border-color: var(--happy-pink); }
+        .pg-btn.active { 
+            background: var(--happy-pink); color: white; font-weight: bold; border-color: var(--happy-pink);
+            box-shadow: 0 3px 10px rgba(255, 133, 161, 0.3);
+        }
+
+        /* 검색 영역 */
+        .search-container {
+            display: flex; justify-content: center; gap: 8px; margin-top: 20px; padding: 0 10px;
+        }
+        .search-select {
+            padding: 10px 15px; border: 1px solid #eee; border-radius: 50px;
+            font-size: 13px; color: var(--text-main); background: #fff; outline: none;
+        }
+        .search-input-wrapper {
+            display: flex; flex: 1; max-width: 350px; border: 1px solid #eee; border-radius: 50px; 
+            overflow: hidden; background: #fff; box-shadow: inset 0 2px 5px rgba(0,0,0,0.02);
+        }
+        .search-input {
+            flex: 1; border: none; padding: 10px 20px; font-size: 13px; outline: none; background: transparent;
+        }
+        .search-btn {
+            background: var(--sunny-yellow); color: var(--text-main); border: none; padding: 0 20px;
+            cursor: pointer; transition: 0.2s; font-weight: bold;
+        }
+        .search-btn:hover { background: var(--happy-pink); color: #fff; }
+
+        @media (max-width: 600px) {
+            .board-container { padding: 15px; border-radius: 20px; }
+            .board-header h2 { font-size: 1.6rem; }
+            table { font-size: 12px; }
+            td { padding: 12px 3px; }
+            .col-author { width: 80px !important; }
+            .col-date { width: 50px !important; }
+            .col-views { display: none; } /* 모바일에서 조회수 숨김 */
+            th:nth-child(4) { display: none; }
         }
     </style>
 </head>
@@ -109,39 +160,51 @@
 
     <div class="top-bar">
         <div class="nav-links">
-            <a href="index.html" class="home-link">HOME</a>
-            <a href="joyoon-list.html" class="film-link">FILMO</a>
+            <a href="index.html" class="home-link">Home</a>
+            <a href="joyoon-list.html" class="film-link">Filmo</a>
         </div>
         <div id="authStatus"><span style="font-size: 11px; color: #ccc;">Checking...</span></div>
     </div>
 
     <div class="board-container">
         <div class="board-header">
-            <h2>자유<span>게시판</span></h2>
-            <a href="write.html" class="btn-write">글쓰기 ♪</a>
+            <h2>자유게시판</h2>
+            <a href="write.html" class="btn-write">글쓰기</a>
         </div>
         <table>
             <thead>
                 <tr>
                     <th style="width: auto;">제목</th>
-                    <th style="width: 100px;">작성자</th>
-                    <th style="width: 70px;">날짜</th>
-                    <th style="width: 60px;">조회</th>
+                    <th class="col-author" style="width: 100px;">작성자</th>
+                    <th class="col-date" style="width: 70px;">날짜</th>
+                    <th class="col-views" style="width: 60px;">조회</th>
                 </tr>
             </thead>
             <tbody id="post-list">
                 <tr><td colspan="4" style="color:#bbb; padding: 50px 0;">행복한 이야기를 불러오는 중... ✨</td></tr>
             </tbody>
         </table>
+
+        <div class="pagination" id="pagination-container"></div>
+
+        <div class="search-container">
+            <select class="search-select" id="searchType">
+                <option value="title">제목</option>
+                <option value="author">작성자</option>
+                <option value="content">내용</option>
+            </select>
+            <div class="search-input-wrapper">
+                <input type="text" class="search-input" placeholder="궁금한 내용을 검색해봐요!" id="searchInput">
+                <button class="search-btn" id="searchBtn">찾기</button>
+            </div>
+        </div>
     </div>
 
     <script type="module">
-        /* ⚠️ 이 영역은 사용자님의 기존 Firebase 설정을 그대로 유지해야 합니다. 
-           아래 내용은 예시이므로, 기존 파일 하단의 <script type="module"> 부분은 
-           본인의 apiKey가 포함된 원본 코드를 그대로 쓰시는 것을 권장합니다. */
+        /* 파이어베이스 연동 스크립트는 기존과 동일하게 유지 */
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, query, orderBy, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-        import { getAuth } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, collection, query, orderBy, getDocs, where, limit } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCP4Ur--4UGGpNSK_P7qRvnVFDZbqn436A",
@@ -156,7 +219,114 @@
         const db = getFirestore(app);
         const auth = getAuth(app);
 
-        /* 기존에 작성된 loadPosts 등의 데이터 로직을 여기에 그대로 두시면 글이 완벽하게 복구됩니다. */
+        let currentPage = 1;
+        const postsPerPage = 10;
+
+        onAuthStateChanged(auth, (user) => {
+            const authStatusDiv = document.getElementById("authStatus");
+            if (user) {
+                authStatusDiv.innerHTML = `
+                    <div class="user-info">
+                        <span class="user-name" onclick="location.href='login.html?mode=profile'">${user.displayName || '팬'}님</span>
+                        <button class="btn-sub" id="logoutBtn">로그아웃</button>
+                    </div>`;
+                document.getElementById("logoutBtn").onclick = async () => {
+                    if (confirm("로그아웃 하시겠습니까?")) { await signOut(auth); location.reload(); }
+                };
+            } else {
+                authStatusDiv.innerHTML = `<a href="login.html" class="btn-sub" style="text-decoration:none">로그인</a>`;
+            }
+        });
+
+        async function loadPosts(pageNum = 1, searchKeyword = "", searchType = "title") {
+            try {
+                currentPage = pageNum;
+                const postList = document.getElementById("post-list");
+                const postsCol = collection(db, "posts");
+                let q;
+
+                if (searchKeyword) {
+                    q = query(postsCol, where(searchType, ">=", searchKeyword), where(searchType, "<=", searchKeyword + "\uf8ff"), limit(100));
+                } else {
+                    q = query(postsCol, orderBy("createdAt", "desc"));
+                }
+
+                const snapshot = await getDocs(q);
+                const allDocs = snapshot.docs;
+                const totalPosts = allDocs.length;
+                const totalPages = Math.ceil(totalPosts / postsPerPage);
+                renderPagination(totalPages, pageNum);
+
+                const startIndex = (pageNum - 1) * postsPerPage;
+                const pageDocs = allDocs.slice(startIndex, startIndex + postsPerPage);
+
+                postList.innerHTML = "";
+                if(pageDocs.length === 0) {
+                    postList.innerHTML = '<tr><td colspan="4" style="padding:40px 0;">검색 결과가 없어요. 🥲</td></tr>';
+                    return;
+                }
+
+                pageDocs.forEach((doc) => {
+                    const data = doc.data();
+                    let dateStr = "-";
+                    if (data.createdAt) {
+                        const dateObj = new Date(data.createdAt.seconds * 1000);
+                        dateStr = `${dateObj.getMonth() + 1}.${dateObj.getDate()}`;
+                    }
+
+                    postList.innerHTML += `
+                        <tr>
+                            <td class="title-column" onclick="location.href='view.html?id=${doc.id}'">${data.title}</td>
+                            <td class="col-author">${data.author}</td>
+                            <td class="col-date">${dateStr}</td>
+                            <td class="col-views">${data.views || 0}</td>
+                        </tr>`;
+                });
+            } catch (e) {
+                console.error(e);
+                document.getElementById("post-list").innerHTML = '<tr><td colspan="4">데이터 로드 실패 😭</td></tr>';
+            }
+        }
+
+        function renderPagination(totalPages, activePage) {
+            const container = document.getElementById("pagination-container");
+            container.innerHTML = "";
+            if (totalPages <= 1) return;
+            for (let i = 1; i <= totalPages; i++) {
+                const btn = document.createElement("div");
+                btn.className = `pg-btn ${i === activePage ? 'active' : ''}`;
+                btn.innerText = i;
+                btn.onclick = () => {
+                    loadPosts(i, document.getElementById("searchInput").value, document.getElementById("searchType").value);
+                    window.scrollTo(0, 0);
+                };
+                container.appendChild(btn);
+            }
+        }
+
+        document.getElementById("searchBtn").onclick = () => {
+            const keyword = document.getElementById("searchInput").value.trim();
+            const type = document.getElementById("searchType").value;
+            loadPosts(1, keyword, type);
+        };
+
+        document.getElementById("searchInput").onkeyup = (e) => {
+            if (e.key === 'Enter') document.getElementById("searchBtn").click();
+        };
+
+        loadPosts(1);
+
+        // 배경 구슬 움직임 효과
+        document.addEventListener('mousemove', (e) => {
+            const x = e.clientX / window.innerWidth;
+            const y = e.clientY / window.innerHeight;
+            const c1 = document.querySelector('.circle-1');
+            const c2 = document.querySelector('.circle-2');
+            const c3 = document.querySelector('.circle-3');
+            if(c1) c1.style.transform = `translate(${x * 30}px, ${y * 30}px)`;
+            if(c2) c2.style.transform = `translate(${-x * 40}px, ${-y * 40}px)`;
+            if(c3) c3.style.transform = `translate(${x * 20}px, ${-y * 20}px)`;
+        });
     </script>
 </body>
 </html>
