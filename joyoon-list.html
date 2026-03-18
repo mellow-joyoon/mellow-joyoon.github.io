@@ -89,10 +89,9 @@
             background: linear-gradient(to right, var(--primary), transparent);
         }
 
-        /* 반응형 그리드 시스템 (PC, 태블릿, 모바일 완벽 대응) */
+        /* 반응형 그리드 시스템 */
         .filmo-grid {
             display: grid;
-            /* 1024px 이상: 3열, 768px 이상: 2열, 그 이하: 1열 */
             grid-template-columns: repeat(3, 1fr);
             gap: 40px 30px;
         }
@@ -104,7 +103,6 @@
             overflow: hidden;
             border: 1px solid rgba(255, 255, 255, 0.1);
             transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
-            /* 모바일 터치 시 하이라이트 방지 */
             -webkit-tap-highlight-color: transparent;
         }
 
@@ -120,7 +118,6 @@
             transition: transform 0.8s ease;
         }
 
-        /* 정보 레이어 (PC 호버 효과) */
         .work-overlay {
             position: absolute;
             inset: 0;
@@ -133,7 +130,6 @@
             transition: opacity 0.4s ease;
         }
 
-        /* PC 마우스 호버 효과 */
         @media (hover: hover) {
             .work-card:hover {
                 transform: translateY(-20px);
@@ -144,7 +140,6 @@
             .work-card:hover .work-overlay { opacity: 1; }
         }
 
-        /* 모바일 & 태블릿 최적화 (터치 대응) */
         @media (max-width: 1024px) {
             .filmo-grid { grid-template-columns: repeat(2, 1fr); gap: 20px; }
             header { height: 50vh; }
@@ -161,7 +156,6 @@
             .content-wrapper { padding-bottom: calc(60px + var(--safe-bottom)); }
         }
 
-        /* 텍스트 스타일 */
         .year { color: var(--primary); font-size: 0.9rem; font-weight: 700; margin-bottom: 8px; }
         .title { font-size: 1.6rem; font-weight: 800; margin: 0 0 10px 0; }
         .role { font-size: 1rem; color: #eee; margin-bottom: 15px; }
@@ -174,7 +168,6 @@
             border: 1px solid rgba(255,255,255,0.1);
         }
 
-        /* 독창적 효과: 커스텀 커서 (모바일에서는 자동 비활성화) */
         #cursor {
             width: 30px; height: 30px;
             border: 2px solid var(--primary);
@@ -207,33 +200,18 @@
         </section>
 
         <div class="filmo-grid">
+            
             <div class="work-card" data-aos="fade-up">
                 <div class="work-img-wrap">
-                    <img src="포스터이미지1.jpg" alt="작품명" class="work-img">
+                    <img src="images/poster2025.jpg" alt="원수를 모시게 되었습니다" class="work-img">
                 </div>
                 <div class="work-overlay">
-                    <div class="year">2024</div>
-                    <h3 class="title">작품 제목</h3>
-                    <div class="role">주연 | 캐릭터 이름 역</div>
+                    <div class="year">2025</div>
+                    <h3 class="title">원수를 모시게 되었습니다</h3>
+                    <div class="role">주연 | 캐릭터 이수지 역</div>
                     <div class="tags">
-                        <span class="tag">#영화</span>
-                        <span class="tag">#로맨스</span>
-                        <span class="tag">#개봉예정</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="work-card" data-aos="fade-up" data-aos-delay="100">
-                <div class="work-img-wrap">
-                    <img src="포스터이미지2.jpg" alt="작품명" class="work-img">
-                </div>
-                <div class="work-overlay">
-                    <div class="year">2023</div>
-                    <h3 class="title">작품 제목</h3>
-                    <div class="role">주연 | 캐릭터 이름 역</div>
-                    <div class="tags">
-                        <span class="tag">#넷플릭스</span>
-                        <span class="tag">#스릴러</span>
+                        <span class="tag">#GL</span>
+                        <span class="tag">#첫사랑</span>
                     </div>
                 </div>
             </div>
@@ -243,21 +221,18 @@
 
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
-        // AOS 애니메이션 초기화 (모바일 성능 고려 최적화)
         AOS.init({
             duration: 800,
             once: true,
-            disable: 'mobile' // 모바일 스크롤 부드러움을 위해 필요시 설정 가능
+            disable: 'mobile' 
         });
 
-        // 커스텀 커서 로직 (아이패드 등 터치 기기 제외한 PC 전용)
         const cursor = document.getElementById('cursor');
         if (window.matchMedia("(hover: hover)").matches) {
             document.addEventListener('mousemove', (e) => {
                 cursor.style.transform = `translate(${e.clientX - 15}px, ${e.clientY - 15}px)`;
             });
 
-            // 카드 위에 올렸을 때 커서 커지는 효과
             document.querySelectorAll('.work-card').forEach(card => {
                 card.addEventListener('mouseenter', () => {
                     cursor.style.transform += ' scale(2.5)';
