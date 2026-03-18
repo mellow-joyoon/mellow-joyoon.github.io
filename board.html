@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Mellow Joyoon | 자유게시판</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@700&family=Montserrat:wght@100;400;700;900&family=Noto+Sans+KR:wght@100;400;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@700&family=Noto+Sans+KR:wght@100;400;900&display=swap" rel="stylesheet">
+    <link href="https://webfontworld.github.io/gmarket/GmarketSans.css" rel="stylesheet">
 
     <style>
         :root {
@@ -87,15 +88,14 @@
 
         .board-header { border-bottom: 2px solid #f0f0f0; padding-bottom: 20px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
         
-        /* 폰트 적용 부분 */
+        /* 폰트 수정: JO YOON 느낌의 한글 지원 폰트 적용 */
         .board-header h2 { 
             margin: 0; 
             font-size: 2rem; /* 기존 크기 유지 */
             color: var(--happy-pink); 
-            font-family: 'Montserrat', sans-serif; /* JO YOON과 같은 폰트 적용 */
-            font-weight: 700; /* 너무 두껍지 않게 조정 (대문은 보통 900 사용) */
+            font-family: 'GmarketSans', sans-serif; /* 대문의 JO YOON과 가장 비슷한 기하학적 한글 폰트 */
+            font-weight: 700; /* 너무 두껍지 않은 적당한 굵기 */
             letter-spacing: -1px; 
-            text-transform: uppercase; /* 대문 느낌 강조 */
         }
 
         table { width: 100%; border-collapse: collapse; font-size: 14px; table-layout: fixed; }
@@ -113,7 +113,7 @@
         }
         .btn-write:active { transform: translateY(3px); box-shadow: 0 1px 0px #e05e7a; }
 
-        /* 페이지네이션 */
+        /* 페이지네이션 및 검색 영역 등 기존 스타일 유지 */
         .pagination { display: flex; justify-content: center; align-items: center; gap: 8px; margin: 30px 0 10px; }
         .pg-btn {
             width: 35px; height: 35px; display: flex; align-items: center; justify-content: center;
@@ -126,7 +126,6 @@
             box-shadow: 0 3px 10px rgba(255, 133, 161, 0.3);
         }
 
-        /* 검색 영역 */
         .search-container {
             display: flex; justify-content: center; gap: 8px; margin-top: 20px; padding: 0 10px;
         }
@@ -175,7 +174,7 @@
 
     <div class="board-container">
         <div class="board-header">
-            <h2>FREE BOARD</h2>
+            <h2>자유게시판</h2>
             <a href="write.html" class="btn-write">글쓰기</a>
         </div>
         <table>
@@ -191,21 +190,7 @@
                 <tr><td colspan="4" style="color:#bbb; padding: 50px 0;">행복한 이야기를 불러오는 중... ✨</td></tr>
             </tbody>
         </table>
-
-        <div class="pagination" id="pagination-container"></div>
-
-        <div class="search-container">
-            <select class="search-select" id="searchType">
-                <option value="title">제목</option>
-                <option value="author">작성자</option>
-                <option value="content">내용</option>
-            </select>
-            <div class="search-input-wrapper">
-                <input type="text" class="search-input" placeholder="궁금한 내용을 검색해봐요!" id="searchInput">
-                <button class="search-btn" id="searchBtn">찾기</button>
-            </div>
         </div>
-    </div>
 
     </body>
 </html>
