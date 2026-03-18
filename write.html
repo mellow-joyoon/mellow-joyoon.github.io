@@ -4,76 +4,98 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Mellow Joyoon | 글쓰기</title>
-    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
+    
+    <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@700&family=Noto+Sans+KR:wght@100;400;900&display=swap" rel="stylesheet">
+
     <style>
         :root {
-            --primary: #d63384;
-            --bg: #0b0b0b; /* 필모그래피 배경색 */
-            --card-bg: rgba(255, 255, 255, 0.05); /* 필모그래피 카드 스타일 */
-            --border: rgba(255, 255, 255, 0.1);
-            --input-bg: rgba(255, 255, 255, 0.08);
+            --happy-pink: #ff85a1;
+            --sunny-yellow: #ffde59;
+            --sky-blue: #87ceeb;
+            --text-main: #444;
+            --bg-cream: #fffcf2;
         }
 
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
         body { 
-            background-color: var(--bg); 
-            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif; 
+            background-color: var(--bg-cream); 
+            font-family: 'Noto Sans KR', sans-serif; 
             padding: env(safe-area-inset-top) 15px env(safe-area-inset-bottom);
-            color: #eee; margin: 0;
-            -webkit-tap-highlight-color: transparent;
-            -webkit-font-smoothing: antialiased;
+            color: var(--text-main);
+            overflow-x: hidden;
+            min-height: 100vh;
         }
-        
+
+        /* ✨ 대문 페이지의 배경 구슬 효과 */
+        .deco-circle {
+            position: fixed;
+            border-radius: 50%;
+            z-index: -1;
+            filter: blur(40px);
+            opacity: 0.4;
+            animation: pulse 6s infinite alternate;
+        }
+        .circle-1 { width: 300px; height: 300px; background: var(--happy-pink); top: -100px; left: -100px; }
+        .circle-2 { width: 250px; height: 250px; background: var(--sunny-yellow); bottom: -50px; right: -50px; animation-delay: 1s; }
+
+        @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.15); } }
+
         .write-container { 
             width: 100%;
             max-width: 800px; 
-            margin: 20px auto; 
-            background: var(--card-bg); 
-            padding: 25px; 
-            border: 1px solid var(--border); 
+            margin: 40px auto; 
+            background: rgba(255, 255, 255, 0.8); 
+            padding: 30px; 
+            border: 2px solid #fff; 
             box-sizing: border-box;
-            border-radius: 12px;
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
+            border-radius: 30px;
+            box-shadow: 0 10px 30px rgba(255, 133, 161, 0.1);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
         }
         
         h2 { 
-            color: var(--primary); 
-            font-size: clamp(1.2rem, 5vw, 1.6rem); 
-            border-bottom: 1px solid var(--primary); 
-            padding-bottom: 15px; 
-            margin-bottom: 25px; 
-            font-weight: 700;
-            letter-spacing: -0.5px;
+            font-family: 'Gaegu', cursive;
+            color: var(--happy-pink); 
+            font-size: 2.2rem; 
+            text-align: center;
+            margin-bottom: 30px; 
+            letter-spacing: -1px;
         }
         
         input, textarea { 
             width: 100%; 
-            padding: 14px; 
+            padding: 15px; 
             margin-bottom: 15px; 
-            border: 1px solid var(--border); 
-            border-radius: 8px; 
+            border: 2px solid #eee; 
+            border-radius: 15px; 
             box-sizing: border-box; 
-            font-size: 15px; 
-            background-color: var(--input-bg);
-            color: #fff;
-            transition: all 0.2s;
+            font-size: 16px; 
+            background-color: #fff;
+            color: var(--text-main);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             font-family: inherit;
         }
-        input::placeholder, textarea::placeholder { color: #666; }
-        input:focus, textarea:focus { border-color: var(--primary); outline: none; background-color: rgba(255,255,255,0.12); }
+        input::placeholder, textarea::placeholder { color: #ccc; }
+        input:focus, textarea:focus { 
+            border-color: var(--happy-pink); 
+            outline: none; 
+            transform: scale(1.01);
+            box-shadow: 0 5px 15px rgba(255, 133, 161, 0.1);
+        }
         
-        /* 읽기 전용 작성자 칸 스타일 */
-        input#author { background-color: rgba(255, 255, 255, 0.03); color: #888; cursor: not-allowed; border-style: dashed; }
+        input#author { background-color: #f9f9f9; color: #999; cursor: not-allowed; border-style: dashed; }
 
         .photo-upload-section {
             display: flex;
             align-items: center;
             gap: 12px;
             margin-bottom: 15px;
-            padding: 12px;
-            border: 1px dashed var(--border);
-            border-radius: 8px;
-            background: rgba(255, 255, 255, 0.02);
+            padding: 15px;
+            border: 2px dashed #ffcad6;
+            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.5);
         }
 
         .photo-btn {
@@ -81,48 +103,43 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            width: 65px;
-            height: 65px;
-            background: var(--input-bg);
-            border: 1px solid var(--border);
-            border-radius: 8px;
+            width: 70px; height: 70px;
+            background: #fff;
+            border: 2px solid #eee;
+            border-radius: 15px;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: 0.2s;
         }
-        .photo-btn:hover { border-color: var(--primary); background: rgba(214, 51, 132, 0.1); }
-        .photo-btn svg { width: 24px; height: 24px; fill: var(--primary); margin-bottom: 4px; }
-        .photo-btn span { font-size: 11px; color: #aaa; }
+        .photo-btn:hover { border-color: var(--happy-pink); background: #fff0f3; }
+        .photo-btn svg { width: 28px; height: 28px; fill: var(--happy-pink); margin-bottom: 4px; }
+        .photo-btn span { font-size: 12px; color: #888; font-weight: bold; }
 
         #photo-preview-container {
             display: flex;
             gap: 10px;
             overflow-x: auto;
             flex: 1;
-            padding: 5px 0;
         }
 
         .preview-box {
             position: relative;
-            width: 60px;
-            height: 60px;
+            width: 65px; height: 65px;
             flex-shrink: 0;
         }
 
         .preview-box img {
-            width: 100%;
-            height: 100%;
+            width: 100%; height: 100%;
             object-fit: cover;
-            border-radius: 6px;
-            border: 1px solid var(--border);
+            border-radius: 12px;
+            border: 2px solid #fff;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
         }
 
         .del-btn {
             position: absolute;
-            top: -6px;
-            right: -6px;
-            width: 20px;
-            height: 20px;
-            background: var(--primary);
+            top: -8px; right: -8px;
+            width: 22px; height: 22px;
+            background: var(--happy-pink);
             color: white;
             border-radius: 50%;
             font-size: 14px;
@@ -130,71 +147,71 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            border: 2px solid #fff;
         }
 
         textarea { 
-            height: 350px; 
-            min-height: 250px;
+            height: 300px; 
             resize: none; 
             line-height: 1.6; 
         }
         
         .button-group { 
             display: flex; 
-            justify-content: flex-end; 
-            gap: 12px; 
-            margin-top: 15px; 
+            justify-content: center; 
+            gap: 15px; 
+            margin-top: 20px; 
         }
         
         .btn-cancel { 
             flex: 1; 
-            max-width: 120px;
-            background: transparent; 
-            color: #aaa; 
-            border: 1px solid var(--border); 
-            padding: 14px 0; 
+            max-width: 150px;
+            background: #fff; 
+            color: #888; 
+            border: 2px solid #eee; 
+            padding: 15px 0; 
             cursor: pointer; 
-            font-size: 14px; 
+            font-size: 16px; 
             text-decoration: none; 
             text-align: center; 
-            border-radius: 8px;
+            border-radius: 50px;
+            font-weight: bold;
             transition: 0.2s;
         }
-        .btn-cancel:hover { background: rgba(255,255,255,0.05); color: #fff; }
         
         .btn-save { 
             flex: 1; 
-            max-width: 120px;
-            background: var(--primary); 
+            max-width: 150px;
+            background: var(--happy-pink); 
             color: white; 
             border: none;
-            padding: 14px 0; 
+            padding: 15px 0; 
             cursor: pointer; 
-            font-weight: bold; 
-            font-size: 14px; 
-            border-radius: 8px;
-            transition: 0.3s;
+            font-weight: 900; 
+            font-size: 16px; 
+            border-radius: 50px;
+            box-shadow: 0 6px 0px #e05e7a;
+            transition: 0.2s;
         }
-        .btn-save:hover:not(:disabled) { 
-            background: #e64a96; 
-            box-shadow: 0 0 15px rgba(214, 51, 132, 0.4);
-            transform: translateY(-2px);
-        }
-        
-        .btn-save:disabled { background: #863d61; cursor: wait; opacity: 0.6; }
+        .btn-save:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 0px #e05e7a; }
+        .btn-save:active:not(:disabled) { transform: translateY(4px); box-shadow: 0 2px 0px #e05e7a; }
+        .btn-save:disabled { background: #ffcad6; box-shadow: 0 4px 0px #eec0ca; cursor: wait; }
 
         @media (max-width: 480px) {
-            .write-container { padding: 18px; margin-top: 10px; }
+            .write-container { padding: 20px; border-radius: 20px; margin-top: 20px; }
+            h2 { font-size: 1.8rem; }
             .btn-cancel, .btn-save { max-width: none; }
         }
     </style>
 </head>
 <body>
+    <div class="deco-circle circle-1"></div>
+    <div class="deco-circle circle-2"></div>
+
     <div class="write-container">
-        <h2>자유게시판 글쓰기</h2>
-        <input type="text" id="title" placeholder="제목을 입력하세요" autocomplete="off">
-        <input type="text" id="author" placeholder="작성자 닉네임 로딩 중..." readonly>
+        <h2>Joyoon Story</h2>
+        <input type="text" id="title" placeholder="어떤 이야기를 들려주실 건가요?" autocomplete="off">
+        <input type="text" id="author" placeholder="닉네임 불러오는 중..." readonly>
 
         <div class="photo-upload-section">
             <label for="image-upload" class="photo-btn">
@@ -205,15 +222,16 @@
             <div id="photo-preview-container"></div>
         </div>
 
-        <textarea id="content" placeholder="조윤 배우님께 전할 메시지나 팬들의 따뜻한 이야기를 들려주세요!"></textarea>
+        <textarea id="content" placeholder="조윤 배우님께 전할 따뜻한 메시지를 남겨주세요! ✨"></textarea>
         
         <div class="button-group">
-            <a href="board.html" class="btn-cancel">취소</a>
-            <button class="btn-save" id="saveBtn">등록하기</button>
+            <a href="board.html" class="btn-cancel">다음에 쓸게요</a>
+            <button class="btn-save" id="saveBtn">등록하기 ➔</button>
         </div>
     </div>
 
     <script type="module">
+        /* 파이어베이스 스크립트 부분은 기존과 동일하게 유지됩니다 (생략 가능) */
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -245,6 +263,7 @@
             }
         });
 
+        // 사진 미리보기 및 삭제 기능
         document.getElementById("image-upload").addEventListener("change", function(e) {
             const files = e.target.files;
             const previewContainer = document.getElementById("photo-preview-container");
@@ -254,18 +273,13 @@
                     alert("사진은 최대 5장까지 가능합니다.");
                     return;
                 }
-
                 const reader = new FileReader();
                 reader.onload = function(event) {
                     const base64String = event.target.result;
                     uploadedImages.push(base64String);
-
                     const div = document.createElement("div");
                     div.className = "preview-box";
-                    div.innerHTML = `
-                        <img src="${base64String}">
-                        <div class="del-btn">×</div>
-                    `;
+                    div.innerHTML = `<img src="${base64String}"><div class="del-btn">×</div>`;
                     div.querySelector(".del-btn").onclick = () => {
                         uploadedImages = uploadedImages.filter(img => img !== base64String);
                         div.remove();
@@ -276,15 +290,15 @@
             });
         });
 
+        // 글 저장 로직
         document.getElementById("saveBtn").addEventListener("click", async () => {
             if (isSaving) return;
-
             const title = document.getElementById("title").value.trim();
             const content = document.getElementById("content").value.trim();
             const author = document.getElementById("author").value;
 
             if (!title || !content) {
-                alert("제목과 내용을 모두 입력해 주세요! 😉");
+                alert("내용을 채워주세요! 😉");
                 return;
             }
 
@@ -304,15 +318,24 @@
                     likes: 0
                 });
                 
-                alert("🎉 글이 성공적으로 등록되었습니다!");
+                alert("🎉 소중한 글이 등록되었습니다!");
                 location.href = "board.html"; 
             } catch (e) {
-                console.error("등록 에러: ", e);
-                alert("저장에 실패했습니다. 다시 시도해 주세요.");
                 isSaving = false;
-                document.getElementById("saveBtn").disabled = false;
-                document.getElementById("saveBtn").innerText = "등록하기";
+                saveBtn.disabled = false;
+                saveBtn.innerText = "등록하기 ➔";
+                alert("오류가 발생했어요. 다시 시도해 주세요!");
             }
+        });
+
+        // 배경 구슬 마우스 반응 효과
+        document.addEventListener('mousemove', (e) => {
+            const x = e.clientX / window.innerWidth;
+            const y = e.clientY / window.innerHeight;
+            const c1 = document.querySelector('.circle-1');
+            const c2 = document.querySelector('.circle-2');
+            if(c1) c1.style.transform = `translate(${x * 30}px, ${y * 30}px)`;
+            if(c2) c2.style.transform = `translate(${-x * 20}px, ${-y * 20}px)`;
         });
     </script>
 </body>
