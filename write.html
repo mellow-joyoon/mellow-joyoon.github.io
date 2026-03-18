@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 
 <html lang="ko">
 
@@ -6,441 +6,25 @@
 
     <meta charset="UTF-8">
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-
-    <title>Mellow Joyoon | 배우 조윤 팬페이지</title>
-
-    
-
-    <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@700&family=Montserrat:wght@900&family=Noto+Sans+KR:wght@100;400;900&display=swap" rel="stylesheet">
-
-
-
-    <style>
-
-        :root {
-
-            --happy-pink: #ff85a1;
-
-            --sunny-yellow: #ffde59;
-
-            --sky-blue: #87ceeb;
-
-            --text-main: #444; /* 너무 검지 않은 부드러운 회색 */
-
-        }
-
-
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
-
-
-        html, body {
-
-            width: 100%; height: 100%;
-
-            overflow: hidden;
-
-            background: #fffcf2; /* 따뜻한 느낌의 크림색 */
-
-            font-family: 'Noto Sans KR', sans-serif;
-
-        }
-
-
-
-        /* 📱 PC 여백을 채우는 생기발랄한 배경 오브제 */
-
-        .deco-circle {
-
-            position: absolute;
-
-            border-radius: 50%;
-
-            z-index: 1;
-
-            filter: blur(40px);
-
-            opacity: 0.5;
-
-            animation: pulse 6s infinite alternate;
-
-        }
-
-        .circle-1 { width: 400px; height: 400px; background: var(--happy-pink); top: -100px; left: -100px; }
-
-        .circle-2 { width: 300px; height: 300px; background: var(--sunny-yellow); bottom: -50px; right: -50px; animation-delay: 1s; }
-
-        .circle-3 { width: 250px; height: 250px; background: var(--sky-blue); top: 20%; right: 10%; animation-delay: 2s; }
-
-
-
-        @keyframes pulse { from { transform: scale(1); opacity: 0.4; } to { transform: scale(1.2); opacity: 0.6; } }
-
-
-
-        .main-container {
-
-            position: relative;
-
-            z-index: 10;
-
-            width: 100%; height: 100%;
-
-            display: grid;
-
-            grid-template-columns: 1fr 1fr;
-
-            align-items: center;
-
-            padding: 0 8%;
-
-        }
-
-
-
-        /* 📱 왼쪽: 배우 이름과 로고 */
-
-        .content-text {
-
-            text-align: left;
-
-            animation: popUp 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-
-        }
-
-
-
-        .mellow-logo {
-
-            font-family: 'Gaegu', cursive;
-
-            font-size: 1.5rem;
-
-            color: var(--happy-pink);
-
-            margin-bottom: 5px;
-
-            display: inline-block;
-
-            transform: rotate(-5deg);
-
-        }
-
-
-
-        .actor-name {
-
-            font-family: 'Montserrat', sans-serif;
-
-            font-size: clamp(4rem, 12vw, 9rem);
-
-            font-weight: 900;
-
-            color: var(--text-main);
-
-            line-height: 0.85;
-
-            letter-spacing: -2px;
-
-            margin-bottom: 30px;
-
-        }
-
-
-
-        .actor-name span { color: var(--happy-pink); }
-
-
-
-        .intro-text {
-
-            font-size: 1.2rem;
-
-            color: #666;
-
-            margin-bottom: 40px;
-
-            font-weight: 400;
-
-            line-height: 1.6;
-
-        }
-
-
-
-        /* 📱 오른쪽: 사진 카드 (기존 디자인 유지) */
-
-        .content-visual {
-
-            position: relative;
-
-            display: flex;
-
-            justify-content: center;
-
-            align-items: center;
-
-        }
-
-
-
-        .photo-card {
-
-            width: 320px;
-
-            height: 420px;
-
-            background: #fff;
-
-            padding: 15px;
-
-            border-radius: 20px;
-
-            box-shadow: 20px 20px 0px var(--sunny-yellow);
-
-            transform: rotate(5deg);
-
-            transition: 0.4s;
-
-            overflow: hidden;
-
-        }
-
-
-
-        .photo-card:hover {
-
-            transform: rotate(0deg) translateY(-10px);
-
-            box-shadow: 10px 10px 0px var(--happy-pink);
-
-        }
-
-
-
-        /* 이미지 반응형 설정 */
-
-        .photo-card img {
-
-            width: 100%; height: 100%;
-
-            object-fit: cover;
-
-            border-radius: 10px;
-
-            display: block;
-
-        }
-
-
-
-        /* 📱 입장 버튼: 귀여운 젤리 스타일 */
-
-        .btn-entry {
-
-            display: inline-block;
-
-            padding: 18px 50px;
-
-            background: var(--happy-pink);
-
-            color: #fff;
-
-            text-decoration: none;
-
-            font-weight: 900;
-
-            font-size: 1.2rem;
-
-            border-radius: 50px;
-
-            box-shadow: 0 10px 0px #e05e7a;
-
-            transition: 0.2s;
-
-        }
-
-
-
-        .btn-entry:active {
-
-            transform: translateY(5px);
-
-            box-shadow: 0 5px 0px #e05e7a;
-
-        }
-
-
-
-        /* 저작권 문구 유지 */
-
-        .copyright {
-
-            position: absolute;
-
-            bottom: 30px;
-
-            width: 100%;
-
-            text-align: center;
-
-            font-size: 0.75rem;
-
-            color: #bbb;
-
-            letter-spacing: 1px;
-
-        }
-
-
-
-        @keyframes popUp { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
-
-
-
-        /* 📱 모바일 및 모든 기기 반응형 유지 */
-
-        @media (max-width: 1024px) {
-
-            .main-container { grid-template-columns: 1fr; padding-top: 50px; }
-
-            .content-text { text-align: center; margin-bottom: 60px; }
-
-            .photo-card { width: 260px; height: 340px; }
-
-            .deco-circle { width: 200px; height: 200px; }
-
-        }
-
-    </style>
-
-</head>
-
-<body>
-
-
-
-    <div class="deco-circle circle-1"></div>
-
-    <div class="deco-circle circle-2"></div>
-
-    <div class="deco-circle circle-3"></div>
-
-
-
-    <div class="main-container">
-
-        <div class="content-text">
-
-            <span class="mellow-logo">Mellow ♪</span>
-
-            <h1 class="actor-name">JO<br><span>YOON</span></h1>
-
-            <p class="intro-text">웃음 가득한 조윤 배우님의<br>행복한 순간들을 기록해요 ✨</p>
-
-            <a href="board.html" class="btn-entry">놀러가기 ➔</a>
-
-        </div>
-
-
-
-        <div class="content-visual">
-
-            <div class="photo-card">
-
-                <img src="images/joyoon_main3.jpg" alt="배우 조윤 배우님">
-
-            </div>
-
-        </div>
-
-    </div>
-
-
-
-    <p class="copyright">Copyright © Mellow Joyoon. All rights reserved.</p>
-
-
-
-    <script>
-
-        // 마우스를 따라 배경 구슬들이 미세하게 도망다니는 효과 (생동감)
-
-        document.addEventListener('mousemove', (e) => {
-
-            const x = e.clientX / window.innerWidth;
-
-            const y = e.clientY / window.innerHeight;
-
-            
-
-            const c1 = document.querySelector('.circle-1');
-
-            const c2 = document.querySelector('.circle-2');
-
-            const c3 = document.querySelector('.circle-3');
-
-            
-
-            if(c1) c1.style.transform = `translate(${x * 50}px, ${y * 50}px)`;
-
-            if(c2) c2.style.transform = `translate(${-x * 30}px, ${-y * 30}px)`;
-
-            if(c3) c3.style.transform = `translate(${x * 40}px, ${-y * 40}px)`;
-
-        });
-
-    </script>
-
-</body>
-
-</html> <!DOCTYPE html>
-
-<html lang="ko">
-
-<head>
-
-    <meta charset="UTF-8">
-
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
     <title>Mellow Joyoon | 글쓰기</title>
 
-    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
-
     <style>
-
-        :root {
-
-            --primary: #d63384;
-
-            --bg: #0b0b0b; /* 필모그래피 배경색 */
-
-            --card-bg: rgba(255, 255, 255, 0.05); /* 필모그래피 카드 스타일 */
-
-            --border: rgba(255, 255, 255, 0.1);
-
-            --input-bg: rgba(255, 255, 255, 0.08);
-
-        }
-
-
 
         body { 
 
-            background-color: var(--bg); 
+            background-color: #f6f6f6; 
 
-            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif; 
+            font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; 
 
-            padding: env(safe-area-inset-top) 15px env(safe-area-inset-bottom);
+            padding: 15px;
 
-            color: #eee; margin: 0;
+            color: #333; 
+
+            margin: 0;
 
             -webkit-tap-highlight-color: transparent;
-
-            -webkit-font-smoothing: antialiased;
 
         }
 
@@ -452,21 +36,17 @@
 
             max-width: 800px; 
 
-            margin: 20px auto; 
+            margin: 0 auto; 
 
-            background: var(--card-bg); 
+            background: white; 
 
-            padding: 25px; 
+            padding: 20px; 
 
-            border: 1px solid var(--border); 
+            border: 1px solid #ddd; 
 
             box-sizing: border-box;
 
-            border-radius: 12px;
-
-            backdrop-filter: blur(10px);
-
-            -webkit-backdrop-filter: blur(10px);
+            border-radius: 8px;
 
         }
 
@@ -474,19 +54,15 @@
 
         h2 { 
 
-            color: var(--primary); 
+            color: #d63384; 
 
             font-size: clamp(1.2rem, 5vw, 1.6rem); 
 
-            border-bottom: 1px solid var(--primary); 
+            border-bottom: 2px solid #333; 
 
             padding-bottom: 15px; 
 
-            margin-bottom: 25px; 
-
-            font-weight: 700;
-
-            letter-spacing: -0.5px;
+            margin-bottom: 20px; 
 
         }
 
@@ -496,37 +72,25 @@
 
             width: 100%; 
 
-            padding: 14px; 
+            padding: 12px; 
 
-            margin-bottom: 15px; 
+            margin-bottom: 12px; 
 
-            border: 1px solid var(--border); 
+            border: 1px solid #ccc; 
 
-            border-radius: 8px; 
+            border-radius: 4px; 
 
             box-sizing: border-box; 
 
-            font-size: 15px; 
-
-            background-color: var(--input-bg);
-
-            color: #fff;
-
-            transition: all 0.2s;
-
-            font-family: inherit;
+            font-size: 16px; 
 
         }
 
-        input::placeholder, textarea::placeholder { color: #666; }
-
-        input:focus, textarea:focus { border-color: var(--primary); outline: none; background-color: rgba(255,255,255,0.12); }
+        input:focus, textarea:focus { border-color: #d63384; outline: none; }
 
         
 
-        /* 읽기 전용 작성자 칸 스타일 */
-
-        input#author { background-color: rgba(255, 255, 255, 0.03); color: #888; cursor: not-allowed; border-style: dashed; }
+        input#author { background-color: #f9f9f9; color: #777; cursor: not-allowed; }
 
 
 
@@ -536,17 +100,17 @@
 
             align-items: center;
 
-            gap: 12px;
+            gap: 10px;
 
-            margin-bottom: 15px;
+            margin-bottom: 12px;
 
-            padding: 12px;
+            padding: 10px;
 
-            border: 1px dashed var(--border);
+            border: 1px dashed #ccc;
 
-            border-radius: 8px;
+            border-radius: 6px;
 
-            background: rgba(255, 255, 255, 0.02);
+            background: #fafafa;
 
         }
 
@@ -562,15 +126,15 @@
 
             justify-content: center;
 
-            width: 65px;
+            width: 60px;
 
-            height: 65px;
+            height: 60px;
 
-            background: var(--input-bg);
+            background: white;
 
-            border: 1px solid var(--border);
+            border: 1px solid #ddd;
 
-            border-radius: 8px;
+            border-radius: 4px;
 
             cursor: pointer;
 
@@ -578,11 +142,11 @@
 
         }
 
-        .photo-btn:hover { border-color: var(--primary); background: rgba(214, 51, 132, 0.1); }
+        .photo-btn:hover { border-color: #00c73c; background: #f0fff4; }
 
-        .photo-btn svg { width: 24px; height: 24px; fill: var(--primary); margin-bottom: 4px; }
+        .photo-btn svg { width: 24px; height: 24px; fill: #00c73c; margin-bottom: 4px; }
 
-        .photo-btn span { font-size: 11px; color: #aaa; }
+        .photo-btn span { font-size: 11px; color: #666; }
 
 
 
@@ -590,13 +154,11 @@
 
             display: flex;
 
-            gap: 10px;
+            gap: 8px;
 
             overflow-x: auto;
 
             flex: 1;
-
-            padding: 5px 0;
 
         }
 
@@ -624,9 +186,9 @@
 
             object-fit: cover;
 
-            border-radius: 6px;
+            border-radius: 4px;
 
-            border: 1px solid var(--border);
+            border: 1px solid #eee;
 
         }
 
@@ -636,21 +198,21 @@
 
             position: absolute;
 
-            top: -6px;
+            top: -5px;
 
-            right: -6px;
+            right: -5px;
 
-            width: 20px;
+            width: 18px;
 
-            height: 20px;
+            height: 18px;
 
-            background: var(--primary);
+            background: rgba(0,0,0,0.6);
 
             color: white;
 
             border-radius: 50%;
 
-            font-size: 14px;
+            font-size: 12px;
 
             display: flex;
 
@@ -659,8 +221,6 @@
             justify-content: center;
 
             cursor: pointer;
-
-            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
 
         }
 
@@ -686,9 +246,9 @@
 
             justify-content: flex-end; 
 
-            gap: 12px; 
+            gap: 10px; 
 
-            margin-top: 15px; 
+            margin-top: 10px; 
 
         }
 
@@ -700,13 +260,13 @@
 
             max-width: 120px;
 
-            background: transparent; 
+            background: #fff; 
 
-            color: #aaa; 
+            color: #333; 
 
-            border: 1px solid var(--border); 
+            border: 1px solid #ccc; 
 
-            padding: 14px 0; 
+            padding: 12px 0; 
 
             cursor: pointer; 
 
@@ -716,13 +276,9 @@
 
             text-align: center; 
 
-            border-radius: 8px;
-
-            transition: 0.2s;
+            border-radius: 4px;
 
         }
-
-        .btn-cancel:hover { background: rgba(255,255,255,0.05); color: #fff; }
 
         
 
@@ -732,13 +288,13 @@
 
             max-width: 120px;
 
-            background: var(--primary); 
+            background: #d63384; 
 
             color: white; 
 
-            border: none;
+            border: 1px solid #d63384; 
 
-            padding: 14px 0; 
+            padding: 12px 0; 
 
             cursor: pointer; 
 
@@ -746,31 +302,23 @@
 
             font-size: 14px; 
 
-            border-radius: 8px;
-
-            transition: 0.3s;
-
-        }
-
-        .btn-save:hover:not(:disabled) { 
-
-            background: #e64a96; 
-
-            box-shadow: 0 0 15px rgba(214, 51, 132, 0.4);
-
-            transform: translateY(-2px);
+            border-radius: 4px;
 
         }
 
         
 
-        .btn-save:disabled { background: #863d61; cursor: wait; opacity: 0.6; }
+        /* 등록 중 버튼 스타일 */
+
+        .btn-save:disabled { background: #edaecb; border-color: #edaecb; cursor: wait; }
+
+        .btn-save:hover:not(:disabled) { background: #c12a74; }
 
 
 
         @media (max-width: 480px) {
 
-            .write-container { padding: 18px; margin-top: 10px; }
+            .write-container { padding: 15px; }
 
             .btn-cancel, .btn-save { max-width: none; }
 
@@ -866,7 +414,7 @@
 
         let uploadedImages = [];
 
-        let isSaving = false;
+        let isSaving = false; // 🚨 중복 등록 방지 잠금 변수
 
 
 
@@ -901,3 +449,61 @@
             Array.from(files).forEach(file => {
 
                 if (uploadedImages.length >= 5) {
+
+                    alert("사진은 최대 5장까지 가능합니다.");
+
+                    return;
+
+                }
+
+
+
+                const reader = new FileReader();
+
+                reader.onload = function(event) {
+
+                    const base64String = event.target.result;
+
+                    uploadedImages.push(base64String);
+
+
+
+                    const div = document.createElement("div");
+
+                    div.className = "preview-box";
+
+                    div.innerHTML = `
+
+                        <img src="${base64String}">
+
+                        <div class="del-btn">×</div>
+
+                    `;
+
+                    div.querySelector(".del-btn").onclick = () => {
+
+                        uploadedImages = uploadedImages.filter(img => img !== base64String);
+
+                        div.remove();
+
+                    };
+
+                    previewContainer.appendChild(div);
+
+                };
+
+                reader.readAsDataURL(file);
+
+            });
+
+        });
+
+
+
+        document.getElementById("saveBtn").addEventListener("click", async () => {
+
+            if (isSaving) return; // 🚨 이미 저장 중이면 무시
+
+
+
+            const title = document.getElementById("title").value.trim();
