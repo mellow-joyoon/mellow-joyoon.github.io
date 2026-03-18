@@ -14,6 +14,7 @@
             --safe-top: env(safe-area-inset-top);
         }
 
+        /* [수정] 전체 페이지 스크롤바 숨기기 */
         body {
             margin: 0;
             background-color: var(--bg);
@@ -22,9 +23,18 @@
             overflow-x: hidden;
             -webkit-font-smoothing: antialiased;
             word-break: keep-all;
+
+            /* 스크롤바 숨김 (IE, Edge, Firefox) */
+            -ms-overflow-style: none; /* IE and Edge */
+            scrollbar-width: none; /* Firefox */
         }
 
-        /* [추가] 자유게시판 돌아가기 버튼 디자인 */
+        /* 스크롤바 숨김 (Chrome, Safari, Opera, Samsung Internet) */
+        body::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* 자유게시판 돌아가기 버튼 디자인 */
         .back-to-board {
             position: fixed;
             top: calc(20px + var(--safe-top));
@@ -59,7 +69,6 @@
             fill: none;
             stroke: currentColor;
             stroke-width: 2;
-            transition: transform 0.3s ease;
         }
 
         /* 배경 조명 효과 */
