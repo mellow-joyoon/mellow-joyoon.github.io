@@ -11,6 +11,7 @@
             --bg: #0b0b0b;
             --card-bg: rgba(255, 255, 255, 0.05);
             --safe-bottom: env(safe-area-inset-bottom);
+            --safe-top: env(safe-area-inset-top);
         }
 
         body {
@@ -21,6 +22,44 @@
             overflow-x: hidden;
             -webkit-font-smoothing: antialiased;
             word-break: keep-all;
+        }
+
+        /* [추가] 자유게시판 돌아가기 버튼 디자인 */
+        .back-to-board {
+            position: fixed;
+            top: calc(20px + var(--safe-top));
+            left: 20px;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 18px;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50px;
+            color: #fff;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .back-to-board:hover {
+            background: var(--primary);
+            border-color: var(--primary);
+            box-shadow: 0 0 20px rgba(214, 51, 132, 0.4);
+            transform: translateX(5px);
+        }
+
+        .back-to-board svg {
+            width: 18px;
+            height: 18px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2;
+            transition: transform 0.3s ease;
         }
 
         /* 배경 조명 효과 */
@@ -154,6 +193,7 @@
             }
             .header-title { letter-spacing: -1px; }
             .content-wrapper { padding-bottom: calc(60px + var(--safe-bottom)); }
+            .back-to-board { font-size: 0.8rem; padding: 8px 14px; }
         }
 
         .year { color: var(--primary); font-size: 0.9rem; font-weight: 700; margin-bottom: 8px; }
@@ -185,6 +225,11 @@
     </style>
 </head>
 <body>
+    <a href="#" class="back-to-board">
+        <svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        자유게시판
+    </a>
+
     <div id="cursor"></div>
     <div class="glow-effect"></div>
 
@@ -200,7 +245,6 @@
         </section>
 
         <div class="filmo-grid">
-            
             <div class="work-card" data-aos="fade-up">
                 <div class="work-img-wrap">
                     <img src="images/poster2025.jpg" alt="원수를 모시게 되었습니다" class="work-img">
@@ -215,8 +259,7 @@
                     </div>
                 </div>
             </div>
-
-            </div>
+        </div>
     </main>
 
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
@@ -233,7 +276,7 @@
                 cursor.style.transform = `translate(${e.clientX - 15}px, ${e.clientY - 15}px)`;
             });
 
-            document.querySelectorAll('.work-card').forEach(card => {
+            document.querySelectorAll('.work-card, .back-to-board').forEach(card => {
                 card.addEventListener('mouseenter', () => {
                     cursor.style.transform += ' scale(2.5)';
                     cursor.style.backgroundColor = 'rgba(214, 51, 132, 0.1)';
