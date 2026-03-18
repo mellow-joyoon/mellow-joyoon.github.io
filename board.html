@@ -114,7 +114,7 @@
 
     <div class="top-bar">
         <div class="nav-links">
-            <a href="index.html" class="home-link">홈</a>
+            <a href="joyoon-list.html" class="home-link">홈</a>
             <a href="joyoon-list.html" class="film-link">필모그래피</a>
         </div>
         <div id="authStatus"><span style="font-size: 11px; color: #999;">확인 중...</span></div>
@@ -175,7 +175,7 @@
         const auth = getAuth(app);
 
         let currentPage = 1;
-        const postsPerPage = 10; // 요청하신 대로 10개로 수정!
+        const postsPerPage = 10;
 
         onAuthStateChanged(auth, (user) => {
             const authStatusDiv = document.getElementById("authStatus");
@@ -212,7 +212,7 @@
                 const allDocs = snapshot.docs;
                 
                 const totalPosts = allDocs.length;
-                const totalPages = Math.ceil(totalPosts / postsPerPage); // 14개면 2페이지 생성
+                const totalPages = Math.ceil(totalPosts / postsPerPage);
                 renderPagination(totalPages, pageNum);
 
                 const startIndex = (pageNum - 1) * postsPerPage;
@@ -249,7 +249,7 @@
         function renderPagination(totalPages, activePage) {
             const container = document.getElementById("pagination-container");
             container.innerHTML = "";
-            if (totalPages <= 1) return; // 1페이지밖에 없으면 번호를 숨겨서 더 깔끔하게 처리
+            if (totalPages <= 1) return;
             
             for (let i = 1; i <= totalPages; i++) {
                 const btn = document.createElement("div");
@@ -257,7 +257,7 @@
                 btn.innerText = i;
                 btn.onclick = () => {
                     loadPosts(i, document.getElementById("searchInput").value, document.getElementById("searchType").value);
-                    window.scrollTo(0, 0); // 페이지 바꿀 때 상단으로 이동
+                    window.scrollTo(0, 0);
                 };
                 container.appendChild(btn);
             }
