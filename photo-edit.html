@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mellow Joyoon | 사진 수정하기</title>
+    <style>
+        body { 
+            background-color: #f6f6f6; 
+            font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; 
+            padding: 15px; 
+            color: #333; 
+            margin: 0;
+        }
+        
+        .edit-container { 
+            width: 100%;
+            max-width: 800px; 
+            margin: 0 auto; 
+            background: white; 
+            padding: 20px; 
+            border: 1px solid #ddd; 
+            box-sizing: border-box;
+            border-radius: 8px;
+        }
+        
+        h2 { 
+            color: #d63384; 
+            font-size: clamp(1.2rem, 5vw, 1.5rem); 
+            border-bottom: 2px solid #d63384; 
+            padding-bottom: 10px; 
+            margin-bottom: 20px; 
+        }
+        
+        input[type="text"], textarea { 
+            width: 100%; 
+            padding: 12px; 
+            margin-bottom: 12px; 
+            border: 1px solid #ddd; 
+            box-sizing: border-box; 
+            font-size: 16px; 
+            border-radius: 4px;
+        }
+        input:focus, textarea:focus { border-color: #d63384; outline: none; }
+        
+        textarea { 
+            height: 350px; 
+            min-height: 250px;
+            resize: none; 
+            line-height: 1.6; 
+        }
+
+        .btn-area { 
+            display: flex; 
+            justify-content: flex-end; 
+            gap: 10px; 
+            margin-top: 10px;
+        }
+        
+        .btn { 
+            flex: 1;
+            max-width: 120px;
+            padding: 12px 0; 
+            border: none; 
+            font-weight: bold; 
+            cursor: pointer; 
+            font-size: 14px; 
+            border-radius: 4px;
+            text-align: center;
+        }
+        
+        .btn-submit { background: #d63384; color: white; }
+        .btn-cancel { 
+            background: #eee; 
+            color: #333; 
+            text-decoration: none; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+        }
+        .btn:hover { opacity: 0.8; }
+
+        @media (max-width: 480px) {
+            .btn-cancel, .btn-submit { max-width: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="edit-container">
+        <h2>사진 게시글 수정</h2>
+        <div id="loading" style="text-align:center; padding:50px; font-size: 14px;">기존 내용을 불러오는 중입니다...</div>
+        
+        <div id="edit-form" style="display:none;">
+            <input type="text" id="editTitle" placeholder="제목을 입력하세요" autocomplete="off">
+            <textarea id="editContent" placeholder="내용을 입력하세요"></textarea>
+            
+            <div class="btn-area">
+                <a href="javascript:history.back();" class="btn btn-cancel">취소</a>
+                <button class="btn btn-submit" id="updateBtn">수정 완료</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCP4Ur--4UGGpNSK_P7qRvnVFDZbqn436A",
+            authDomain: "mellow-joyoon.firebaseapp.com",
+            projectId: "mellow-joyoon",
+            storageBucket: "mellow-joyoon.firebasestorage.app",
+            messagingSenderId: "556097417487",
+            appId: "1:556097417487:web:0dca0eb26ba28d893c4e7a"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const postId = urlParams.get('id');
+        const ADMIN_EMAIL = "yun786692@gmail.com"; 
+
+        if (!postId) {
+            alert("잘못된 접근입니다.");
+            location.href = "photo-board.html";
+        }
+
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) {
+                alert("로그인이 필요한 서비스입니다.");
+                location.href = "login.html";
+                return;
+            }
+
+            try {
+                // ✅ 핵심: 'photo_posts' 컬렉션에서 데이터 참조
+                const docRef = doc(db, "photo_posts", postId);
+                const docSnap = await getDoc(docRef);
+
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    
+                    // 작성자 본인 혹은 관리자만 수정 가능
+                    if (user.email === ADMIN_EMAIL || user.uid === data.authorId) {
+                        document.getElementById("editTitle").value = data.title;
+                        document.getElementById("editContent").value = data.content;
+                        
+                        document.getElementById("loading").style.display = "none";
+                        document.getElementById("edit-form").style.display = "block";
+                    } else {
+                        alert("이 사진을 수정할 권한이 없습니다.");
+                        location.href = "photo-board.html";
+                    }
+                } else {
+                    alert("해당 사진 게시글이 존재하지 않습니다.");
+                    location.href = "photo-board.html";
+                }
+            } catch (e) {
+                console.error("데이터 로딩 중 오류:", e);
+                alert("내용을 불러오지 못했습니다.");
+            }
+        });
+
+        document.getElementById("updateBtn").onclick = async () => {
+            const newTitle = document.getElementById("editTitle").value.trim();
+            const newContent = document.getElementById("editContent").value.trim();
+
+            if (!newTitle || !newContent) {
+                alert("제목과 내용을 입력해주세요!");
+                return;
+            }
+
+            if (confirm("사진 게시글의 내용을 수정하시겠습니까?")) {
+                try {
+                    // ✅ 핵심: 'photo_posts' 컬렉션 업데이트
+                    const docRef = doc(db, "photo_posts", postId);
+                    await updateDoc(docRef, {
+                        title: newTitle,
+                        content: newContent,
+                        updatedAt: new Date()
+                    });
+                    alert("수정이 완료되었습니다! ✨");
+                    // 수정 완료 후 사진 전용 보기 페이지로 이동
+                    location.href = `photo-view.html?id=${postId}`;
+                } catch (error) {
+                    console.error("수정 오류:", error);
+                    alert("수정 중에 오류가 발생했습니다.");
+                }
+            }
+        };
+    </script>
+</body>
+</html>
