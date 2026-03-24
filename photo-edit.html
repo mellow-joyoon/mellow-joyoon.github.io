@@ -8,17 +8,16 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;400;900&display=swap" rel="stylesheet">
 
     <style>
-        /* ✅ 기존 스타일 유지 및 반응형 고도화 */
+        /* ✅ 기존 스타일 보존 및 반응형 고도화 */
         body { 
             background-color: #f6f6f6; 
             font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', 'Noto Sans KR', sans-serif; 
-            /* 아이폰 하단 홈바/노치 여백 대응 */
-            padding: env(safe-area-inset-top) 15px calc(20px + env(safe-area-inset-bottom));
+            /* 아이폰 하단 홈바 및 상단 노치 여백 대응 */
+            padding: env(safe-area-inset-top) 15px calc(25px + env(safe-area-inset-bottom)) 15px;
             color: #333; 
             margin: 0;
             -webkit-tap-highlight-color: transparent;
-            -webkit-overflow-scrolling: touch;
-            -webkit-text-size-adjust: none; /* 모바일 텍스트 자동크기조절 방지 */
+            -webkit-text-size-adjust: none; /* 브라우저의 텍스트 강제 크기 조절 방지 */
         }
         
         .edit-container { 
@@ -26,7 +25,8 @@
             max-width: 850px; 
             margin: 20px auto; 
             background: white; 
-            padding: clamp(15px, 4vw, 30px); 
+            /* 기기 너비에 따라 패딩을 15px에서 40px까지 유동적으로 조절 */
+            padding: clamp(15px, 5vw, 40px); 
             border: 1px solid #ddd; 
             box-sizing: border-box;
             border-radius: 12px;
@@ -35,7 +35,7 @@
         
         h2 { 
             color: #d63384; 
-            font-size: clamp(1.3rem, 5vw, 1.8rem); 
+            font-size: clamp(1.4rem, 5vw, 2rem); 
             border-bottom: 2px solid #333; 
             padding-bottom: 15px; 
             margin-bottom: 25px; 
@@ -43,25 +43,32 @@
             letter-spacing: -0.5px;
         }
         
-        /* 📱 모바일 입력창 최적화 (16px 이상이어야 아이폰 사파리에서 확대 안 됨) */
+        /* 📱 모바일 입력창 최적화 (16px 미만이면 아이폰 사파리에서 강제 확대됨) */
         input[type="text"], textarea { 
             width: 100%; 
-            padding: 14px; 
-            margin-bottom: 15px; 
-            border: 1px solid #ddd; 
+            padding: 15px; 
+            margin-bottom: 20px; 
+            border: 1.5px solid #eee; 
             box-sizing: border-box; 
-            font-size: 16px; 
-            border-radius: 8px;
-            transition: border-color 0.2s, background-color 0.2s;
+            font-size: 16px; /* 아이폰 자동 확대 방지 마지노선 */
+            border-radius: 10px;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             font-family: inherit;
+            background-color: #fdfdfd;
         }
-        input:focus, textarea:focus { border-color: #d63384; outline: none; background-color: #fffafc; }
+        input:focus, textarea:focus { 
+            border-color: #d63384; 
+            outline: none; 
+            background-color: #fff; 
+            box-shadow: 0 0 0 3px rgba(214, 51, 132, 0.1);
+        }
         
         textarea { 
-            height: clamp(250px, 45vh, 450px); 
+            /* 화면 높이에 따라 에디터 크기 조절 */
+            height: clamp(300px, 50vh, 500px); 
             min-height: 250px;
             resize: none; 
-            line-height: 1.6; 
+            line-height: 1.7; 
         }
 
         /* 🔘 버튼 영역 반응형 디자인 */
@@ -69,18 +76,18 @@
             display: flex; 
             justify-content: flex-end; 
             gap: 12px; 
-            margin-top: 15px;
+            margin-top: 10px;
         }
         
         .btn { 
             flex: 1;
-            max-width: 140px;
-            padding: 14px 0; 
+            max-width: 160px;
+            padding: 15px 0; 
             border: none; 
             font-weight: bold; 
             cursor: pointer; 
-            font-size: 15px; 
-            border-radius: 8px;
+            font-size: 16px; 
+            border-radius: 10px;
             text-align: center;
             transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             text-decoration: none;
@@ -92,31 +99,37 @@
         .btn-submit { 
             background: #d63384; 
             color: white; 
-            box-shadow: 0 4px 10px rgba(214, 51, 132, 0.2);
+            box-shadow: 0 4px 12px rgba(214, 51, 132, 0.2);
         }
         .btn-cancel { 
-            background: #eee; 
-            color: #555; 
+            background: #f0f0f0; 
+            color: #666; 
         }
         
-        .btn:active { transform: scale(0.96); opacity: 0.9; }
+        .btn:active { transform: scale(0.95); opacity: 0.9; }
 
         /* 로딩 애니메이션 */
         #loading {
             text-align: center;
-            padding: 80px 20px;
-            font-size: 15px;
+            padding: 100px 20px;
+            font-size: 16px;
             color: #999;
         }
 
-        /* 📱 모바일 전용 여백 조정 */
+        /* 💻 PC 전용 패딩 */
+        @media (min-width: 1024px) {
+            body { padding-top: 50px; padding-bottom: 50px; }
+            .edit-container { padding: 50px; }
+        }
+
+        /* 📱 모바일/태블릿 전용 레이아웃 조정 */
         @media (max-width: 768px) {
             .edit-container { margin: 10px auto; border-radius: 0; border-left: none; border-right: none; }
         }
 
         @media (max-width: 480px) {
-            .btn-cancel, .btn-submit { max-width: none; }
-            .btn-area { gap: 8px; }
+            .btn-area { flex-direction: column-reverse; width: 100%; }
+            .btn-cancel, .btn-submit { max-width: none; width: 100%; }
             h2 { margin-bottom: 20px; }
         }
     </style>
@@ -172,7 +185,6 @@
             }
 
             try {
-                // 'photo_posts' 컬렉션 참조 유지
                 const docRef = doc(db, "photo_posts", postId);
                 const docSnap = await getDoc(docRef);
 
