@@ -1,0 +1,26 @@
+// ... (Firebase 초기화 코드 생략) ...
+
+async function savePhotoPost() {
+    const title = document.getElementById("title").value;
+    const content = document.getElementById("content").value;
+    const user = auth.currentUser;
+
+    if (!title || !content) return alert("내용을 입력해주세요!");
+
+    try {
+        // ✅ 저장 위치를 'photo_posts'로 변경하여 자유게시판과 완전히 분리
+        await addDoc(collection(db, "photo_posts"), {
+            title: title,
+            content: content,
+            author: user.displayName || "팬",
+            uid: user.uid,
+            createdAt: serverTimestamp(),
+            imageUrl: uploadedImageUrl // 업로드된 사진 경로
+        });
+        
+        alert("사진 게시글이 등록되었습니다! ✨");
+        location.href = "photo-board.html"; // 사진 게시판 목록으로 이동
+    } catch (e) {
+        console.error("에러 발생:", e);
+    }
+}
