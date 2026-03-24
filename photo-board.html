@@ -2,113 +2,42 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Mellow Joyoon | 사진게시판</title>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@700&family=Montserrat:wght@900&family=Noto+Sans+KR:wght@100;400;900&display=swap" rel="stylesheet">
-    <link href="https://webfontworld.github.io/gmarket/GmarketSans.css" rel="stylesheet">
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mellow Joyoon | 사진 보기</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@900&family=Noto+Sans+KR:wght@400;900&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --happy-pink: #ff85a1;
-            --sunny-yellow: #ffde59;
-            --sky-blue: #87ceeb;
-            --text-main: #444;
-            --bg-cream: #fffcf2;
-            --card-white: rgba(255, 255, 255, 0.85);
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { 
-            background-color: var(--bg-cream); 
-            font-family: 'Noto Sans KR', sans-serif; 
-            padding: env(safe-area-inset-top) 10px env(safe-area-inset-bottom);
-            color: var(--text-main); 
-            display: flex; flex-direction: column; align-items: center;
-            overflow-x: hidden; width: 100%; min-height: 100vh;
-        }
-
-        /* 배경 구슬 효과 */
-        .deco-circle { position: fixed; border-radius: 50%; z-index: -1; filter: blur(40px); opacity: 0.4; animation: pulse 6s infinite alternate; }
-        .circle-1 { width: 350px; height: 350px; background: var(--happy-pink); top: -100px; left: -100px; }
-        .circle-2 { width: 300px; height: 300px; background: var(--sunny-yellow); bottom: -50px; right: -50px; }
-
-        @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.1); } }
-
-        /* 상단 네비게이션 */
-        .top-bar {
-            width: 100%; max-width: 1000px; margin: 15px 0;
-            display: flex; justify-content: space-between; align-items: center;
-            background: var(--card-white); padding: 12px 20px; 
-            border: 2px solid #fff; border-radius: 50px; 
-            backdrop-filter: blur(10px); box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-        }
-        .nav-links { display: flex; gap: 15px; }
-        .nav-links a { text-decoration: none; color: var(--happy-pink); font-weight: 900; font-size: 14px; }
-        .nav-links a.active { color: #d63384; text-decoration: underline; }
-
-        /* 사진 게시판 그리드 레이아웃 */
-        .photo-container { 
-            width: 100%; max-width: 1000px; background: var(--card-white); padding: 25px; 
-            border: 2px solid #fff; border-radius: 30px; backdrop-filter: blur(10px);
-            margin-bottom: 40px;
-        }
-        .board-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
-        .board-header h2 { font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 2rem; }
-
-        .photo-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-            gap: 20px;
-        }
-        .photo-card {
-            background: #fff; border-radius: 15px; overflow: hidden;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05); transition: 0.3s;
-            cursor: pointer;
-        }
-        
-        .photo-card:hover { transform: translateY(-5px); }
-        .photo-img { width: 100%; aspect-ratio: 1/1; object-fit: cover; background: #f9f9f9; }
-        
-        .photo-info { padding: 12px; }
-        .photo-title { font-size: 14px; font-weight: bold; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .photo-meta { font-size: 12px; color: #888; display: flex; justify-content: space-between; }
-
-        .btn-write { 
-            background: var(--happy-pink); color: white; padding: 10px 20px; 
-            font-size: 14px; font-weight: 900; border-radius: 50px; text-decoration: none;
-            box-shadow: 0 4px 0px #e05e7a;
-        }
+        :root { --happy-pink: #ff85a1; --bg-cream: #fffcf2; }
+        body { background-color: var(--bg-cream); font-family: 'Noto Sans KR', sans-serif; padding: 20px; display: flex; flex-direction: column; align-items: center; }
+        .view-container { width: 100%; max-width: 800px; background: white; padding: 30px; border-radius: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        .post-header { border-bottom: 2px solid #f5f5f5; padding-bottom: 15px; margin-bottom: 20px; }
+        .post-title { font-size: 24px; font-weight: 900; color: #333; margin-bottom: 10px; }
+        .post-info { font-size: 14px; color: #888; display: flex; gap: 15px; }
+        .post-image { width: 100%; border-radius: 20px; margin: 20px 0; display: block; }
+        .post-content { line-height: 1.8; color: #444; white-space: pre-wrap; }
+        .btn-list { display: inline-block; margin-top: 30px; background: #eee; color: #555; padding: 10px 20px; border-radius: 50px; text-decoration: none; font-weight: bold; }
     </style>
 </head>
 <body>
-    <div class="deco-circle circle-1"></div>
-    <div class="deco-circle circle-2"></div>
 
-    <div class="top-bar">
-        <div class="nav-links">
-            <a href="index.html">Home</a>
-            <a href="joyoon-list.html">Filmo</a>
-            <a href="board.html">자유게시판</a>
-            <a href="photo-board.html" class="active">사진게시판</a>
-        </div>
-        <div id="authStatus"></div>
-    </div>
-
-    <div class="photo-container">
-        <div class="board-header">
-            <h2>PHOTO</h2>
-            <a href="photo-write.html" class="btn-write">사진 올리기</a>
+    <div class="view-container">
+        <div class="post-header">
+            <div id="title" class="post-title">불러오는 중...</div>
+            <div class="post-info">
+                <span id="author"></span>
+                <span id="date"></span>
+            </div>
         </div>
         
-        <div class="photo-grid" id="photo-list">
-            <p id="loading-msg" style="grid-column: 1/-1; text-align: center; padding: 50px; color: #bbb;">소중한 추억을 불러오고 있어요... ✨</p>
-        </div>
+        <img id="main-image" class="post-image" src="" alt="">
+        
+        <div id="content" class="post-content"></div>
+        
+        <a href="photo-board.html" class="btn-list">목록으로 돌아가기</a>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, query, orderBy, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCP4Ur--4UGGpNSK_P7qRvnVFDZbqn436A",
@@ -122,53 +51,34 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        async function loadPhotos() {
-            const photoList = document.getElementById("photo-list");
-            try {
-                // ✅ 핵심 수정: 'posts'가 아닌 'photo_posts' 컬렉션에서 데이터를 직접 가져옵니다.
-                // 컬렉션 자체가 분리되었으므로 where 필터링 없이 orderBy만 사용하면 되어 성능이 더 좋습니다.
-                const q = query(
-                    collection(db, "photo_posts"), 
-                    orderBy("createdAt", "desc")
-                );
-                
-                const snapshot = await getDocs(q);
-                
-                let htmlContent = "";
-                let hasAnyPhoto = false;
+        // URL에서 게시글 ID 가져오기
+        const urlParams = new URLSearchParams(window.location.search);
+        const postId = urlParams.get('id');
 
-                snapshot.forEach((doc) => {
-                    const data = doc.data();
-                    hasAnyPhoto = true;
-                    
-                    // 사진 정보 (기본 이미지 처리)
-                    const thumb = data.imageUrl || data.thumbnail || (data.images && data.images[0]) || "https://via.placeholder.com/300?text=Mellow+Joyoon";
+        async function loadPost() {
+            if (!postId) return alert("잘못된 접근입니다.");
 
-                    htmlContent += `
-                        <div class="photo-card" onclick="location.href='photo-view.html?id=${doc.id}'">
-                            <img src="${thumb}" class="photo-img" alt="post image" onerror="this.src='https://via.placeholder.com/300?text=No+Image'">
-                            <div class="photo-info">
-                                <div class="photo-title">${data.title}</div>
-                                <div class="photo-meta">
-                                    <span>${data.author}</span>
-                                    <span>조회 ${data.views || 0}</span>
-                                </div>
-                            </div>
-                        </div>`;
-                });
+            // ✅ 핵심: 오직 photo_posts 컬렉션에서만 문서를 찾음
+            const postRef = doc(db, "photo_posts", postId);
+            const postSnap = await getDoc(postRef);
 
-                if (!hasAnyPhoto) {
-                    photoList.innerHTML = "<p style='grid-column: 1/-1; text-align: center; padding: 50px; color: #bbb;'>아직 등록된 사진이 없어요. 첫 번째 사진을 공유해 주세요! 📸</p>";
-                } else {
-                    photoList.innerHTML = htmlContent;
-                }
+            if (postSnap.exists()) {
+                const data = postSnap.data();
+                document.getElementById('title').innerText = data.title;
+                document.getElementById('author').innerText = "작성자: " + data.author;
+                document.getElementById('date').innerText = data.createdAt?.toDate().toLocaleString() || "";
+                document.getElementById('main-image').src = data.imageUrl;
+                document.getElementById('content').innerText = data.content;
 
-            } catch (e) {
-                console.error("불러오기 실패:", e);
-                photoList.innerHTML = "<p style='grid-column: 1/-1; text-align: center; padding: 50px;'>데이터를 불러오는 중 오류가 발생했습니다.</p>";
+                // 조회수 증가
+                updateDoc(postRef, { views: increment(1) });
+            } else {
+                alert("삭제된 게시글이거나 경로가 잘못되었습니다.");
+                location.href = "photo-board.html";
             }
         }
-        loadPhotos();
+
+        loadPost();
     </script>
 </body>
 </html>
