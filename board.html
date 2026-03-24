@@ -248,33 +248,31 @@
                 currentPage = pageNum;
                 const postList = document.getElementById("post-list");
                 const postsCol = collection(db, "posts");
-                let q;
-
-                // ✅ [수정 완료] category가 'free'인 게시글만 필터링합니다.
-                if (searchKeyword) {
-                    q = query(
-                        postsCol, 
-                        where("category", "==", "free"),
-                        where(searchType, ">=", searchKeyword), 
-                        where(searchType, "<=", searchKeyword + "\uf8ff"), 
-                        limit(100)
-                    );
-                } else {
-                    q = query(
-                        postsCol, 
-                        where("category", "==", "free"),
-                        orderBy("createdAt", "desc")
-                    );
-                }
-
+                
+                // 1. 먼저 전체를 가져옵니다 (기존 글 보존을 위해)
+                let q = query(postsCol, orderBy("createdAt", "desc"));
                 const snapshot = await getDocs(q);
-                const allDocs = snapshot.docs;
-                const totalPosts = allDocs.length;
+                
+                // 2. ✅ 핵심 필터 로직: 
+                // 카테고리가 'photo'인 것만 제외하고 나머지를 모두 보여줍니다.
+                // 이렇게 하면 카테고리가 아예 없는 이전 글들 + 카테고리가 free인 새 글이 모두 보입니다.
+                let filteredDocs = snapshot.docs.filter(doc => {
+                    const data = doc.data();
+                    // 검색어가 있을 때 검색 필터링 추가
+                    if (searchKeyword) {
+                        const targetValue = data[searchType] || "";
+                        if (!targetValue.includes(searchKeyword)) return false;
+                    }
+                    // 카테고리가 photo인 게시글만 제외!
+                    return data.category !== "photo";
+                });
+
+                const totalPosts = filteredDocs.length;
                 const totalPages = Math.ceil(totalPosts / postsPerPage);
                 renderPagination(totalPages, pageNum);
 
                 const startIndex = (pageNum - 1) * postsPerPage;
-                const pageDocs = allDocs.slice(startIndex, startIndex + postsPerPage);
+                const pageDocs = filteredDocs.slice(startIndex, startIndex + postsPerPage);
 
                 postList.innerHTML = "";
                 if(pageDocs.length === 0) {
