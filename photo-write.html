@@ -1,26 +1,141 @@
-// ... (Firebase 초기화 코드 생략) ...
-
-async function savePhotoPost() {
-    const title = document.getElementById("title").value;
-    const content = document.getElementById("content").value;
-    const user = auth.currentUser;
-
-    if (!title || !content) return alert("내용을 입력해주세요!");
-
-    try {
-        // ✅ 저장 위치를 'photo_posts'로 변경하여 자유게시판과 완전히 분리
-        await addDoc(collection(db, "photo_posts"), {
-            title: title,
-            content: content,
-            author: user.displayName || "팬",
-            uid: user.uid,
-            createdAt: serverTimestamp(),
-            imageUrl: uploadedImageUrl // 업로드된 사진 경로
-        });
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Mellow Joyoon | 사진 올리기</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@700&family=Montserrat:wght@900&family=Noto+Sans+KR:wght@100;400;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --happy-pink: #ff85a1;
+            --bg-cream: #fffcf2;
+            --card-white: rgba(255, 255, 255, 0.9);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            background-color: var(--bg-cream); 
+            font-family: 'Noto Sans KR', sans-serif; 
+            display: flex; flex-direction: column; align-items: center; padding: 20px;
+        }
+        .write-box {
+            width: 100%; max-width: 700px; background: var(--card-white);
+            padding: 30px; border-radius: 30px; border: 2px solid #fff;
+            backdrop-filter: blur(10px); box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        }
+        h2 { font-family: 'Montserrat', sans-serif; color: var(--happy-pink); margin-bottom: 25px; text-align: center; font-size: 2rem; }
         
-        alert("사진 게시글이 등록되었습니다! ✨");
-        location.href = "photo-board.html"; // 사진 게시판 목록으로 이동
-    } catch (e) {
-        console.error("에러 발생:", e);
-    }
-}
+        input[type="text"], textarea {
+            width: 100%; padding: 15px; margin-bottom: 15px;
+            border: 2px solid #eee; border-radius: 15px; font-size: 16px; outline: none;
+        }
+        input:focus, textarea:focus { border-color: var(--happy-pink); }
+        
+        .file-label {
+            display: block; background: #f8f9fa; border: 2px dashed #ccc;
+            padding: 20px; text-align: center; border-radius: 15px;
+            cursor: pointer; margin-bottom: 15px; color: #888;
+        }
+        #image-preview { width: 100%; max-height: 400px; object-fit: cover; border-radius: 15px; display: none; margin-bottom: 15px; }
+
+        .btn-group { display: flex; gap: 10px; }
+        .btn { flex: 1; padding: 15px; border-radius: 50px; border: none; font-weight: 900; cursor: pointer; font-size: 16px; }
+        .btn-save { background: var(--happy-pink); color: white; box-shadow: 0 4px 0 #e05e7a; }
+        .btn-cancel { background: #eee; color: #777; }
+    </style>
+</head>
+<body>
+
+    <div class="write-box">
+        <h2>PHOTO UPLOAD</h2>
+        
+        <label class="file-label" for="photo-file">
+            📸 클릭해서 사진을 선택해주세요
+            <input type="file" id="photo-file" accept="image/*" style="display:none">
+        </label>
+        
+        <img id="image-preview">
+        
+        <input type="text" id="title" placeholder="제목을 입력하세요">
+        <textarea id="content" rows="8" placeholder="이 사진에 담긴 소중한 이야기를 들려주세요..."></textarea>
+        
+        <div class="btn-group">
+            <button class="btn btn-cancel" onclick="history.back()">취소</button>
+            <button class="btn btn-save" id="save-btn">사진 등록하기 ✨</button>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
+        import { getAuth } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCP4Ur--4UGGpNSK_P7qRvnVFDZbqn436A",
+            authDomain: "mellow-joyoon.firebaseapp.com",
+            projectId: "mellow-joyoon",
+            storageBucket: "mellow-joyoon.firebasestorage.app",
+            messagingSenderId: "556097417487",
+            appId: "1:556097417487:web:0dca0eb26ba28d893c4e7a"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const storage = getStorage(app);
+        const auth = getAuth(app);
+
+        const fileInput = document.getElementById('photo-file');
+        const previewImg = document.getElementById('image-preview');
+
+        // 파일 선택 시 미리보기 처리
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (ex) => {
+                    previewImg.src = ex.target.result;
+                    previewImg.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // ✅ 저장 로직 (자유게시판과 완전 격리)
+        document.getElementById('save-btn').addEventListener('click', async () => {
+            const title = document.getElementById('title').value;
+            const content = document.getElementById('content').value;
+            const file = fileInput.files[0];
+            const user = auth.currentUser;
+
+            if (!user) return alert("로그인이 필요한 서비스입니다!");
+            if (!file) return alert("공유할 사진을 선택해주세요!");
+            if (!title.trim()) return alert("제목을 입력해주세요!");
+
+            try {
+                // 1. 사진을 전용 폴더(photos/)에 업로드
+                const storageRef = ref(storage, `photos/${Date.now()}_${file.name}`);
+                const snapshot = await uploadBytes(storageRef, file);
+                const url = await getDownloadURL(snapshot.ref);
+
+                // 2. ✅ 핵심: 'photo_posts'라는 독립된 컬렉션에만 저장
+                await addDoc(collection(db, "photo_posts"), {
+                    title: title,
+                    content: content,
+                    imageUrl: url,
+                    author: user.displayName || "팬",
+                    uid: user.uid,
+                    createdAt: serverTimestamp(),
+                    views: 0
+                });
+
+                alert("사진 게시판에 소중한 추억이 등록되었습니다! ✨");
+                location.href = "photo-board.html";
+            } catch (err) {
+                console.error(err);
+                alert("등록 중 오류가 발생했습니다.");
+            }
+        });
+    </script>
+</body>
+</html>
