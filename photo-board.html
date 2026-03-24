@@ -98,7 +98,7 @@
     <div class="photo-container">
         <div class="board-header">
             <h2>PHOTO</h2>
-            <a href="write.html?type=photo" class="btn-write">사진 올리기</a>
+            <a href="photo-write.html" class="btn-write">사진 올리기</a>
         </div>
         
         <div class="photo-grid" id="photo-list">
@@ -108,7 +108,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, query, orderBy, getDocs, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, query, orderBy, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCP4Ur--4UGGpNSK_P7qRvnVFDZbqn436A",
@@ -125,10 +125,10 @@
         async function loadPhotos() {
             const photoList = document.getElementById("photo-list");
             try {
-                // ✅ 'category'가 'photo'인 문서만 필터링하여 가져옵니다.
+                // ✅ 핵심 수정: 'posts'가 아닌 'photo_posts' 컬렉션에서 데이터를 직접 가져옵니다.
+                // 컬렉션 자체가 분리되었으므로 where 필터링 없이 orderBy만 사용하면 되어 성능이 더 좋습니다.
                 const q = query(
-                    collection(db, "posts"), 
-                    where("category", "==", "photo"), 
+                    collection(db, "photo_posts"), 
                     orderBy("createdAt", "desc")
                 );
                 
@@ -141,11 +141,11 @@
                     const data = doc.data();
                     hasAnyPhoto = true;
                     
-                    // 썸네일 우선 사용, 없으면 첫 번째 이미지 사용
-                    const thumb = data.thumbnail || (data.images && data.images[0]) || "https://via.placeholder.com/300?text=Mellow+Joyoon";
+                    // 사진 정보 (기본 이미지 처리)
+                    const thumb = data.imageUrl || data.thumbnail || (data.images && data.images[0]) || "https://via.placeholder.com/300?text=Mellow+Joyoon";
 
                     htmlContent += `
-                        <div class="photo-card" onclick="location.href='view.html?id=${doc.id}'">
+                        <div class="photo-card" onclick="location.href='photo-view.html?id=${doc.id}'">
                             <img src="${thumb}" class="photo-img" alt="post image" onerror="this.src='https://via.placeholder.com/300?text=No+Image'">
                             <div class="photo-info">
                                 <div class="photo-title">${data.title}</div>
