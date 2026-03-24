@@ -47,7 +47,7 @@
 
         @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.15); } }
 
-        /* 상단 바 디자인 (유지) */
+        /* 상단 바 디자인 (사진게시판 메뉴 추가됨) */
         .top-bar {
             width: 100%; max-width: 1000px; margin: 15px 0;
             display: flex; justify-content: space-between; align-items: center;
@@ -59,11 +59,13 @@
         }
 
         .nav-links { display: flex; gap: 15px; align-items: center; }
-        .home-link, .film-link {
+        .nav-links a {
             text-decoration: none; color: var(--happy-pink); font-weight: 900; font-size: 14px;
             transition: 0.2s;
         }
-        .home-link:hover, .film-link:hover { transform: scale(1.1); }
+        .nav-links a:hover { transform: scale(1.1); }
+        /* 현재 페이지(자유게시판) 강조 표시 */
+        .nav-links a.active { color: #d63384; text-decoration: underline; }
 
         .user-info { font-size: 13px; display: flex; align-items: center; gap: 8px; }
         .user-name { 
@@ -88,12 +90,11 @@
 
         .board-header { border-bottom: 2px solid #f0f0f0; padding-bottom: 20px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
         
-        /* ✅ 수정: 자유게시판 제목 - 대문 폰트 적용, 검은색 유지, 크기 유지 */
         .board-header h2 { 
             margin: 0; 
             font-size: 2rem; 
-            color: #000; /* 검은색 유지 */
-            font-family: 'Montserrat', 'GmarketSans', sans-serif; /* 대문 폰트 조합 */
+            color: #000; 
+            font-family: 'Montserrat', 'GmarketSans', sans-serif; 
             font-weight: 900;
             letter-spacing: -1px; 
         }
@@ -157,6 +158,8 @@
             .col-date { width: 50px !important; }
             .col-views { display: none; } 
             th:nth-child(4) { display: none; }
+            .nav-links { gap: 10px; }
+            .nav-links a { font-size: 12px; }
         }
     </style>
 </head>
@@ -168,8 +171,10 @@
 
     <div class="top-bar">
         <div class="nav-links">
-            <a href="index.html" class="home-link">Home</a>
-            <a href="joyoon-list.html" class="film-link">Filmo</a>
+            <a href="index.html">Home</a>
+            <a href="joyoon-list.html">Filmo</a>
+            <a href="board.html" class="active">자유게시판</a>
+            <a href="photo-board.html">사진게시판</a>
         </div>
         <div id="authStatus"><span style="font-size: 11px; color: #ccc;">Checking...</span></div>
     </div>
