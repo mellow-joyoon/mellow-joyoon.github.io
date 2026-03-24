@@ -64,9 +64,8 @@
         .photo-card {
             background: #fff; border-radius: 15px; overflow: hidden;
             box-shadow: 0 4px 10px rgba(0,0,0,0.05); transition: 0.3s;
-            cursor: pointer; display: none; /* 기본 숨김, 사진 있으면 보임 */
+            cursor: pointer;
         }
-        .photo-card.has-image { display: block; } /* 사진 있는 카드만 표시 */
         
         .photo-card:hover { transform: translateY(-5px); }
         .photo-img { width: 100%; aspect-ratio: 1/1; object-fit: cover; background: #f9f9f9; }
@@ -109,7 +108,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, query, orderBy, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, query, orderBy, getDocs, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCP4Ur--4UGGpNSK_P7qRvnVFDZbqn436A",
@@ -125,44 +124,48 @@
 
         async function loadPhotos() {
             const photoList = document.getElementById("photo-list");
-            const loadingMsg = document.getElementById("loading-msg");
-
             try {
-                const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
+                // ✅ 'category'가 'photo'인 문서만 필터링하여 가져옵니다.
+                const q = query(
+                    collection(db, "posts"), 
+                    where("category", "==", "photo"), 
+                    orderBy("createdAt", "desc")
+                );
+                
                 const snapshot = await getDocs(q);
                 
-                let hasAnyPhoto = false;
                 let htmlContent = "";
+                let hasAnyPhoto = false;
 
                 snapshot.forEach((doc) => {
                     const data = doc.data();
+                    hasAnyPhoto = true;
                     
-                    // 핵심 수정: thumbnail(사진) 데이터가 있는 경우만 카드를 생성합니다.
-                    if (data.thumbnail && data.thumbnail.trim() !== "") {
-                        hasAnyPhoto = true;
-                        htmlContent += `
-                            <div class="photo-card has-image" onclick="location.href='view.html?id=${doc.id}'">
-                                <img src="${data.thumbnail}" class="photo-img" alt="post image" onerror="this.parentElement.style.display='none'">
-                                <div class="photo-info">
-                                    <div class="photo-title">${data.title}</div>
-                                    <div class="photo-meta">
-                                        <span>${data.author}</span>
-                                        <span>조회 ${data.views || 0}</span>
-                                    </div>
+                    // 썸네일 우선 사용, 없으면 첫 번째 이미지 사용
+                    const thumb = data.thumbnail || (data.images && data.images[0]) || "https://via.placeholder.com/300?text=Mellow+Joyoon";
+
+                    htmlContent += `
+                        <div class="photo-card" onclick="location.href='view.html?id=${doc.id}'">
+                            <img src="${thumb}" class="photo-img" alt="post image" onerror="this.src='https://via.placeholder.com/300?text=No+Image'">
+                            <div class="photo-info">
+                                <div class="photo-title">${data.title}</div>
+                                <div class="photo-meta">
+                                    <span>${data.author}</span>
+                                    <span>조회 ${data.views || 0}</span>
                                 </div>
-                            </div>`;
-                    }
+                            </div>
+                        </div>`;
                 });
 
                 if (!hasAnyPhoto) {
-                    photoList.innerHTML = "<p style='grid-column: 1/-1; text-align: center; padding: 50px; color: #bbb;'>아직 올라온 사진이 없어요. 첫 번째 사진을 올려보세요! 📸</p>";
+                    photoList.innerHTML = "<p style='grid-column: 1/-1; text-align: center; padding: 50px; color: #bbb;'>아직 등록된 사진이 없어요. 첫 번째 사진을 공유해 주세요! 📸</p>";
                 } else {
                     photoList.innerHTML = htmlContent;
                 }
 
             } catch (e) {
-                console.error(e);
-                photoList.innerHTML = "<p>데이터를 불러오지 못했습니다.</p>";
+                console.error("불러오기 실패:", e);
+                photoList.innerHTML = "<p style='grid-column: 1/-1; text-align: center; padding: 50px;'>데이터를 불러오는 중 오류가 발생했습니다.</p>";
             }
         }
         loadPhotos();
