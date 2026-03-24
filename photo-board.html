@@ -19,65 +19,82 @@
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
+        
         body { 
             background-color: var(--bg-cream); 
-            font-family: 'Noto Sans KR', sans-serif; 
-            padding: env(safe-area-inset-top) 10px env(safe-area-inset-bottom);
+            font-family: 'Noto Sans KR', 'Apple SD Gothic Neo', sans-serif; 
+            /* 아이폰/갤럭시 상단 노치 및 하단 홈바 여백 자동 대응 */
+            padding: env(safe-area-inset-top) 10px calc(20px + env(safe-area-inset-bottom));
             color: var(--text-main); 
             display: flex; flex-direction: column; align-items: center;
             overflow-x: hidden; width: 100%; min-height: 100vh;
+            -webkit-text-size-adjust: none;
         }
 
-        /* 배경 구슬 효과 */
+        /* 배경 구슬 효과 (고정 위치 유지) */
         .deco-circle { position: fixed; border-radius: 50%; z-index: -1; filter: blur(40px); opacity: 0.4; animation: pulse 6s infinite alternate; }
-        .circle-1 { width: 350px; height: 350px; background: var(--happy-pink); top: -100px; left: -100px; }
-        .circle-2 { width: 300px; height: 300px; background: var(--sunny-yellow); bottom: -50px; right: -50px; }
+        .circle-1 { width: clamp(200px, 40vw, 350px); height: clamp(200px, 40vw, 350px); background: var(--happy-pink); top: -100px; left: -100px; }
+        .circle-2 { width: clamp(150px, 30vw, 300px); height: clamp(150px, 30vw, 300px); background: var(--sunny-yellow); bottom: -50px; right: -50px; }
 
         @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.1); } }
 
-        /* 상단 네비게이션 */
+        /* 상단 네비게이션 (반응형 최적화) */
         .top-bar {
             width: 100%; max-width: 1000px; margin: 15px 0;
             display: flex; justify-content: space-between; align-items: center;
-            background: var(--card-white); padding: 12px 20px; 
+            background: var(--card-white); padding: 12px clamp(15px, 3vw, 25px); 
             border: 2px solid #fff; border-radius: 50px; 
             backdrop-filter: blur(10px); box-shadow: 0 5px 15px rgba(0,0,0,0.05);
         }
-        .nav-links { display: flex; gap: 15px; }
-        .nav-links a { text-decoration: none; color: var(--happy-pink); font-weight: 900; font-size: 14px; }
+        .nav-links { display: flex; gap: clamp(8px, 2vw, 15px); }
+        .nav-links a { text-decoration: none; color: var(--happy-pink); font-weight: 900; font-size: clamp(12px, 3.5vw, 14px); }
         .nav-links a.active { color: #d63384; text-decoration: underline; }
 
-        /* 사진 게시판 그리드 레이아웃 */
+        /* 사진 게시판 컨테이너 */
         .photo-container { 
-            width: 100%; max-width: 1000px; background: var(--card-white); padding: 25px; 
-            border: 2px solid #fff; border-radius: 30px; backdrop-filter: blur(10px);
+            width: 100%; max-width: 1000px; background: var(--card-white); 
+            padding: clamp(15px, 4vw, 30px); 
+            border: 2px solid #fff; border-radius: clamp(15px, 5vw, 30px); 
+            backdrop-filter: blur(10px);
             margin-bottom: 40px;
         }
+        
         .board-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
-        .board-header h2 { font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 2rem; }
+        .board-header h2 { font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: clamp(1.5rem, 6vw, 2rem); }
 
+        /* 🖼️ 그리드 레이아웃 (PC 4열, 태블릿 3열, 모바일 2열 자동 조절) */
         .photo-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-            gap: 20px;
-        }
-        .photo-card {
-            background: #fff; border-radius: 15px; overflow: hidden;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05); transition: 0.3s;
-            cursor: pointer;
+            grid-template-columns: repeat(auto-fill, minmax(clamp(140px, 45%, 220px), 1fr));
+            gap: clamp(10px, 3vw, 20px);
         }
         
-        .photo-card:hover { transform: translateY(-5px); }
-        .photo-img { width: 100%; aspect-ratio: 1/1; object-fit: cover; background: #f9f9f9; }
+        .photo-card {
+            background: #fff; border-radius: 15px; overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05); transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+        .photo-card:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
+        .photo-card:active { transform: scale(0.97); } /* 모바일 터치 피드백 */
+        
+        .photo-img { width: 100%; aspect-ratio: 1/1; object-fit: cover; background: #f9f9f9; display: block; }
         
         .photo-info { padding: 12px; }
         .photo-title { font-size: 14px; font-weight: bold; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .photo-meta { font-size: 12px; color: #888; display: flex; justify-content: space-between; }
+        .photo-meta { font-size: 11px; color: #888; display: flex; justify-content: space-between; }
 
         .btn-write { 
             background: var(--happy-pink); color: white; padding: 10px 20px; 
-            font-size: 14px; font-weight: 900; border-radius: 50px; text-decoration: none;
-            box-shadow: 0 4px 0px #e05e7a;
+            font-size: clamp(12px, 3.5vw, 14px); font-weight: 900; border-radius: 50px; text-decoration: none;
+            box-shadow: 0 4px 0px #e05e7a; transition: 0.2s;
+        }
+        .btn-write:active { transform: translateY(2px); box-shadow: 0 2px 0px #e05e7a; }
+
+        /* 📱 모바일 특화 스타일 */
+        @media (max-width: 480px) {
+            .photo-info { padding: 8px; }
+            .photo-title { font-size: 13px; }
+            .photo-meta { font-size: 10px; }
         }
     </style>
 </head>
@@ -125,8 +142,6 @@
         async function loadPhotos() {
             const photoList = document.getElementById("photo-list");
             try {
-                // ✅ 핵심 수정: 'posts'가 아닌 'photo_posts' 컬렉션에서 데이터를 직접 가져옵니다.
-                // 컬렉션 자체가 분리되었으므로 where 필터링 없이 orderBy만 사용하면 되어 성능이 더 좋습니다.
                 const q = query(
                     collection(db, "photo_posts"), 
                     orderBy("createdAt", "desc")
@@ -141,7 +156,6 @@
                     const data = doc.data();
                     hasAnyPhoto = true;
                     
-                    // 사진 정보 (기본 이미지 처리)
                     const thumb = data.imageUrl || data.thumbnail || (data.images && data.images[0]) || "https://via.placeholder.com/300?text=Mellow+Joyoon";
 
                     htmlContent += `
