@@ -8,18 +8,17 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;400;900&display=swap" rel="stylesheet">
 
     <style>
-        /* ✅ 기존 디자인 감성 유지 + 반응형 보강 */
+        /* ✅ 기존 디자인 감성 유지 + PC/모바일/태블릿 반응형 보강 */
         body { 
             background-color: #f6f6f6; 
             font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', 'Noto Sans KR', sans-serif; 
-            /* 아이폰 노치 및 홈바 여백 대응 */
+            /* 아이폰 노치 및 홈바 여백 완벽 대응 */
             padding: env(safe-area-inset-top) 15px calc(20px + env(safe-area-inset-bottom));
             color: #333; 
             margin: 0;
             -webkit-tap-highlight-color: transparent;
             -webkit-overflow-scrolling: touch; 
-            /* 모바일 텍스트 자동 크기조절 방지 */
-            -webkit-text-size-adjust: none;
+            -webkit-text-size-adjust: none; /* 브라우저 텍스트 강제 크기 조절 방지 */
         }
         
         .write-container { 
@@ -44,7 +43,7 @@
             letter-spacing: -0.5px;
         }
         
-        /* 입력창 모바일 가독성 최적화 */
+        /* 📱 입력창 최적화: 16px 미만은 아이폰 사파리에서 클릭 시 강제 줌이 발생함 */
         input, textarea { 
             width: 100%; 
             padding: 14px; 
@@ -52,14 +51,15 @@
             border: 1px solid #ddd; 
             border-radius: 8px; 
             box-sizing: border-box; 
-            font-size: 16px; /* 아이폰 입력 시 자동확대 방지 최소 크기 */
-            transition: border-color 0.2s;
+            font-size: 16px; 
+            transition: all 0.2s;
+            font-family: inherit;
         }
         input:focus, textarea:focus { border-color: #d63384; outline: none; background-color: #fffafc; }
         
         input#author { background-color: #f9f9f9; color: #888; cursor: not-allowed; border: 1px solid #eee; }
 
-        /* 📸 사진 업로드 영역 (태블릿/PC 가변형) */
+        /* 📸 사진 업로드 영역 (가변 너비 대응) */
         .photo-upload-section {
             display: flex;
             align-items: center;
@@ -70,6 +70,7 @@
             border-radius: 10px;
             background: #fafafa;
             transition: 0.2s;
+            min-height: 80px;
         }
         .photo-upload-section:active { background: #f0f0f0; }
 
@@ -92,17 +93,16 @@
         .photo-btn svg { width: 26px; height: 26px; fill: #d63384; margin-bottom: 4px; }
         .photo-btn span { font-size: 12px; color: #666; font-weight: bold; }
 
-        /* 미리보기 스크롤 영역 최적화 */
+        /* 미리보기 스크롤 영역 최적화 (가로 스크롤 가능) */
         #photo-preview-container {
             display: flex;
             gap: 10px;
             overflow-x: auto;
             flex: 1;
             padding: 5px 2px;
-            /* 스크롤바 숨기기 (선택사항) */
             -webkit-overflow-scrolling: touch;
         }
-        #photo-preview-container::-webkit-scrollbar { display: none; }
+        #photo-preview-container::-webkit-scrollbar { display: none; } /* 깔끔한 모바일 화면을 위해 스크롤바 숨김 */
 
         .preview-box {
             position: relative;
@@ -143,7 +143,7 @@
             line-height: 1.6; 
         }
         
-        /* 🔘 버튼 그룹 반응형 */
+        /* 🔘 버튼 그룹 반응형 (태블릿 이상에서는 오른쪽 정렬, 모바일에서는 꽉 차게) */
         .button-group { 
             display: flex; 
             justify-content: flex-end; 
@@ -164,6 +164,7 @@
             text-align: center; 
             border-radius: 8px;
             font-weight: 500;
+            transition: 0.2s;
         }
         
         .btn-save { 
@@ -181,10 +182,15 @@
             box-shadow: 0 4px 10px rgba(214, 51, 132, 0.2);
         }
         
-        .btn-save:disabled { background: #edaecb; cursor: wait; transform: none !important; }
+        .btn-save:disabled { background: #edaecb !important; cursor: wait; transform: none !important; }
         .btn-save:active:not(:disabled) { transform: scale(0.96); }
 
-        /* 📱 모바일 전용 여백 조정 */
+        /* 🖥️ PC 및 대형 화면 (데스크탑) */
+        @media (min-width: 1024px) {
+            .write-container { margin: 40px auto; padding: 40px; }
+        }
+
+        /* 📱 태블릿 및 모바일 여백 조정 */
         @media (max-width: 768px) {
             .write-container { margin: 10px auto; border-radius: 0; border-left: none; border-right: none; }
         }
@@ -193,6 +199,7 @@
             .button-group { gap: 8px; }
             .btn-cancel, .btn-save { max-width: none; }
             h2 { margin-bottom: 20px; }
+            .photo-upload-section { padding: 10px; }
         }
     </style>
 </head>
@@ -299,7 +306,6 @@
             saveBtn.innerText = "등록 중...";
 
             try {
-                // photo_posts 컬렉션에 데이터 저장
                 await addDoc(collection(db, "photo_posts"), {
                     title: title,
                     content: content,
