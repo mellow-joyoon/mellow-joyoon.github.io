@@ -32,7 +32,6 @@
             min-height: 100vh;
         }
 
-        /* ✨ 대문 페이지의 배경 구슬 효과 (유지) */
         .deco-circle {
             position: fixed;
             border-radius: 50%;
@@ -47,7 +46,6 @@
 
         @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.15); } }
 
-        /* 상단 바 디자인 (사진게시판 메뉴 추가됨) */
         .top-bar {
             width: 100%; max-width: 1000px; margin: 15px 0;
             display: flex; justify-content: space-between; align-items: center;
@@ -64,7 +62,6 @@
             transition: 0.2s;
         }
         .nav-links a:hover { transform: scale(1.1); }
-        /* 현재 페이지(자유게시판) 강조 표시 */
         .nav-links a.active { color: #d63384; text-decoration: underline; }
 
         .user-info { font-size: 13px; display: flex; align-items: center; gap: 8px; }
@@ -80,7 +77,6 @@
             border: none; background: transparent; cursor: pointer; font-weight: bold;
         }
 
-        /* 게시판 컨테이너 (유지) */
         .board-container { 
             width: 100%; max-width: 1000px; background: var(--card-white); padding: 25px; 
             border: 2px solid #fff; border-radius: 30px; box-sizing: border-box;
@@ -114,7 +110,6 @@
         }
         .btn-write:active { transform: translateY(3px); box-shadow: 0 1px 0px #e05e7a; }
 
-        /* 페이지네이션 (유지) */
         .pagination { display: flex; justify-content: center; align-items: center; gap: 8px; margin: 30px 0 10px; }
         .pg-btn {
             width: 35px; height: 35px; display: flex; align-items: center; justify-content: center;
@@ -127,7 +122,6 @@
             box-shadow: 0 3px 10px rgba(255, 133, 161, 0.3);
         }
 
-        /* 검색 영역 (유지) */
         .search-container {
             display: flex; justify-content: center; gap: 8px; margin-top: 20px; padding: 0 10px;
         }
@@ -148,7 +142,6 @@
         }
         .search-btn:hover { background: var(--happy-pink); color: #fff; }
 
-        /* 반응형 설정 (유지 및 강화) */
         @media (max-width: 600px) {
             .board-container { padding: 15px; border-radius: 20px; }
             .board-header h2 { font-size: 1.6rem; }
@@ -257,10 +250,21 @@
                 const postsCol = collection(db, "posts");
                 let q;
 
+                // ✅ [수정 완료] category가 'free'인 게시글만 필터링합니다.
                 if (searchKeyword) {
-                    q = query(postsCol, where(searchType, ">=", searchKeyword), where(searchType, "<=", searchKeyword + "\uf8ff"), limit(100));
+                    q = query(
+                        postsCol, 
+                        where("category", "==", "free"),
+                        where(searchType, ">=", searchKeyword), 
+                        where(searchType, "<=", searchKeyword + "\uf8ff"), 
+                        limit(100)
+                    );
                 } else {
-                    q = query(postsCol, orderBy("createdAt", "desc"));
+                    q = query(
+                        postsCol, 
+                        where("category", "==", "free"),
+                        orderBy("createdAt", "desc")
+                    );
                 }
 
                 const snapshot = await getDocs(q);
@@ -274,7 +278,7 @@
 
                 postList.innerHTML = "";
                 if(pageDocs.length === 0) {
-                    postList.innerHTML = '<tr><td colspan="4" style="padding:40px 0;">검색 결과가 없어요. 🥲</td></tr>';
+                    postList.innerHTML = '<tr><td colspan="4" style="padding:40px 0;">게시글이 없어요. 🥲</td></tr>';
                     return;
                 }
 
