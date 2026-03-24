@@ -8,92 +8,106 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;400;900&display=swap" rel="stylesheet">
 
     <style>
-        /* ✅ 기존 글쓰기 페이지 디자인 스타일 완벽 유지 */
+        /* ✅ 기존 디자인 감성 유지 + 반응형 보강 */
         body { 
             background-color: #f6f6f6; 
             font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', 'Noto Sans KR', sans-serif; 
-            padding: env(safe-area-inset-top) 15px env(safe-area-inset-bottom);
+            /* 아이폰 노치 및 홈바 여백 대응 */
+            padding: env(safe-area-inset-top) 15px calc(20px + env(safe-area-inset-bottom));
             color: #333; 
             margin: 0;
             -webkit-tap-highlight-color: transparent;
             -webkit-overflow-scrolling: touch; 
+            /* 모바일 텍스트 자동 크기조절 방지 */
+            -webkit-text-size-adjust: none;
         }
         
         .write-container { 
             width: 100%;
-            max-width: 800px; 
+            max-width: 850px; 
             margin: 20px auto; 
             background: white; 
-            padding: 20px; 
+            padding: clamp(15px, 4vw, 30px); 
             border: 1px solid #ddd; 
             box-sizing: border-box;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
         }
         
         h2 { 
             color: #d63384; 
-            font-size: clamp(1.2rem, 5vw, 1.6rem); 
+            font-size: clamp(1.3rem, 5vw, 1.8rem); 
             border-bottom: 2px solid #333; 
             padding-bottom: 15px; 
-            margin-bottom: 20px; 
+            margin-bottom: 25px; 
             font-weight: 900;
+            letter-spacing: -0.5px;
         }
         
+        /* 입력창 모바일 가독성 최적화 */
         input, textarea { 
             width: 100%; 
-            padding: 12px; 
-            margin-bottom: 12px; 
-            border: 1px solid #ccc; 
-            border-radius: 4px; 
+            padding: 14px; 
+            margin-bottom: 15px; 
+            border: 1px solid #ddd; 
+            border-radius: 8px; 
             box-sizing: border-box; 
-            font-size: 16px;
+            font-size: 16px; /* 아이폰 입력 시 자동확대 방지 최소 크기 */
+            transition: border-color 0.2s;
         }
-        input:focus, textarea:focus { border-color: #d63384; outline: none; }
+        input:focus, textarea:focus { border-color: #d63384; outline: none; background-color: #fffafc; }
         
-        input#author { background-color: #f9f9f9; color: #777; cursor: not-allowed; }
+        input#author { background-color: #f9f9f9; color: #888; cursor: not-allowed; border: 1px solid #eee; }
 
+        /* 📸 사진 업로드 영역 (태블릿/PC 가변형) */
         .photo-upload-section {
             display: flex;
             align-items: center;
-            gap: 10px;
-            margin-bottom: 12px;
-            padding: 10px;
-            border: 1px dashed #ccc;
-            border-radius: 6px;
+            gap: 12px;
+            margin-bottom: 15px;
+            padding: 15px;
+            border: 2px dashed #eee;
+            border-radius: 10px;
             background: #fafafa;
+            transition: 0.2s;
         }
+        .photo-upload-section:active { background: #f0f0f0; }
 
         .photo-btn {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            width: 60px;
-            height: 60px;
+            width: 65px;
+            height: 65px;
             background: white;
             border: 1px solid #ddd;
-            border-radius: 4px;
+            border-radius: 8px;
             cursor: pointer;
             transition: all 0.2s;
             flex-shrink: 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
         }
-        .photo-btn:hover { border-color: #00c73c; background: #f0fff4; }
-        .photo-btn svg { width: 24px; height: 24px; fill: #00c73c; margin-bottom: 4px; }
-        .photo-btn span { font-size: 11px; color: #666; }
+        .photo-btn:hover { border-color: #d63384; background: #fffafc; }
+        .photo-btn svg { width: 26px; height: 26px; fill: #d63384; margin-bottom: 4px; }
+        .photo-btn span { font-size: 12px; color: #666; font-weight: bold; }
 
+        /* 미리보기 스크롤 영역 최적화 */
         #photo-preview-container {
             display: flex;
-            gap: 8px;
+            gap: 10px;
             overflow-x: auto;
             flex: 1;
-            padding-bottom: 5px;
+            padding: 5px 2px;
+            /* 스크롤바 숨기기 (선택사항) */
+            -webkit-overflow-scrolling: touch;
         }
+        #photo-preview-container::-webkit-scrollbar { display: none; }
 
         .preview-box {
             position: relative;
-            width: 60px;
-            height: 60px;
+            width: 65px;
+            height: 65px;
             flex-shrink: 0;
         }
 
@@ -101,81 +115,84 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-            border-radius: 4px;
+            border-radius: 8px;
             border: 1px solid #eee;
         }
 
         .del-btn {
             position: absolute;
-            top: -5px;
-            right: -5px;
-            width: 18px;
-            height: 18px;
-            background: rgba(0,0,0,0.6);
+            top: -6px;
+            right: -6px;
+            width: 22px;
+            height: 22px;
+            background: #333;
             color: white;
             border-radius: 50%;
-            font-size: 12px;
+            font-size: 14px;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
             z-index: 10;
+            border: 2px solid white;
         }
 
         textarea { 
-            height: 350px; 
-            min-height: 250px;
+            height: clamp(250px, 40vh, 450px); 
             resize: none; 
             line-height: 1.6; 
         }
         
+        /* 🔘 버튼 그룹 반응형 */
         .button-group { 
             display: flex; 
             justify-content: flex-end; 
-            gap: 10px; 
-            margin-top: 10px; 
+            gap: 12px; 
+            margin-top: 15px; 
         }
         
         .btn-cancel { 
             flex: 1; 
-            max-width: 120px;
+            max-width: 140px;
             background: #fff; 
-            color: #333; 
+            color: #666; 
             border: 1px solid #ccc; 
-            padding: 12px 0; 
+            padding: 14px 0; 
             cursor: pointer; 
-            font-size: 14px; 
+            font-size: 15px; 
             text-decoration: none; 
             text-align: center; 
-            border-radius: 4px;
+            border-radius: 8px;
+            font-weight: 500;
         }
         
         .btn-save { 
             flex: 1; 
-            max-width: 120px;
+            max-width: 140px;
             background: #d63384; 
             color: white; 
-            border: 1px solid #d63384; 
-            padding: 12px 0; 
+            border: none; 
+            padding: 14px 0; 
             cursor: pointer; 
             font-weight: bold; 
-            font-size: 14px; 
-            border-radius: 4px;
-            transition: 0.2s;
+            font-size: 15px; 
+            border-radius: 8px;
+            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 10px rgba(214, 51, 132, 0.2);
         }
         
-        .btn-save:disabled { background: #edaecb; border-color: #edaecb; cursor: wait; }
-        .btn-save:hover:not(:disabled) { background: #c12a74; }
+        .btn-save:disabled { background: #edaecb; cursor: wait; transform: none !important; }
+        .btn-save:active:not(:disabled) { transform: scale(0.96); }
 
+        /* 📱 모바일 전용 여백 조정 */
         @media (max-width: 768px) {
             .write-container { margin: 10px auto; border-radius: 0; border-left: none; border-right: none; }
         }
 
         @media (max-width: 480px) {
-            body { padding: 10px; }
-            .write-container { padding: 15px; }
+            .button-group { gap: 8px; }
             .btn-cancel, .btn-save { max-width: none; }
-            textarea { height: 300px; }
+            h2 { margin-bottom: 20px; }
         }
     </style>
 </head>
@@ -270,7 +287,6 @@
                 return;
             }
 
-            // 사진 게시판이므로 사진 1장 이상 필수 체크
             if (uploadedImages.length === 0) {
                 alert("사진게시판은 최소 1장의 사진이 필요합니다. 📸");
                 return;
@@ -283,20 +299,21 @@
             saveBtn.innerText = "등록 중...";
 
             try {
-                // ✅ 핵심 수정: 'posts'가 아닌 'photo_posts' 컬렉션에 독립 저장
+                // photo_posts 컬렉션에 데이터 저장
                 await addDoc(collection(db, "photo_posts"), {
                     title: title,
                     content: content,
                     author: currentUserName,
                     authorId: auth.currentUser.uid,
                     images: uploadedImages,
-                    thumbnail: uploadedImages[0], // 첫 번째 사진을 썸네일로 사용
+                    thumbnail: uploadedImages[0], 
                     views: 0,
+                    likes: 0,
                     createdAt: serverTimestamp()
                 });
 
                 alert("사진이 성공적으로 등록되었습니다! ✨");
-                location.href = "photo-board.html"; // 등록 후 사진 게시판 목록으로 이동
+                location.href = "photo-board.html";
             } catch (error) {
                 console.error("Error adding document: ", error);
                 alert("등록에 실패했습니다.");
