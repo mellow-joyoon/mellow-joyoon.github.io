@@ -2,93 +2,129 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Mellow Joyoon | 사진 수정하기</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;400;900&display=swap" rel="stylesheet">
+
     <style>
+        /* ✅ 기존 스타일 유지 및 반응형 고도화 */
         body { 
             background-color: #f6f6f6; 
-            font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; 
-            padding: 15px; 
+            font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', 'Noto Sans KR', sans-serif; 
+            /* 아이폰 하단 홈바/노치 여백 대응 */
+            padding: env(safe-area-inset-top) 15px calc(20px + env(safe-area-inset-bottom));
             color: #333; 
             margin: 0;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-overflow-scrolling: touch;
+            -webkit-text-size-adjust: none; /* 모바일 텍스트 자동크기조절 방지 */
         }
         
         .edit-container { 
             width: 100%;
-            max-width: 800px; 
-            margin: 0 auto; 
+            max-width: 850px; 
+            margin: 20px auto; 
             background: white; 
-            padding: 20px; 
+            padding: clamp(15px, 4vw, 30px); 
             border: 1px solid #ddd; 
             box-sizing: border-box;
-            border-radius: 8px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
         }
         
         h2 { 
             color: #d63384; 
-            font-size: clamp(1.2rem, 5vw, 1.5rem); 
-            border-bottom: 2px solid #d63384; 
-            padding-bottom: 10px; 
-            margin-bottom: 20px; 
+            font-size: clamp(1.3rem, 5vw, 1.8rem); 
+            border-bottom: 2px solid #333; 
+            padding-bottom: 15px; 
+            margin-bottom: 25px; 
+            font-weight: 900;
+            letter-spacing: -0.5px;
         }
         
+        /* 📱 모바일 입력창 최적화 (16px 이상이어야 아이폰 사파리에서 확대 안 됨) */
         input[type="text"], textarea { 
             width: 100%; 
-            padding: 12px; 
-            margin-bottom: 12px; 
+            padding: 14px; 
+            margin-bottom: 15px; 
             border: 1px solid #ddd; 
             box-sizing: border-box; 
             font-size: 16px; 
-            border-radius: 4px;
+            border-radius: 8px;
+            transition: border-color 0.2s, background-color 0.2s;
+            font-family: inherit;
         }
-        input:focus, textarea:focus { border-color: #d63384; outline: none; }
+        input:focus, textarea:focus { border-color: #d63384; outline: none; background-color: #fffafc; }
         
         textarea { 
-            height: 350px; 
+            height: clamp(250px, 45vh, 450px); 
             min-height: 250px;
             resize: none; 
             line-height: 1.6; 
         }
 
+        /* 🔘 버튼 영역 반응형 디자인 */
         .btn-area { 
             display: flex; 
             justify-content: flex-end; 
-            gap: 10px; 
-            margin-top: 10px;
+            gap: 12px; 
+            margin-top: 15px;
         }
         
         .btn { 
             flex: 1;
-            max-width: 120px;
-            padding: 12px 0; 
+            max-width: 140px;
+            padding: 14px 0; 
             border: none; 
             font-weight: bold; 
             cursor: pointer; 
-            font-size: 14px; 
-            border-radius: 4px;
+            font-size: 15px; 
+            border-radius: 8px;
             text-align: center;
-        }
-        
-        .btn-submit { background: #d63384; color: white; }
-        .btn-cancel { 
-            background: #eee; 
-            color: #333; 
-            text-decoration: none; 
+            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-decoration: none;
             display: flex; 
             align-items: center; 
             justify-content: center;
         }
-        .btn:hover { opacity: 0.8; }
+        
+        .btn-submit { 
+            background: #d63384; 
+            color: white; 
+            box-shadow: 0 4px 10px rgba(214, 51, 132, 0.2);
+        }
+        .btn-cancel { 
+            background: #eee; 
+            color: #555; 
+        }
+        
+        .btn:active { transform: scale(0.96); opacity: 0.9; }
+
+        /* 로딩 애니메이션 */
+        #loading {
+            text-align: center;
+            padding: 80px 20px;
+            font-size: 15px;
+            color: #999;
+        }
+
+        /* 📱 모바일 전용 여백 조정 */
+        @media (max-width: 768px) {
+            .edit-container { margin: 10px auto; border-radius: 0; border-left: none; border-right: none; }
+        }
 
         @media (max-width: 480px) {
             .btn-cancel, .btn-submit { max-width: none; }
+            .btn-area { gap: 8px; }
+            h2 { margin-bottom: 20px; }
         }
     </style>
 </head>
 <body>
     <div class="edit-container">
         <h2>사진 게시글 수정</h2>
-        <div id="loading" style="text-align:center; padding:50px; font-size: 14px;">기존 내용을 불러오는 중입니다...</div>
+        <div id="loading">✨ 기존 내용을 불러오는 중입니다...</div>
         
         <div id="edit-form" style="display:none;">
             <input type="text" id="editTitle" placeholder="제목을 입력하세요" autocomplete="off">
@@ -136,14 +172,13 @@
             }
 
             try {
-                // ✅ 핵심: 'photo_posts' 컬렉션에서 데이터 참조
+                // 'photo_posts' 컬렉션 참조 유지
                 const docRef = doc(db, "photo_posts", postId);
                 const docSnap = await getDoc(docRef);
 
                 if (docSnap.exists()) {
                     const data = docSnap.data();
                     
-                    // 작성자 본인 혹은 관리자만 수정 가능
                     if (user.email === ADMIN_EMAIL || user.uid === data.authorId) {
                         document.getElementById("editTitle").value = data.title;
                         document.getElementById("editContent").value = data.content;
@@ -175,7 +210,6 @@
 
             if (confirm("사진 게시글의 내용을 수정하시겠습니까?")) {
                 try {
-                    // ✅ 핵심: 'photo_posts' 컬렉션 업데이트
                     const docRef = doc(db, "photo_posts", postId);
                     await updateDoc(docRef, {
                         title: newTitle,
@@ -183,7 +217,6 @@
                         updatedAt: new Date()
                     });
                     alert("수정이 완료되었습니다! ✨");
-                    // 수정 완료 후 사진 전용 보기 페이지로 이동
                     location.href = `photo-view.html?id=${postId}`;
                 } catch (error) {
                     console.error("수정 오류:", error);
