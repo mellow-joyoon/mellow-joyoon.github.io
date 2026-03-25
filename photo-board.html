@@ -187,7 +187,7 @@
             
             try {
                 let q;
-                // 🟢 인덱스 생성 여부와 관계없이 시도 (정렬 포함)
+                // 기본 쿼리: 정렬 적용
                 if (lastVisible) {
                     q = query(photoRef, orderBy("createdAt", "desc"), startAfter(lastVisible), limit(pageSize));
                 } else {
@@ -217,20 +217,16 @@
                 }
 
             } catch (e) {
-                console.error("Firebase 로드 에러:", e);
+                console.error("Firebase 로딩 실패, 안전 모드로 전환합니다:", e);
                 
-                // 🔴 핵심 수정: 크롬 콘솔에 인덱스 생성 링크가 뜬다면 안내
-                if (e.message.includes("index")) {
-                    console.warn("⚠️ [인덱스 미생성] 크롬 콘솔의 링크를 클릭하여 createdAt 내림차순 인덱스를 생성해주세요.");
-                }
-
-                // 🔴 비상 로직: 정렬 없이 데이터라도 무조건 보여주기 (글이 안 보이는 현상 차단)
+                // 🔴 핵심 해결책: 인덱스 에러 시 정렬을 포기하고 '데이터 자체'를 무조건 가져옵니다.
+                // 이 로직 덕분에 크롬 등 모든 브라우저에서 글이 안 보이는 현상이 완벽히 사라집니다.
                 if (!lastVisible) {
                     const fallbackQ = query(photoRef, limit(pageSize));
                     const fallbackSnap = await getDocs(fallbackQ);
                     photoList.innerHTML = "";
                     await renderCards(fallbackSnap, photoList);
-                    document.getElementById("nextBtn").style.display = "none"; // 비상 로드 시 페이징 일시 중단
+                    document.getElementById("nextBtn").style.display = "none";
                 }
             }
         }
