@@ -31,20 +31,21 @@
             box-sizing: border-box;
         }
         
-        /* 📌 헤더 영역: 수정/삭제 버튼을 우측 상단으로 배치 */
+        /* 📌 헤더 영역: 수정/삭제 버튼 우측 상단 고정 */
         .post-header { border-bottom: 2px solid #f0f0f0; padding-bottom: 20px; margin-bottom: 20px; position: relative; }
         
-        .header-top-line { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+        .header-top-line { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
         .post-category { color: var(--happy-pink); font-size: 14px; font-weight: bold; }
         
-        /* ✅ 오른쪽 맨 위 버튼 그룹 */
-        .admin-buttons { display: none; gap: 6px; }
+        /* ✅ 버튼 그룹 스타일 */
+        .admin-buttons { display: none; gap: 8px; align-items: center; }
         .btn-edit, .btn-delete { 
-            background: #fff; border: 1px solid #ddd; padding: 6px 12px; 
+            background: #fff; border: 1px solid #ddd; padding: 6px 14px; 
             font-size: 13px; cursor: pointer; color: #666; border-radius: 6px; font-weight: bold;
+            transition: all 0.2s ease;
         }
-        .btn-edit:hover { background: #fdf2f5; border-color: var(--happy-pink); color: var(--happy-pink); }
-        .btn-delete:hover { background: #333; color: #fff; border-color: #333; }
+        .btn-edit:hover { border-color: var(--happy-pink); color: var(--happy-pink); background: #fff0f3; }
+        .btn-delete:hover { border-color: #333; color: #fff; background: #333; }
 
         .post-title { 
             font-size: clamp(1.5rem, 5vw, 2.2rem); 
@@ -124,7 +125,6 @@
         import { getFirestore, doc, getDoc, updateDoc, increment, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-        // ✅ 새 프로젝트 데이터베이스 정보 적용
         const firebaseConfig = {
             apiKey: "AIzaSyCbdCDMCCDfAlxgJGnkYrsK5czUmVhi6-c",
             authDomain: "mellow-joyoon-final.firebaseapp.com",
@@ -151,15 +151,17 @@
             const postRef = doc(db, "photo_posts", postId);
             
             try {
+                // 조회수 상승
                 await updateDoc(postRef, { views: increment(1) });
                 const docSnap = await getDoc(postRef);
                 
                 if (docSnap.exists()) {
                     const data = docSnap.data();
+                    
                     document.getElementById("title").innerText = data.title || "제목 없음";
                     document.getElementById("author").innerText = data.author || "익명";
                     document.getElementById("content").innerText = data.content || "";
-                    document.getElementById("viewCount").innerText = (data.views || 0) + 1;
+                    document.getElementById("viewCount").innerText = (data.views || 0);
                     document.getElementById("likeCount").innerText = data.likes || 0;
                     
                     const dateObj = data.createdAt ? new Date(data.createdAt.seconds * 1000) : new Date();
@@ -175,9 +177,14 @@
                         });
                     }
 
-                    // ✅ 작성자 본인 혹은 관리자일 때만 우측 상단 버튼 노출
-                    if (currentUser && (currentUser.email === ADMIN_EMAIL || currentUser.uid === data.authorId)) {
-                        document.getElementById("adminButtons").style.display = "flex";
+                    // ✅ 버튼 노출 로직 (관리자 이메일 일치 OR 글 작성자 UID 일치)
+                    if (currentUser) {
+                        const isAuthor = data.authorId && (currentUser.uid === data.authorId);
+                        const isAdmin = currentUser.email === ADMIN_EMAIL;
+                        
+                        if (isAuthor || isAdmin) {
+                            document.getElementById("adminButtons").style.display = "flex";
+                        }
                     }
 
                     document.getElementById("loading").style.display = "none";
@@ -185,16 +192,21 @@
 
                     attachEvents(postRef);
                 }
-            } catch (error) { document.getElementById("loading").innerText = "오류가 발생했습니다."; }
+            } catch (error) { 
+                console.error("오류 상세:", error);
+                document.getElementById("loading").innerText = "게시글을 불러올 수 없습니다."; 
+            }
         }
 
         function attachEvents(postRef) {
+            // 좋아요
             document.getElementById("likeBtn").onclick = async () => {
                 await updateDoc(postRef, { likes: increment(1) });
                 document.getElementById("likeCount").innerText = parseInt(document.getElementById("likeCount").innerText) + 1;
                 document.getElementById("likeBtn").classList.add("active");
             };
 
+            // 삭제 (순서대로 배치된 버튼 이벤트)
             document.getElementById("deleteBtn").onclick = async () => {
                 if (confirm("정말로 삭제하시겠습니까?")) {
                     await deleteDoc(postRef);
@@ -203,6 +215,7 @@
                 }
             };
 
+            // 수정 (순서대로 배치된 버튼 이벤트)
             document.getElementById("editBtn").onclick = () => {
                 location.href = `photo-edit.html?id=${postId}`;
             };
