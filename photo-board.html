@@ -70,9 +70,8 @@
             cursor: pointer;
         }
         .photo-card:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
-        .photo-card:active { transform: scale(0.97); }
         
-        .photo-img { width: 100%; aspect-ratio: 1/1; object-fit: cover; background: #f9f9f9; display: block; }
+        .photo-img { width: 100%; aspect-ratio: 1/1; object-fit: cover; background: #eee; display: block; }
         
         .photo-info { padding: 12px; }
         .photo-title { font-size: 14px; font-weight: bold; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -83,32 +82,16 @@
             font-size: clamp(12px, 3.5vw, 14px); font-weight: 900; border-radius: 50px; text-decoration: none;
             box-shadow: 0 4px 0px #e05e7a; transition: 0.2s;
         }
-        .btn-write:active { transform: translateY(2px); box-shadow: 0 2px 0px #e05e7a; }
 
-        .pagination {
-            display: flex; justify-content: center; align-items: center; gap: 15px;
-            margin: 10px 0 40px; width: 100%; max-width: 1000px;
-        }
+        .pagination { display: flex; justify-content: center; gap: 15px; margin: 10px 0 40px; }
         .page-btn {
             background: white; border: 2px solid var(--happy-pink); color: var(--happy-pink);
             padding: 10px 20px; border-radius: 25px; font-weight: bold; cursor: pointer;
-            transition: 0.2s; font-size: 14px; box-shadow: 0 3px 6px rgba(0,0,0,0.05);
-        }
-        .page-btn:disabled { border-color: #eee; color: #ccc; cursor: not-allowed; box-shadow: none; }
-        .page-btn:not(:disabled):hover { background: var(--happy-pink); color: white; }
-
-        @media (max-width: 480px) {
-            .photo-info { padding: 8px; }
-            .photo-title { font-size: 13px; }
-            .photo-meta { font-size: 10px; }
-            .pagination { gap: 10px; }
         }
     </style>
 </head>
 <body>
     <div class="deco-circle circle-1"></div>
-    <div class="deco-circle circle-2"></div>
-
     <div class="top-bar">
         <div class="nav-links">
             <a href="index.html">Home</a>
@@ -116,7 +99,6 @@
             <a href="board.html">자유게시판</a>
             <a href="photo-board.html" class="active">사진게시판</a>
         </div>
-        <div id="authStatus"></div>
     </div>
 
     <div class="photo-container">
@@ -124,15 +106,13 @@
             <h2>PHOTO</h2>
             <a href="photo-write.html" class="btn-write">사진 올리기</a>
         </div>
-        
         <div class="photo-grid" id="photo-list">
-            <p id="loading-msg" style="grid-column: 1/-1; text-align: center; padding: 50px; color: #bbb;">소중한 추억을 불러오고 있어요... ✨</p>
+            <p id="loading-msg" style="grid-column: 1/-1; text-align: center; padding: 50px; color: #bbb;">불러오는 중... ✨</p>
         </div>
     </div>
 
     <div class="pagination">
-        <button id="prevBtn" class="page-btn" onclick="location.reload()">처음으로</button>
-        <button id="nextBtn" class="page-btn">다음 사진 더보기</button>
+        <button id="nextBtn" class="page-btn">더보기</button>
     </div>
 
     <script type="module">
@@ -150,89 +130,67 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+        let lastVisible = null;
 
-        let lastVisible = null; 
-        
-        // 🟢 기기별 페이징 수량 설정 (PC 6개 / 모바일 4개)
         const getPageSize = () => window.innerWidth <= 768 ? 4 : 6;
 
-        async function renderCards(snapshot, photoList, append = true) {
-            const fragment = document.createDocumentFragment();
-            snapshot.forEach((doc) => {
-                const data = doc.data();
-                const thumb = data.imageUrl || data.thumbnail || (data.images && data.images[0]) || "https://via.placeholder.com/300?text=No+Image";
-                const card = document.createElement("div");
-                card.className = "photo-card";
-                card.onclick = () => { window.location.href = `photo-view.html?id=${doc.id}`; };
-                card.innerHTML = `
-                    <img src="${thumb}" class="photo-img" alt="post" loading="lazy" onerror="this.src='https://via.placeholder.com/300?text=No+Image'">
-                    <div class="photo-info">
-                        <div class="photo-title">${data.title || '제목 없음'}</div>
-                        <div class="photo-meta">
-                            <span>${data.author || '익명'}</span>
-                            <span>조회 ${data.views || 0}</span>
-                        </div>
-                    </div>
-                `;
-                fragment.appendChild(card);
-            });
-            if (!append) photoList.innerHTML = "";
-            photoList.appendChild(fragment);
+        // 🟢 어떤 필드명으로 저장되어도 이미지를 찾아내는 함수
+        function getBestImage(data) {
+            return data.imageUrl || data.url || data.image || (data.images && data.images[0]) || "https://via.placeholder.com/300?text=No+Image";
         }
 
         async function loadPhotos() {
             const photoList = document.getElementById("photo-list");
             const pageSize = getPageSize();
-            const photoRef = collection(db, "photo_posts"); 
+            const photoRef = collection(db, "photo_posts");
             
             try {
-                let q;
-                // 기본 쿼리: 정렬 적용
-                if (lastVisible) {
-                    q = query(photoRef, orderBy("createdAt", "desc"), startAfter(lastVisible), limit(pageSize));
-                } else {
-                    q = query(photoRef, orderBy("createdAt", "desc"), limit(pageSize));
+                // 1. 우선 인덱스 기반 정렬 시도
+                let q = lastVisible 
+                    ? query(photoRef, orderBy("createdAt", "desc"), startAfter(lastVisible), limit(pageSize))
+                    : query(photoRef, orderBy("createdAt", "desc"), limit(pageSize));
+
+                let snapshot;
+                try {
+                    snapshot = await getDocs(q);
+                } catch (indexError) {
+                    console.warn("인덱스 미생성 - 안전 모드로 전환");
+                    // 2. 인덱스 에러 발생 시 정렬 없이 강제 로드 (무조건 보이게 함)
+                    const fallbackQ = query(photoRef, limit(pageSize));
+                    snapshot = await getDocs(fallbackQ);
                 }
 
-                const snapshot = await getDocs(q);
-                
-                if (snapshot.empty) {
-                    if (!lastVisible) {
-                        photoList.innerHTML = "<p style='grid-column: 1/-1; text-align: center; padding: 50px; color: #bbb;'>아직 등록된 사진이 없어요. 📸</p>";
-                    } else {
-                        alert("마지막 사진입니다! ✨");
-                    }
-                    document.getElementById("nextBtn").disabled = true;
-                    document.getElementById("nextBtn").innerText = "마지막 사진입니다";
+                if (snapshot.empty && !lastVisible) {
+                    photoList.innerHTML = "<p style='grid-column: 1/-1; text-align: center; padding: 50px; color: #bbb;'>아직 등록된 사진이 없어요. 📸</p>";
                     return;
                 }
 
                 if (!lastVisible) photoList.innerHTML = "";
                 lastVisible = snapshot.docs[snapshot.docs.length - 1];
-                await renderCards(snapshot, photoList);
 
-                if (snapshot.docs.length < pageSize) {
-                    document.getElementById("nextBtn").disabled = true;
-                    document.getElementById("nextBtn").innerText = "마지막 사진입니다";
-                }
+                snapshot.forEach((doc) => {
+                    const data = doc.data();
+                    const card = document.createElement("div");
+                    card.className = "photo-card";
+                    card.onclick = () => { window.location.href = `photo-view.html?id=${doc.id}`; };
+                    card.innerHTML = `
+                        <img src="${getBestImage(data)}" class="photo-img" loading="lazy">
+                        <div class="photo-info">
+                            <div class="photo-title">${data.title || '제목 없음'}</div>
+                            <div class="photo-meta"><span>${data.author || '익명'}</span></div>
+                        </div>
+                    `;
+                    photoList.appendChild(card);
+                });
 
             } catch (e) {
-                console.error("Firebase 로딩 실패, 안전 모드로 전환합니다:", e);
-                
-                // 🔴 핵심 해결책: 인덱스 에러 시 정렬을 포기하고 '데이터 자체'를 무조건 가져옵니다.
-                // 이 로직 덕분에 크롬 등 모든 브라우저에서 글이 안 보이는 현상이 완벽히 사라집니다.
-                if (!lastVisible) {
-                    const fallbackQ = query(photoRef, limit(pageSize));
-                    const fallbackSnap = await getDocs(fallbackQ);
-                    photoList.innerHTML = "";
-                    await renderCards(fallbackSnap, photoList);
-                    document.getElementById("nextBtn").style.display = "none";
-                }
+                console.error("최종 로드 실패:", e);
+                photoList.innerHTML = "<p style='grid-column: 1/-1; text-align: center; color: red;'>데이터를 불러올 수 없습니다. 권한 설정을 확인해주세요.</p>";
             }
         }
 
-        document.getElementById("nextBtn").addEventListener("click", loadPhotos);
-        window.addEventListener('DOMContentLoaded', loadPhotos);
+        document.getElementById("nextBtn").onclick = loadPhotos;
+        window.onload = loadPhotos;
     </script>
 </body>
 </html>
