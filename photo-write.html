@@ -6,7 +6,6 @@
     <title>Mellow Joyoon | 사진 올리기</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;400;900&display=swap" rel="stylesheet">
     <style>
-        /* ✅ 기존 디자인 유지 */
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { 
             background-color: #f6f6f6; 
@@ -15,10 +14,10 @@
             color: #333; display: flex; flex-direction: column; align-items: center; 
         }
 
-        /* 로딩 레이어: 초기에는 보이게 설정 */
+        /* 로딩 레이어: 로그인 확인 전까지 사용자 인터랙션 제한 */
         #loading-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #f6f6f6; display: flex; justify-content: center; align-items: center;
+            background: rgba(246, 246, 246, 0.8); display: flex; justify-content: center; align-items: center;
             z-index: 9999; font-weight: bold; color: #d63384;
         }
 
@@ -57,7 +56,7 @@
         .button-group { display: flex; justify-content: center; gap: 12px; margin-top: 15px; width: 100%; }
         .btn-cancel { flex: 1; max-width: 140px; background: #fff; color: #666; border: 1px solid #ccc; padding: 14px 0; cursor: pointer; font-size: 15px; text-decoration: none; text-align: center; border-radius: 8px; font-weight: 500; }
         .btn-save { flex: 1; max-width: 140px; background: #d63384; color: white; border: none; padding: 14px 0; cursor: pointer; font-weight: bold; font-size: 15px; border-radius: 8px; box-shadow: 0 4px 10px rgba(214, 51, 132, 0.2); }
-        .btn-save:disabled { background: #edaecb !important; cursor: wait; }
+        .btn-save:disabled { background: #ccc !important; cursor: wait; }
 
         @media (max-width: 768px) { .write-container { margin: 10px auto; border-radius: 12px; width: 95%; } }
         @media (max-width: 480px) { .btn-cancel, .btn-save { max-width: none; } }
@@ -65,7 +64,7 @@
 </head>
 <body>
 
-    <div id="loading-overlay">사용자 확인 중...</div>
+    <div id="loading-overlay">연결 확인 중...</div>
 
     <div class="write-container">
         <div class="board-header">
@@ -77,7 +76,7 @@
         </div>
 
         <input type="text" id="title" placeholder="제목을 입력하세요">
-        <input type="text" id="author" placeholder="닉네임을 입력하세요">
+        <input type="text" id="author" placeholder="닉네임 불러오는 중..." readonly>
 
         <div class="photo-upload-section">
             <label for="image-upload" class="photo-btn">
@@ -92,7 +91,7 @@
         
         <div class="button-group">
             <a href="photo-board.html" class="btn-cancel">취소</a>
-            <button class="btn-save" id="saveBtn">등록하기</button>
+            <button class="btn-save" id="saveBtn" disabled>확인 중...</button>
         </div>
     </div>
 
@@ -121,30 +120,34 @@
         let existingImages = [];
         let currentUID = null;
 
-        // ✅ 로그인 체크 및 닉네임 할당 속도 최적화
+        // ✅ 개선된 로그인 감지: alert 팝업 오류 방지
         onAuthStateChanged(auth, async (user) => {
+            const authorInput = document.getElementById("author");
+            const saveBtn = document.getElementById("saveBtn");
+
             if (user) {
+                // 로그인 성공
                 currentUID = user.uid;
-                const userNickname = user.displayName || user.email.split('@')[0];
-                document.getElementById("author").value = userNickname;
-                
-                // 수정 모드일 경우 데이터 로드까지 기다림
-                if (postId) { 
-                    await loadPostData(); 
-                }
-                
-                // 정보가 확인되면 로딩 레이어를 즉시 제거
+                authorInput.value = user.displayName || user.email.split('@')[0];
+                authorInput.readOnly = false; // 수동 수정 가능케 변경
+                saveBtn.disabled = false;
+                saveBtn.innerText = postId ? "수정완료" : "등록하기";
+
+                if (postId) { await loadPostData(); }
                 document.getElementById("loading-overlay").style.display = "none";
             } else {
-                // 로그인 세션이 정말 없을 때만 튕기게 설정
-                alert("로그인이 필요합니다. 로그인 페이지로 이동합니다.");
-                location.href = "login.html";
+                // 정말로 세션이 없을 때까지 잠시 기다림 (즉시 alert 방지)
+                setTimeout(() => {
+                    if (!auth.currentUser) {
+                        alert("로그인이 세션이 만료되었습니다. 다시 로그인해주세요.");
+                        location.href = "login.html";
+                    }
+                }, 1000); 
             }
         });
 
         async function loadPostData() {
             document.getElementById("page-title").innerText = "사진 수정하기";
-            document.getElementById("saveBtn").innerText = "수정완료";
             document.getElementById("topEditBtn").style.display = "block";
             document.getElementById("topDeleteBtn").style.display = "block";
 
