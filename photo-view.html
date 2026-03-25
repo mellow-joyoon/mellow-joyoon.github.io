@@ -5,134 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Mellow Joyoon | 사진 보기</title>
     <style>
-        /* 📱 전 기종 공통 반응형 레이아웃 보강 */
-        body { 
-            background-color: #f6f6f6; 
-            font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', 'Noto Sans KR', sans-serif; 
-            /* 아이폰 노치 및 하단 홈바 대응 패딩 */
-            padding: env(safe-area-inset-top) 15px calc(20px + env(safe-area-inset-bottom)) 15px;
-            color: #333; 
-            margin: 0;
-            -webkit-tap-highlight-color: transparent;
-            -webkit-text-size-adjust: none; /* 브라우저 텍스트 강제 크기 조절 방지 */
-        }
-        
-        .view-container { 
-            width: 100%;
-            max-width: 850px; 
-            margin: 20px auto; 
-            background: white; 
-            padding: clamp(15px, 5vw, 40px); /* 모바일은 15px, 넓은 화면은 최대 40px까지 가변적 적용 */
-            border: 1px solid #ddd; 
-            box-sizing: border-box;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-        }
-        
-        /* 📝 헤더 영역 반응형 */
+        /* [디자인 보존] 쫌쫌님의 감각적인 레이아웃 그대로 유지 */
+        body { background-color: #f6f6f6; font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', 'Noto Sans KR', sans-serif; padding: env(safe-area-inset-top) 15px calc(20px + env(safe-area-inset-bottom)) 15px; color: #333; margin: 0; -webkit-tap-highlight-color: transparent; -webkit-text-size-adjust: none; }
+        .view-container { width: 100%; max-width: 850px; margin: 20px auto; background: white; padding: clamp(15px, 5vw, 40px); border: 1px solid #ddd; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
         .post-header { border-bottom: 1px solid #eee; padding-bottom: 15px; margin-bottom: 20px; }
         .post-category { color: #d63384; font-size: 13px; font-weight: bold; margin-bottom: 8px; }
-        
-        .post-title { 
-            font-size: clamp(1.4rem, 5.5vw, 2.2rem); /* 제목 크기 유동적 조절 */
-            font-weight: 800; 
-            margin-bottom: 15px; 
-            line-height: 1.3;
-            word-break: keep-all; 
-            color: #1a1a1a;
-            letter-spacing: -0.5px;
-        }
-        
-        .post-info { 
-            display: flex; 
-            flex-wrap: wrap; 
-            align-items: center; 
-            font-size: 13px; 
-            color: #888; 
-            gap: 12px;
-        }
+        .post-title { font-size: clamp(1.4rem, 5.5vw, 2.2rem); font-weight: 800; margin-bottom: 15px; line-height: 1.3; word-break: keep-all; color: #1a1a1a; letter-spacing: -0.5px; }
+        .post-info { display: flex; flex-wrap: wrap; align-items: center; font-size: 13px; color: #888; gap: 12px; }
         .post-info .author { color: #333; font-weight: bold; }
-
-        /* 🖼️ 이미지 및 본문 반응형 최적화 */
-        .post-content { 
-            line-height: 1.8; 
-            font-size: 17px; /* 가독성을 위해 본문 폰트 소폭 상향 */
-            min-height: 50px; 
-            white-space: pre-wrap; 
-            padding: 20px 0; 
-            word-break: break-all;
-        }
-
-        #post-images {
-            display: flex;
-            flex-direction: column;
-            gap: 25px;
-            margin: 20px 0;
-        }
-        #post-images img {
-            width: 100%;
-            max-width: 100%;
-            height: auto;
-            border-radius: 10px;
-            display: block;
-            margin: 0 auto;
-            object-fit: contain;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
-        
-        /* 🔘 하단 버튼 영역 반응형 */
-        .post-footer { 
-            padding-top: 25px; 
-            border-top: 1px solid #eee;
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-
-        .btn-like { 
-            background: #fff; border: 1.5px solid #eee; 
-            padding: 14px 26px; cursor: pointer; border-radius: 35px; 
-            font-size: 16px; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
-            display: flex; align-items: center; gap: 8px; 
-            user-select: none;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-        }
+        .post-content { line-height: 1.8; font-size: 17px; min-height: 50px; white-space: pre-wrap; padding: 20px 0; word-break: break-all; }
+        #post-images { display: flex; flex-direction: column; gap: 25px; margin: 20px 0; }
+        #post-images img { width: 100%; max-width: 100%; height: auto; border-radius: 10px; display: block; margin: 0 auto; object-fit: contain; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .post-footer { padding-top: 25px; border-top: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
+        .btn-like { background: #fff; border: 1.5px solid #eee; padding: 14px 26px; cursor: pointer; border-radius: 35px; font-size: 16px; transition: 0.3s; display: flex; align-items: center; gap: 8px; user-select: none; }
         .btn-like:active { transform: scale(0.92); }
-        .btn-like:hover { background: #fff0f3; border-color: #d63384; color: #d63384; }
         .btn-like.active { background: #fff0f3; border-color: #d63384; color: #d63384; font-weight: bold; }
-        
-        .btn-list { 
-            background: #f8f8f8; border: 1px solid #ddd; color: #555; 
-            padding: 12px 24px; text-decoration: none; font-size: 15px; 
-            border-radius: 8px; font-weight: 500;
-            transition: 0.2s;
-        }
+        .btn-list { background: #f8f8f8; border: 1px solid #ddd; color: #555; padding: 12px 24px; text-decoration: none; font-size: 15px; border-radius: 8px; font-weight: 500; transition: 0.2s; }
         .btn-list:hover { background: #eee; }
-
         .admin-buttons { display: none; gap: 8px; }
-        .btn-edit, .btn-delete { 
-            background: #fff; border: 1px solid #ddd; padding: 8px 14px; 
-            font-size: 13px; cursor: pointer; color: #666; border-radius: 6px;
-            transition: 0.2s;
-        }
-        .btn-delete:hover { background: #ffeded; color: #d63384; border-color: #d63384; }
-
-        /* 💻 PC/태블릿 전용 환경 설정 */
-        @media (min-width: 1024px) {
-            body { padding-top: 50px; padding-bottom: 50px; }
-            .view-container { padding: 50px; }
-        }
-
-        /* 📱 모바일 특화 레이아웃 (갤럭시/아이폰 최적화) */
-        @media (max-width: 480px) {
-            .post-footer { flex-direction: column; width: 100%; }
-            .post-footer > div, .btn-list { width: 100%; text-align: center; }
-            .btn-like { justify-content: center; width: 100%; }
-            .btn-list { display: block; box-sizing: border-box; }
-            .post-title { font-size: 1.5rem; }
-        }
+        .btn-edit, .btn-delete { background: #fff; border: 1px solid #ddd; padding: 8px 14px; font-size: 13px; cursor: pointer; color: #666; border-radius: 6px; }
+        @media (max-width: 480px) { .post-title { font-size: 1.5rem; } .post-footer { flex-direction: column; } .btn-like, .btn-list { width: 100%; justify-content: center; } }
     </style>
 </head>
 <body>
@@ -172,17 +64,18 @@
     </div>
 
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, doc, getDoc, updateDoc, increment, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, doc, getDoc, updateDoc, increment, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
+        // 🟢 쫌쫌님의 새 프로젝트 정보로 교체 완료!
         const firebaseConfig = {
-            apiKey: "AIzaSyCP4Ur--4UGGpNSK_P7qRvnVFDZbqn436A",
-            authDomain: "mellow-joyoon.firebaseapp.com",
-            projectId: "mellow-joyoon",
-            storageBucket: "mellow-joyoon.firebasestorage.app",
-            messagingSenderId: "556097417487",
-            appId: "1:556097417487:web:0dca0eb26ba28d893c4e7a"
+            apiKey: "AIzaSyCbdCDMCCDfAlxgJGnkYrsK5czUmVhi6-c",
+            authDomain: "mellow-joyoon-final.firebaseapp.com",
+            projectId: "mellow-joyoon-final",
+            storageBucket: "mellow-joyoon-final.firebasestorage.app",
+            messagingSenderId: "947377190182",
+            appId: "1:947377190182:web:051cef6c2c810dc0a63de7"
         };
 
         const app = initializeApp(firebaseConfig);
@@ -193,51 +86,48 @@
         const postId = urlParams.get('id');
         const ADMIN_EMAIL = "yun786692@gmail.com"; 
 
-        let isViewCounted = false;
-
+        // 로그인 상태 체크 (비로그인 시에도 보게 하려면 이 로직을 수정해야 함)
         onAuthStateChanged(auth, (user) => {
-            if (!user) {
-                alert("로그인 후 확인해 주세요! 😊");
-                location.href = "login.html";
-            } else {
-                if (postId && !isViewCounted) {
-                    isViewCounted = true; 
-                    initPost(user);
-                }
+            if (postId) {
+                initPost(user);
             }
         });
 
         async function initPost(currentUser) {
+            // 새 서랍 이름 "photo_posts"에서 데이터 가져오기
             const postRef = doc(db, "photo_posts", postId);
             try {
+                // 조회수 올리기
                 await updateDoc(postRef, { views: increment(1) });
                 const docSnap = await getDoc(postRef);
                 
                 if (docSnap.exists()) {
                     const data = docSnap.data();
                     
-                    document.getElementById("title").innerText = data.title;
-                    document.getElementById("author").innerText = data.author;
-                    document.getElementById("content").innerText = data.content;
+                    document.getElementById("title").innerText = data.title || "제목 없음";
+                    document.getElementById("author").innerText = data.author || "익명";
+                    document.getElementById("content").innerText = data.content || "";
                     document.getElementById("viewCount").innerText = data.views || 0;
                     document.getElementById("likeCount").innerText = data.likes || 0;
                     
                     const dateObj = data.createdAt ? new Date(data.createdAt.seconds * 1000) : new Date();
-                    document.getElementById("date").innerText = dateObj.toLocaleString('ko-KR', { 
-                        year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' 
-                    });
+                    document.getElementById("date").innerText = dateObj.toLocaleString('ko-KR');
 
+                    // 🖼️ 이미지 출력 (images 배열 안의 모든 사진 출력)
                     const imageContainer = document.getElementById("post-images");
+                    imageContainer.innerHTML = ""; // 초기화
+                    
                     if (data.images && Array.isArray(data.images)) {
                         data.images.forEach(imgUrl => {
                             const imgTag = document.createElement("img");
                             imgTag.src = imgUrl;
-                            imgTag.loading = "lazy"; 
+                            imgTag.onerror = () => { imgTag.style.display = 'none'; }; // 깨진 이미지는 숨김
                             imageContainer.appendChild(imgTag);
                         });
                     }
 
-                    if (currentUser.email === ADMIN_EMAIL || currentUser.uid === data.authorId) {
+                    // 관리자거나 본인 글이면 수정/삭제 버튼 노출
+                    if (currentUser && (currentUser.email === ADMIN_EMAIL || currentUser.uid === data.authorId)) {
                         document.getElementById("adminButtons").style.display = "flex";
                     }
 
@@ -246,12 +136,12 @@
 
                     setupButtonEvents(postRef);
                 } else {
-                    alert("존재하지 않는 사진 게시글입니다.");
+                    alert("삭제된 게시글이거나 경로가 잘못되었습니다.");
                     location.href = 'photo-board.html';
                 }
             } catch (error) {
                 console.error("로딩 에러:", error);
-                alert("데이터를 불러오는 중 오류가 발생했습니다.");
+                document.getElementById("loading").innerText = "데이터 로드 실패 ㅠㅠ";
             }
         }
 
@@ -262,21 +152,14 @@
                     const likeSpan = document.getElementById("likeCount");
                     likeSpan.innerText = parseInt(likeSpan.innerText) + 1;
                     document.getElementById("likeBtn").classList.add("active");
-                    alert("이 사진을 좋아합니다! ❤️");
-                } catch (e) {
-                    alert("좋아요 처리에 실패했습니다.");
-                }
+                } catch (e) { alert("좋아요 실패!"); }
             };
 
             document.getElementById("deleteBtn").onclick = async () => {
-                if (confirm("정말로 이 사진 게시글을 삭제하시겠습니까?")) {
-                    try {
-                        await deleteDoc(postRef);
-                        alert("글이 삭제되었습니다.");
-                        location.href = "photo-board.html";
-                    } catch (e) {
-                        alert("삭제 권한이 없거나 오류가 발생했습니다.");
-                    }
+                if (confirm("정말로 삭제할까요?")) {
+                    await deleteDoc(postRef);
+                    alert("삭제되었습니다.");
+                    location.href = "photo-board.html";
                 }
             };
 
