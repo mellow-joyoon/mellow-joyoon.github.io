@@ -15,6 +15,13 @@
             color: #333; display: flex; flex-direction: column; align-items: center; 
         }
 
+        /* 로딩 레이어: 초기에는 보이게 설정 */
+        #loading-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #f6f6f6; display: flex; justify-content: center; align-items: center;
+            z-index: 9999; font-weight: bold; color: #d63384;
+        }
+
         .write-container { 
             width: 100%; max-width: 850px; margin: 20px auto; 
             background: white; padding: clamp(15px, 4vw, 30px); 
@@ -57,6 +64,8 @@
     </style>
 </head>
 <body>
+
+    <div id="loading-overlay">사용자 확인 중...</div>
 
     <div class="write-container">
         <div class="board-header">
@@ -112,22 +121,24 @@
         let existingImages = [];
         let currentUID = null;
 
-        // ✅ 로그인 상태 체크 로직 보완
-        onAuthStateChanged(auth, (user) => {
+        // ✅ 로그인 체크 및 닉네임 할당 속도 최적화
+        onAuthStateChanged(auth, async (user) => {
             if (user) {
                 currentUID = user.uid;
-                // 닉네임이 있으면 닉네임, 없으면 이메일 아이디 사용
                 const userNickname = user.displayName || user.email.split('@')[0];
-                const authorInput = document.getElementById("author");
+                document.getElementById("author").value = userNickname;
                 
-                // 값이 비어있을 때만 채워줌 (사용자 수동 입력 방해 금지)
-                if(!authorInput.value) authorInput.value = userNickname;
+                // 수정 모드일 경우 데이터 로드까지 기다림
+                if (postId) { 
+                    await loadPostData(); 
+                }
                 
-                if (postId) { loadPostData(); }
+                // 정보가 확인되면 로딩 레이어를 즉시 제거
+                document.getElementById("loading-overlay").style.display = "none";
             } else {
-                // 로그인 안 되어 있으면 경고창 띄우고 목록으로 (글쓰기 방지)
-                alert("로그인이 필요합니다.");
-                location.href = "photo-board.html";
+                // 로그인 세션이 정말 없을 때만 튕기게 설정
+                alert("로그인이 필요합니다. 로그인 페이지로 이동합니다.");
+                location.href = "login.html";
             }
         });
 
@@ -179,6 +190,8 @@
         });
 
         const saveAction = async () => {
+            if (!auth.currentUser) return alert("로그인 정보가 없습니다.");
+            
             const title = document.getElementById("title").value.trim();
             const content = document.getElementById("content").value.trim();
             const author = document.getElementById("author").value.trim();
@@ -218,7 +231,7 @@
                 }
                 location.href = "photo-board.html";
             } catch (e) { 
-                alert("저장에 실패했습니다. 다시 시도해주세요."); 
+                alert("저장에 실패했습니다."); 
                 btn.disabled = false; 
                 btn.innerText = "등록하기"; 
             }
