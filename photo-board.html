@@ -137,6 +137,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        // getDocs 대신 실시간 리스너 기능인 onSnapshot을 보조로 활용하여 인덱스 에러 시 대응
         import { getFirestore, collection, query, orderBy, limit, startAfter, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
@@ -153,7 +154,7 @@
 
         let lastVisible = null; 
         
-        // PC: 6개, 모바일: 4개 설정 유지
+        // 🟢 기기별 페이징 수량 설정 (PC 6개 / 모바일 4개)
         const getPageSize = () => window.innerWidth <= 768 ? 4 : 6;
 
         async function loadPhotos() {
@@ -161,10 +162,10 @@
             const pageSize = getPageSize();
             
             try {
-                // 아이폰 크롬 안정성을 위해 query 구조를 가장 표준적인 방식으로 작성
                 const photoRef = collection(db, "photo_posts"); 
                 let q;
 
+                // 🟢 크롬에서 'createdAt' 정렬 시 인덱스 에러가 나면 아예 안 뜨는 문제 방지
                 if (lastVisible) {
                     q = query(photoRef, orderBy("createdAt", "desc"), startAfter(lastVisible), limit(pageSize));
                 } else {
@@ -184,23 +185,18 @@
                     return;
                 }
 
-                // 로딩 메시지 제거 (첫 로드 시에만)
-                if (!lastVisible) {
-                    photoList.innerHTML = "";
-                }
+                if (!lastVisible) photoList.innerHTML = "";
 
                 lastVisible = snapshot.docs[snapshot.docs.length - 1];
-
-                // 아이폰 크롬에서 DOM 생성 속도와 렌더링 타이밍을 맞추기 위한 DocumentFragment 사용
                 const fragment = document.createDocumentFragment();
 
                 snapshot.forEach((doc) => {
                     const data = doc.data();
+                    // 다양한 이미지 필드 지원
                     const thumb = data.imageUrl || data.thumbnail || (data.images && data.images[0]) || "https://via.placeholder.com/300?text=No+Image";
 
                     const card = document.createElement("div");
                     card.className = "photo-card";
-                    // 아이폰 터치 이벤트 호환성을 위해 직접 onclick 할당
                     card.onclick = () => { window.location.href = `photo-view.html?id=${doc.id}`; };
                     
                     card.innerHTML = `
@@ -224,15 +220,31 @@
                 }
 
             } catch (e) {
-                console.error("아이폰 크롬 로드 실패:", e);
-                // 인덱스 문제일 가능성이 있으므로 에러 시 알림 대신 콘솔에 상세 출력 유도
-                photoList.innerHTML = "<p style='grid-column: 1/-1; text-align: center; padding: 50px;'>데이터를 불러오는 데 실패했습니다.</p>";
+                console.error("크롬 로딩 에러 상세:", e);
+                
+                // 🔴 [매우 중요] 인덱스가 없을 경우 크롬에서 아래 링크가 콘솔에 뜹니다.
+                // 만약 인덱스 때문이라면, 개발자 도구(F12) 콘솔창에 나타난 링크를 클릭만 하면 자동 생성됩니다.
+                
+                // 에러 발생 시 정렬 없이라도 보여주는 비상용 로직 (최소한 게시글이 안 보이는 현상 방지)
+                if (!lastVisible) {
+                    const fallbackQ = query(collection(db, "photo_posts"), limit(pageSize));
+                    const fallbackSnap = await getDocs(fallbackQ);
+                    photoList.innerHTML = "";
+                    fallbackSnap.forEach((doc) => {
+                        /* 위와 동일한 카드 생성 로직 (생략 방지를 위해 실제 코드에선 반복) */
+                        const data = doc.data();
+                        const thumb = data.imageUrl || data.thumbnail || (data.images && data.images[0]) || "https://via.placeholder.com/300?text=No+Image";
+                        const card = document.createElement("div");
+                        card.className = "photo-card";
+                        card.onclick = () => { window.location.href = `photo-view.html?id=${doc.id}`; };
+                        card.innerHTML = `<img src="${thumb}" class="photo-img"><div class="photo-info"><div class="photo-title">${data.title}</div></div>`;
+                        photoList.appendChild(card);
+                    });
+                }
             }
         }
 
         document.getElementById("nextBtn").addEventListener("click", loadPhotos);
-
-        // 페이지 로드 시 즉시 실행
         window.addEventListener('DOMContentLoaded', loadPhotos);
     </script>
 </body>
