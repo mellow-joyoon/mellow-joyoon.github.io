@@ -6,35 +6,42 @@
     <title>Mellow Joyoon | 사진게시판</title>
     <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@700&family=Montserrat:wght@900&family=Noto+Sans+KR:wght@100;400;900&display=swap" rel="stylesheet">
     <style>
-        /* [디자인 보존] 쫌쫌님의 소중한 스타일 시트 100% 유지 */
         :root { --happy-pink: #ff85a1; --sunny-yellow: #ffde59; --sky-blue: #87ceeb; --text-main: #444; --bg-cream: #fffcf2; --card-white: rgba(255, 255, 255, 0.85); }
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background-color: var(--bg-cream); font-family: 'Noto Sans KR', sans-serif; padding: env(safe-area-inset-top) 10px calc(20px + env(safe-area-inset-bottom)); color: var(--text-main); display: flex; flex-direction: column; align-items: center; overflow-x: hidden; width: 100%; min-height: 100vh; -webkit-text-size-adjust: none; }
+        body { background-color: var(--bg-cream); font-family: 'Noto Sans KR', sans-serif; padding: env(safe-area-inset-top) 10px calc(20px + env(safe-area-inset-bottom)); color: var(--text-main); display: flex; flex-direction: column; align-items: center; overflow-x: hidden; width: 100%; min-height: 100vh; }
+        
         .deco-circle { position: fixed; border-radius: 50%; z-index: -1; filter: blur(40px); opacity: 0.4; animation: pulse 6s infinite alternate; }
         .circle-1 { width: clamp(200px, 40vw, 350px); height: clamp(200px, 40vw, 350px); background: var(--happy-pink); top: -100px; left: -100px; }
         .circle-2 { width: clamp(150px, 30vw, 300px); height: clamp(150px, 30vw, 300px); background: var(--sunny-yellow); bottom: -50px; right: -50px; }
         @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.1); } }
-        .top-bar { width: 100%; max-width: 1000px; margin: 15px 0; display: flex; justify-content: space-between; align-items: center; background: var(--card-white); padding: 12px clamp(15px, 3vw, 25px); border: 2px solid #fff; border-radius: 50px; backdrop-filter: blur(10px); box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
-        .nav-links { display: flex; gap: clamp(8px, 2vw, 15px); }
-        .nav-links a { text-decoration: none; color: var(--happy-pink); font-weight: 900; font-size: clamp(12px, 3.5vw, 14px); }
-        .nav-links a.active { color: #d63384; text-decoration: underline; }
-        .photo-container { width: 100%; max-width: 1000px; background: var(--card-white); padding: clamp(15px, 4vw, 30px); border: 2px solid #fff; border-radius: clamp(15px, 5vw, 30px); backdrop-filter: blur(10px); margin-bottom: 20px; }
-        .board-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
-        .board-header h2 { font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: clamp(1.5rem, 6vw, 2rem); }
-        .photo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(clamp(140px, 45%, 220px), 1fr)); gap: clamp(10px, 3vw, 20px); }
-        .photo-card { background: #fff; border-radius: 15px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.05); transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; }
-        .photo-card:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
-        .photo-img { width: 100%; aspect-ratio: 1/1; object-fit: cover; background: #f0f0f0; display: block; border-bottom: 1px solid #eee; }
-        .photo-info { padding: 12px; }
-        .photo-title { font-size: 14px; font-weight: bold; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        
-        /* 👁️ [조회수 표시 스타일 추가] */
-        .photo-meta { font-size: 11px; color: #888; display: flex; justify-content: space-between; align-items: center; }
-        .view-count { color: #bbb; font-weight: bold; }
 
-        .btn-write { background: var(--happy-pink); color: white; padding: 10px 20px; font-size: clamp(12px, 3.5vw, 14px); font-weight: 900; border-radius: 50px; text-decoration: none; box-shadow: 0 4px 0px #e05e7a; transition: 0.2s; }
-        .pagination { display: flex; justify-content: center; gap: 15px; margin: 10px 0 40px; }
-        .page-btn { background: white; border: 2px solid var(--happy-pink); color: var(--happy-pink); padding: 10px 20px; border-radius: 25px; font-weight: bold; cursor: pointer; }
+        .top-bar { width: 100%; max-width: 1000px; margin: 15px 0; display: flex; justify-content: space-between; align-items: center; background: var(--card-white); padding: 12px 20px; border: 2px solid #fff; border-radius: 50px; backdrop-filter: blur(10px); }
+        .nav-links { display: flex; gap: 12px; }
+        .nav-links a { text-decoration: none; color: var(--happy-pink); font-weight: 900; font-size: 13px; }
+        .nav-links a.active { color: #d63384; text-decoration: underline; }
+
+        .photo-container { width: 100%; max-width: 1000px; background: var(--card-white); padding: 20px; border: 2px solid #fff; border-radius: 25px; backdrop-filter: blur(10px); margin-bottom: 15px; }
+        .board-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .board-header h2 { font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 1.5rem; }
+
+        /* 📸 그리드 설정: PC 3열(6개 노출), 모바일 2열(4개 노출) 최적화 */
+        .photo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
+        @media (max-width: 600px) { 
+            .photo-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; } 
+            .photo-container { padding: 15px; }
+        }
+
+        .photo-card { background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.05); cursor: pointer; }
+        .photo-img { width: 100%; aspect-ratio: 1/1; object-fit: cover; display: block; border-bottom: 1px solid #eee; }
+        .photo-info { padding: 8px 10px; }
+        .photo-title { font-size: 13px; font-weight: bold; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .photo-meta { font-size: 10px; color: #888; display: flex; justify-content: space-between; }
+
+        .btn-write { background: var(--happy-pink); color: white; padding: 8px 16px; font-size: 12px; font-weight: 900; border-radius: 50px; text-decoration: none; box-shadow: 0 3px 0px #e05e7a; }
+
+        .pagination { display: flex; justify-content: center; gap: 8px; margin: 10px 0 30px; }
+        .page-num { background: white; border: 2px solid var(--happy-pink); color: var(--happy-pink); width: 32px; height: 32px; border-radius: 50%; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+        .page-num.active { background: var(--happy-pink); color: white; }
     </style>
 </head>
 <body>
@@ -53,18 +60,15 @@
             <h2>PHOTO</h2>
             <a href="photo-write.html" class="btn-write">사진 올리기</a>
         </div>
-        <div class="photo-grid" id="photo-list">
-            <p id="loading-msg" style="grid-column: 1/-1; text-align: center; padding: 50px; color: #bbb;">불러오는 중... ✨</p>
-        </div>
+        <div id="photo-list" class="photo-grid">
+            </div>
     </div>
 
-    <div class="pagination">
-        <button id="nextBtn" class="page-btn">더보기</button>
-    </div>
+    <div id="pagination" class="pagination"></div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, query, orderBy, limit, startAfter, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, query, orderBy, limit, getDocs, startAfter, getCountFromServer } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCbdCDMCCDfAlxgJGnkYrsK5czUmVhi6-c",
@@ -77,64 +81,71 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        let lastVisible = null;
+        
+        // 🟢 기기 너비에 따라 페이지 당 게시물 수 결정
+        const getPageSize = () => window.innerWidth <= 600 ? 4 : 6;
+        let currentPage = 1;
+        let lastDoc = null; 
 
-        function getBestImage(data) {
-            if (data.thumbnail) return data.thumbnail;
-            if (data.images && data.images.length > 0) return data.images[0];
-            return "https://via.placeholder.com/300?text=No+Image";
-        }
-
-        async function loadPhotos(isMore = false) {
+        async function loadPhotos(page) {
             const photoList = document.getElementById("photo-list");
-            const pageSize = 8;
+            const pageSize = getPageSize();
             const photoRef = collection(db, "photo_posts");
-            let q;
+            
+            // 전체 개수 확인 및 페이지네이션 버튼 생성
+            const totalSnap = await getCountFromServer(photoRef);
+            const totalCount = totalSnap.data().count;
+            renderPagination(Math.ceil(totalCount / pageSize), page);
 
-            if (isMore && lastVisible) {
-                q = query(photoRef, orderBy("createdAt", "desc"), startAfter(lastVisible), limit(pageSize));
-            } else {
-                q = query(photoRef, orderBy("createdAt", "desc"), limit(pageSize));
-                if (!isMore) photoList.innerHTML = ""; 
-            }
+            // 해당 페이지 데이터 가져오기 (간소화를 위해 페이지마다 새로 쿼리)
+            // 실제 서비스에서는 커서 관리가 복잡하므로 offset 기반 처럼 동작하게 구현
+            let q = query(photoRef, orderBy("createdAt", "desc"), limit(page * pageSize));
+            const snapshot = await getDocs(q);
+            const allDocs = snapshot.docs;
+            
+            // 현재 페이지에 해당하는 데이터만 추출
+            const pageDocs = allDocs.slice((page - 1) * pageSize, page * pageSize);
 
-            try {
-                const snapshot = await getDocs(q);
-                
-                if (snapshot.empty && !isMore) {
-                    photoList.innerHTML = "<p style='grid-column: 1/-1; text-align: center; padding: 50px; color: #bbb;'>아직 등록된 사진이 없어요. 📸</p>";
-                    return;
-                }
-
-                lastVisible = snapshot.docs[snapshot.docs.length - 1];
-
-                snapshot.forEach((doc) => {
-                    const data = doc.data();
-                    const card = document.createElement("div");
-                    card.className = "photo-card";
-                    card.onclick = () => { window.location.href = `photo-view.html?id=${doc.id}`; };
-                    
-                    // 🟢 조회수(views) 데이터 매칭 추가
-                    card.innerHTML = `
-                        <img src="${getBestImage(data)}" class="photo-img" loading="lazy" onerror="this.src='https://via.placeholder.com/300?text=Image+Error'">
-                        <div class="photo-info">
-                            <div class="photo-title">${data.title || '제목 없음'}</div>
-                            <div class="photo-meta">
-                                <span>${data.author || '익명의 팬'}</span>
-                                <span class="view-count">👁️ ${data.views || 0}</span>
-                            </div>
+            photoList.innerHTML = "";
+            pageDocs.forEach(doc => {
+                const data = doc.data();
+                const imgUrl = data.thumbnail || (data.images && data.images[0]) || "https://via.placeholder.com/300";
+                const card = document.createElement("div");
+                card.className = "photo-card";
+                card.onclick = () => location.href = `photo-view.html?id=${doc.id}`;
+                card.innerHTML = `
+                    <img src="${imgUrl}" class="photo-img">
+                    <div class="photo-info">
+                        <div class="photo-title">${data.title || '제목 없음'}</div>
+                        <div class="photo-meta">
+                            <span>${data.author || 'Fan'}</span>
+                            <span>👁️ ${data.views || 0}</span>
                         </div>
-                    `;
-                    photoList.appendChild(card);
-                });
-            } catch (e) {
-                console.error("로딩 에러:", e);
-                photoList.innerHTML = "<p style='grid-column: 1/-1; text-align: center; padding: 50px; color: #ff85a1;'>데이터를 불러오는 중 오류가 발생했습니다.</p>";
+                    </div>
+                `;
+                photoList.appendChild(card);
+            });
+        }
+
+        function renderPagination(totalPages, activePage) {
+            const container = document.getElementById("pagination");
+            container.innerHTML = "";
+            for (let i = 1; i <= totalPages; i++) {
+                const btn = document.createElement("div");
+                btn.className = `page-num ${i === activePage ? 'active' : ''}`;
+                btn.innerText = i;
+                btn.onclick = () => {
+                    currentPage = i;
+                    loadPhotos(i);
+                    window.scrollTo(0, 0);
+                };
+                container.appendChild(btn);
             }
         }
 
-        document.getElementById("nextBtn").onclick = () => loadPhotos(true);
-        window.onload = () => loadPhotos();
+        window.onload = () => loadPhotos(1);
+        // 화면 크기 바뀔 때 대응
+        window.onresize = () => loadPhotos(currentPage);
     </script>
 </body>
 </html>
