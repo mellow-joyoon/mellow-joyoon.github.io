@@ -6,7 +6,7 @@
     <title>Mellow Joyoon | 사진 올리기</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;400;900&display=swap" rel="stylesheet">
     <style>
-        /* ✅ 쫌쫌님의 소중한 기존 디자인 100% 보존 */
+        /* ✅ 기존 디자인 100% 보존 */
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { 
             background-color: #f6f6f6; 
@@ -21,7 +21,6 @@
             border: 1px solid #ddd; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); 
         }
 
-        /* 📌 상단 헤더: [수정], [삭제] 버튼 추가 배치 */
         .board-header { 
             display: flex; justify-content: space-between; align-items: center; 
             border-bottom: 2px solid #333; padding-bottom: 15px; margin-bottom: 25px; 
@@ -35,6 +34,8 @@
 
         input, textarea { width: 100%; padding: 14px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; font-family: inherit; }
         input:focus, textarea:focus { border-color: #d63384; outline: none; background-color: #fffafc; }
+        /* 읽기 전용 닉네임 스타일 */
+        input[readonly] { background-color: #f9f9f9; color: #888; cursor: not-allowed; }
 
         .photo-upload-section { display: flex; align-items: center; gap: 12px; margin-bottom: 15px; padding: 15px; border: 2px dashed #eee; border-radius: 10px; background: #fafafa; min-height: 80px; }
         .photo-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 65px; height: 65px; background: white; border: 1px solid #ddd; border-radius: 8px; cursor: pointer; flex-shrink: 0; }
@@ -48,10 +49,9 @@
 
         textarea { height: clamp(250px, 40vh, 450px); resize: none; line-height: 1.6; }
 
-        /* ✅ 하단 버튼 그룹: 요청하신 대로 중앙 정렬 배치 수정 */
         .button-group { 
             display: flex; 
-            justify-content: center; /* 중앙 배치 */
+            justify-content: center; 
             gap: 12px; 
             margin-top: 15px; 
             width: 100%;
@@ -86,7 +86,7 @@
         .btn-save:disabled { background: #edaecb !important; cursor: wait; }
 
         @media (max-width: 768px) { .write-container { margin: 10px auto; border-radius: 12px; width: 95%; } }
-        @media (max-width: 480px) { .btn-cancel, .btn-save { max-width: none; } } /* 모바일에서 가득 차게 */
+        @media (max-width: 480px) { .btn-cancel, .btn-save { max-width: none; } }
     </style>
 </head>
 <body>
@@ -101,7 +101,7 @@
         </div>
 
         <input type="text" id="title" placeholder="제목을 입력하세요">
-        <input type="text" id="author" placeholder="닉네임을 입력해주세요">
+        <input type="text" id="author" placeholder="닉네임 불러오는 중..." readonly>
 
         <div class="photo-upload-section">
             <label for="image-upload" class="photo-btn">
@@ -124,6 +124,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getFirestore, doc, getDoc, collection, addDoc, updateDoc, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
         import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCbdCDMCCDfAlxgJGnkYrsK5czUmVhi6-c",
@@ -136,13 +137,27 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const storage = getStorage(app);
+        const auth = getAuth(app);
 
         const urlParams = new URLSearchParams(window.location.search);
         const postId = urlParams.get('id');
         let selectedFiles = [];
         let existingImages = [];
+        let currentUID = null; // ✅ 작성자 ID 저장 변수
 
-        if (postId) {
+        // ✅ 로그인 상태 체크 및 사용자 정보 할당
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                currentUID = user.uid;
+                document.getElementById("author").value = user.displayName || user.email.split('@')[0];
+                if (postId) { loadPostData(); }
+            } else {
+                alert("로그인이 필요한 페이지입니다.");
+                location.href = "login.html"; // 로그인 페이지로 리다이렉트
+            }
+        });
+
+        async function loadPostData() {
             document.getElementById("page-title").innerText = "사진 수정하기";
             document.getElementById("saveBtn").innerText = "수정완료";
             document.getElementById("topEditBtn").style.display = "block";
@@ -151,6 +166,14 @@
             const docSnap = await getDoc(doc(db, "photo_posts", postId));
             if (docSnap.exists()) {
                 const data = docSnap.data();
+                
+                // 본인 확인 (수정 페이지 진입 차단)
+                if (data.authorId !== currentUID && auth.currentUser.email !== "yun786692@gmail.com") {
+                    alert("권한이 없습니다.");
+                    location.href = "photo-board.html";
+                    return;
+                }
+
                 document.getElementById("title").value = data.title;
                 document.getElementById("author").value = data.author;
                 document.getElementById("content").value = data.content;
@@ -162,71 +185,4 @@
         function renderPreviews() {
             const container = document.getElementById("photo-preview-container");
             container.innerHTML = "";
-            existingImages.forEach((url, idx) => {
-                const div = document.createElement("div");
-                div.className = "preview-box";
-                div.innerHTML = `<img src="${url}"><div class="del-btn">×</div>`;
-                div.querySelector(".del-btn").onclick = () => { existingImages.splice(idx, 1); renderPreviews(); };
-                container.appendChild(div);
-            });
-            selectedFiles.forEach((file, idx) => {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    const div = document.createElement("div");
-                    div.className = "preview-box";
-                    div.innerHTML = `<img src="${e.target.result}"><div class="del-btn">×</div>`;
-                    div.querySelector(".del-btn").onclick = () => { selectedFiles.splice(idx, 1); renderPreviews(); };
-                    container.appendChild(div);
-                };
-                reader.readAsDataURL(file);
-            });
-        }
-
-        document.getElementById("image-upload").addEventListener("change", (e) => {
-            selectedFiles.push(...Array.from(e.target.files));
-            renderPreviews();
-        });
-
-        const saveAction = async () => {
-            const title = document.getElementById("title").value.trim();
-            const content = document.getElementById("content").value.trim();
-            const author = document.getElementById("author").value.trim();
-            if (!title || !content || !author) return alert("빈칸을 채워주세요!");
-
-            const btn = document.getElementById("saveBtn");
-            btn.disabled = true;
-            btn.innerText = "처리 중...";
-
-            try {
-                const urls = [...existingImages];
-                for (const file of selectedFiles) {
-                    const sRef = ref(storage, `photos/${Date.now()}_${file.name}`);
-                    const snap = await uploadBytes(sRef, file);
-                    urls.push(await getDownloadURL(snap.ref));
-                }
-
-                const data = { title, content, author, images: urls, thumbnail: urls[0], updatedAt: serverTimestamp() };
-                if (postId) {
-                    await updateDoc(doc(db, "photo_posts", postId), data);
-                    alert("수정 완료! ✨");
-                } else {
-                    data.createdAt = serverTimestamp(); data.views = 0; data.likes = 0;
-                    await addDoc(collection(db, "photo_posts"), data);
-                    alert("등록 완료! ✨");
-                }
-                location.href = "photo-board.html";
-            } catch (e) { alert("실패!"); btn.disabled = false; btn.innerText = "등록하기"; }
-        };
-
-        document.getElementById("saveBtn").onclick = saveAction;
-        document.getElementById("topEditBtn").onclick = saveAction;
-
-        document.getElementById("topDeleteBtn").onclick = async () => {
-            if (confirm("정말 삭제할까요?")) {
-                await deleteDoc(doc(db, "photo_posts", postId));
-                location.href = "photo-board.html";
-            }
-        };
-    </script>
-</body>
-</html>
+            existingImages.forEach((url
