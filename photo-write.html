@@ -4,188 +4,31 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Mellow Joyoon | 사진 올리기</title>
-    
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;400;900&display=swap" rel="stylesheet">
-
     <style>
-        /* ✅ 기존 디자인 감성 유지 + PC/모바일/태블릿 반응형 보강 */
-        body { 
-            background-color: #f6f6f6; 
-            font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', 'Noto Sans KR', sans-serif; 
-            padding: env(safe-area-inset-top) 15px calc(20px + env(safe-area-inset-bottom));
-            color: #333; 
-            margin: 0;
-            -webkit-tap-highlight-color: transparent;
-            -webkit-overflow-scrolling: touch; 
-            -webkit-text-size-adjust: none;
-        }
-        
-        .write-container { 
-            width: 100%;
-            max-width: 850px; 
-            margin: 20px auto; 
-            background: white; 
-            padding: clamp(15px, 4vw, 30px); 
-            border: 1px solid #ddd; 
-            box-sizing: border-box;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-        }
-        
-        h2 { 
-            color: #d63384; 
-            font-size: clamp(1.3rem, 5vw, 1.8rem); 
-            border-bottom: 2px solid #333; 
-            padding-bottom: 15px; 
-            margin-bottom: 25px; 
-            font-weight: 900;
-            letter-spacing: -0.5px;
-        }
-        
-        input, textarea { 
-            width: 100%; 
-            padding: 14px; 
-            margin-bottom: 15px; 
-            border: 1px solid #ddd; 
-            border-radius: 8px; 
-            box-sizing: border-box; 
-            font-size: 16px; 
-            transition: all 0.2s;
-            font-family: inherit;
-        }
+        /* ✅ 쫌쫌님의 소중한 기존 디자인 100% 그대로 보존 */
+        body { background-color: #f6f6f6; font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', 'Noto Sans KR', sans-serif; padding: env(safe-area-inset-top) 15px calc(20px + env(safe-area-inset-bottom)); color: #333; margin: 0; -webkit-tap-highlight-color: transparent; -webkit-overflow-scrolling: touch; -webkit-text-size-adjust: none; }
+        .write-container { width: 100%; max-width: 850px; margin: 20px auto; background: white; padding: clamp(15px, 4vw, 30px); border: 1px solid #ddd; box-sizing: border-box; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        h2 { color: #d63384; font-size: clamp(1.3rem, 5vw, 1.8rem); border-bottom: 2px solid #333; padding-bottom: 15px; margin-bottom: 25px; font-weight: 900; letter-spacing: -0.5px; }
+        input, textarea { width: 100%; padding: 14px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px; transition: all 0.2s; font-family: inherit; }
         input:focus, textarea:focus { border-color: #d63384; outline: none; background-color: #fffafc; }
-        
-        input#author { background-color: #f9f9f9; color: #888; cursor: not-allowed; border: 1px solid #eee; }
-
-        .photo-upload-section {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 15px;
-            padding: 15px;
-            border: 2px dashed #eee;
-            border-radius: 10px;
-            background: #fafafa;
-            transition: 0.2s;
-            min-height: 80px;
-        }
-
-        .photo-btn {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            width: 65px;
-            height: 65px;
-            background: white;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.2s;
-            flex-shrink: 0;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
-        }
+        .photo-upload-section { display: flex; align-items: center; gap: 12px; margin-bottom: 15px; padding: 15px; border: 2px dashed #eee; border-radius: 10px; background: #fafafa; transition: 0.2s; min-height: 80px; }
+        .photo-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 65px; height: 65px; background: white; border: 1px solid #ddd; border-radius: 8px; cursor: pointer; transition: all 0.2s; flex-shrink: 0; box-shadow: 0 2px 5px rgba(0,0,0,0.03); }
         .photo-btn:hover { border-color: #d63384; background: #fffafc; }
         .photo-btn svg { width: 26px; height: 26px; fill: #d63384; margin-bottom: 4px; }
         .photo-btn span { font-size: 12px; color: #666; font-weight: bold; }
-
-        #photo-preview-container {
-            display: flex;
-            gap: 10px;
-            overflow-x: auto;
-            flex: 1;
-            padding: 5px 2px;
-            -webkit-overflow-scrolling: touch;
-        }
+        #photo-preview-container { display: flex; gap: 10px; overflow-x: auto; flex: 1; padding: 5px 2px; -webkit-overflow-scrolling: touch; }
         #photo-preview-container::-webkit-scrollbar { display: none; }
-
-        .preview-box {
-            position: relative;
-            width: 65px;
-            height: 65px;
-            flex-shrink: 0;
-        }
-
-        .preview-box img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            border-radius: 8px;
-            border: 1px solid #eee;
-        }
-
-        .del-btn {
-            position: absolute;
-            top: -6px;
-            right: -6px;
-            width: 22px;
-            height: 22px;
-            background: #333;
-            color: white;
-            border-radius: 50%;
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            z-index: 10;
-            border: 2px solid white;
-        }
-
-        textarea { 
-            height: clamp(250px, 40vh, 450px); 
-            resize: none; 
-            line-height: 1.6; 
-        }
-        
-        .button-group { 
-            display: flex; 
-            justify-content: flex-end; 
-            gap: 12px; 
-            margin-top: 15px; 
-        }
-        
-        .btn-cancel { 
-            flex: 1; 
-            max-width: 140px;
-            background: #fff; 
-            color: #666; 
-            border: 1px solid #ccc; 
-            padding: 14px 0; 
-            cursor: pointer; 
-            font-size: 15px; 
-            text-decoration: none; 
-            text-align: center; 
-            border-radius: 8px;
-            font-weight: 500;
-            transition: 0.2s;
-        }
-        
-        .btn-save { 
-            flex: 1; 
-            max-width: 140px;
-            background: #d63384; 
-            color: white; 
-            border: none; 
-            padding: 14px 0; 
-            cursor: pointer; 
-            font-weight: bold; 
-            font-size: 15px; 
-            border-radius: 8px;
-            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 4px 10px rgba(214, 51, 132, 0.2);
-        }
-        
+        .preview-box { position: relative; width: 65px; height: 65px; flex-shrink: 0; }
+        .preview-box img { width: 100%; height: 100%; object-fit: cover; border-radius: 8px; border: 1px solid #eee; }
+        .del-btn { position: absolute; top: -6px; right: -6px; width: 22px; height: 22px; background: #333; color: white; border-radius: 50%; font-size: 14px; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 10; border: 2px solid white; }
+        textarea { height: clamp(250px, 40vh, 450px); resize: none; line-height: 1.6; }
+        .button-group { display: flex; justify-content: flex-end; gap: 12px; margin-top: 15px; }
+        .btn-cancel { flex: 1; max-width: 140px; background: #fff; color: #666; border: 1px solid #ccc; padding: 14px 0; cursor: pointer; font-size: 15px; text-decoration: none; text-align: center; border-radius: 8px; font-weight: 500; transition: 0.2s; }
+        .btn-save { flex: 1; max-width: 140px; background: #d63384; color: white; border: none; padding: 14px 0; cursor: pointer; font-weight: bold; font-size: 15px; border-radius: 8px; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 4px 10px rgba(214, 51, 132, 0.2); }
         .btn-save:disabled { background: #edaecb !important; cursor: wait; transform: none !important; }
-
-        @media (max-width: 768px) {
-            .write-container { margin: 10px auto; border-radius: 0; border-left: none; border-right: none; }
-        }
-
-        @media (max-width: 480px) {
-            .button-group { gap: 8px; }
-            .btn-cancel, .btn-save { max-width: none; }
-        }
+        @media (max-width: 768px) { .write-container { margin: 10px auto; border-radius: 0; border-left: none; border-right: none; } }
+        @media (max-width: 480px) { .button-group { gap: 8px; } .btn-cancel, .btn-save { max-width: none; } }
     </style>
 </head>
 <body>
@@ -193,7 +36,7 @@
     <div class="write-container">
         <h2 id="page-title">사진게시판 글쓰기</h2>
         <input type="text" id="title" placeholder="제목을 입력하세요" autocomplete="off">
-        <input type="text" id="author" placeholder="작성자 닉네임 로딩 중..." readonly>
+        <input type="text" id="author" placeholder="닉네임을 입력해주세요">
 
         <div class="photo-upload-section">
             <label for="image-upload" class="photo-btn">
@@ -213,138 +56,95 @@
     </div>
 
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
+        // 🟢 쫌쫌님의 새 프로젝트(final) 설정 적용
         const firebaseConfig = {
-            apiKey: "AIzaSyCP4Ur--4UGGpNSK_P7qRvnVFDZbqn436A",
-            authDomain: "mellow-joyoon.firebaseapp.com",
-            projectId: "mellow-joyoon",
-            storageBucket: "mellow-joyoon.firebasestorage.app",
-            messagingSenderId: "556097417487",
-            appId: "1:556097417487:web:0dca0eb26ba28d893c4e7a"
+            apiKey: "AIzaSyCbdCDMCCDfAlxgJGnkYrsK5czUmVhi6-c",
+            authDomain: "mellow-joyoon-final.firebaseapp.com",
+            projectId: "mellow-joyoon-final",
+            storageBucket: "mellow-joyoon-final.firebasestorage.app",
+            messagingSenderId: "947377190182",
+            appId: "1:947377190182:web:051cef6c2c810dc0a63de7"
         };
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        const auth = getAuth(app);
+        const storage = getStorage(app);
 
-        let currentUserName = "";
-        let uploadedImages = [];
-        let isSaving = false;
+        let selectedFiles = []; // 실제 파일 객체를 담을 배열
 
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                currentUserName = user.displayName || "익명의 팬";
-                document.getElementById("author").value = currentUserName;
-            } else {
-                alert("로그인 후 이용 가능합니다. 😊");
-                location.href = "login.html";
-            }
-        });
-
-        // 🟢 [핵심] 이미지 압축 함수 (아이폰/크롬 전송 실패 방지)
-        async function compressImage(file) {
-            return new Promise((resolve) => {
-                const reader = new FileReader();
-                reader.readAsDataURL(file);
-                reader.onload = (event) => {
-                    const img = new Image();
-                    img.src = event.target.result;
-                    img.onload = () => {
-                        const canvas = document.createElement("canvas");
-                        const MAX_WIDTH = 1200; // 최대 가로 1200px로 제한 (고화질 유지하면서 용량 최적화)
-                        let width = img.width;
-                        let height = img.height;
-
-                        if (width > MAX_WIDTH) {
-                            height *= MAX_WIDTH / width;
-                            width = MAX_WIDTH;
-                        }
-                        canvas.width = width;
-                        canvas.height = height;
-                        const ctx = canvas.getContext("2d");
-                        ctx.drawImage(img, 0, 0, width, height);
-                        // 품질 0.7 정도로 압축하여 전송 오류 방지
-                        resolve(canvas.toDataURL("image/jpeg", 0.7));
-                    };
-                };
-            });
-        }
-
-        document.getElementById("image-upload").addEventListener("change", async function(e) {
-            const files = e.target.files;
+        // 📸 사진 선택 시 미리보기 처리 (파일은 따로 보관)
+        document.getElementById("image-upload").addEventListener("change", function(e) {
+            const files = Array.from(e.target.files);
             const previewContainer = document.getElementById("photo-preview-container");
 
-            for (const file of Array.from(files)) {
-                if (uploadedImages.length >= 5) {
-                    alert("사진은 최대 5장까지 가능합니다.");
-                    break;
-                }
+            files.forEach(file => {
+                if (selectedFiles.length >= 5) return alert("최대 5장까지 가능합니다.");
                 
-                try {
-                    const compressedBase64 = await compressImage(file);
-                    uploadedImages.push(compressedBase64);
-                    
+                selectedFiles.push(file);
+                const reader = new FileReader();
+                reader.onload = (event) => {
                     const div = document.createElement("div");
                     div.className = "preview-box";
-                    div.innerHTML = `<img src="${compressedBase64}"><div class="del-btn">×</div>`;
+                    div.innerHTML = `<img src="${event.target.result}"><div class="del-btn">×</div>`;
                     div.querySelector(".del-btn").onclick = () => {
-                        uploadedImages = uploadedImages.filter(img => img !== compressedBase64);
+                        selectedFiles = selectedFiles.filter(f => f !== file);
                         div.remove();
                     };
                     previewContainer.appendChild(div);
-                } catch (err) {
-                    console.error("이미지 처리 실패:", err);
-                }
-            }
+                };
+                reader.readAsDataURL(file);
+            });
         });
 
-        document.getElementById("saveBtn").addEventListener("click", async () => {
+        // 🚀 등록 버튼 클릭 (Storage 업로드 + DB 저장)
+        document.getElementById("saveBtn").onclick = async () => {
             const title = document.getElementById("title").value.trim();
             const content = document.getElementById("content").value.trim();
+            const author = document.getElementById("author").value.trim();
 
-            if (!title || !content) {
-                alert("제목과 내용을 모두 입력해 주세요!");
-                return;
+            if (!title || !content || !author || selectedFiles.length === 0) {
+                return alert("내용과 사진을 모두 확인해 주세요! 📸");
             }
 
-            if (uploadedImages.length === 0) {
-                alert("사진게시판은 최소 1장의 사진이 필요합니다. 📸");
-                return;
-            }
-
-            if (isSaving) return;
-            isSaving = true;
-            const saveBtn = document.getElementById("saveBtn");
-            saveBtn.disabled = true;
-            saveBtn.innerText = "등록 중...";
+            const btn = document.getElementById("saveBtn");
+            btn.disabled = true;
+            btn.innerText = "업로드 중...";
 
             try {
-                await addDoc(collection(db, "posts"), { // 자유게시판 통합 필터를 위해 'posts' 컬렉션 유지
+                const imageUrls = [];
+
+                // 1. 모든 파일을 Storage 창고에 하나씩 업로드
+                for (const file of selectedFiles) {
+                    const storageRef = ref(storage, 'photos/' + Date.now() + "_" + file.name);
+                    const snapshot = await uploadBytes(storageRef, file);
+                    const url = await getDownloadURL(snapshot.ref);
+                    imageUrls.push(url);
+                }
+
+                // 2. 업로드된 사진 주소들을 DB 'photo_posts' 서랍에 저장
+                await addDoc(collection(db, "photo_posts"), {
                     title: title,
                     content: content,
-                    author: currentUserName,
-                    authorId: auth.currentUser.uid,
-                    images: uploadedImages,
-                    thumbnail: uploadedImages[0], 
-                    category: "photo", // 사진 게시판 구분값
-                    views: 0,
-                    likes: 0,
+                    author: author,
+                    images: imageUrls,
+                    thumbnail: imageUrls[0], // 첫 번째 사진을 썸네일로
                     createdAt: serverTimestamp()
                 });
 
-                alert("사진이 성공적으로 등록되었습니다! ✨");
+                alert("성공적으로 등록되었습니다! ✨");
                 location.href = "photo-board.html";
-            } catch (error) {
-                console.error("등록 중 오류 발생: ", error);
-                alert("등록에 실패했습니다. 용량이 너무 큰 사진이 포함되었을 수 있습니다.");
-                isSaving = false;
-                saveBtn.disabled = false;
-                saveBtn.innerText = "등록하기";
+
+            } catch (err) {
+                console.error(err);
+                alert("등록 실패 ㅠㅠ 용량이 너무 큰지 확인해보세요!");
+                btn.disabled = false;
+                btn.innerText = "등록하기";
             }
-        });
+        };
     </script>
 </body>
 </html>
