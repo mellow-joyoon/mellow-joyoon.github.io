@@ -23,7 +23,6 @@
         body { 
             background-color: var(--bg-cream); 
             font-family: 'Noto Sans KR', 'Apple SD Gothic Neo', sans-serif; 
-            /* 아이폰/갤럭시 상단 노치 및 하단 홈바 여백 자동 대응 */
             padding: env(safe-area-inset-top) 10px calc(20px + env(safe-area-inset-bottom));
             color: var(--text-main); 
             display: flex; flex-direction: column; align-items: center;
@@ -31,14 +30,12 @@
             -webkit-text-size-adjust: none;
         }
 
-        /* 배경 구슬 효과 (고정 위치 유지) */
         .deco-circle { position: fixed; border-radius: 50%; z-index: -1; filter: blur(40px); opacity: 0.4; animation: pulse 6s infinite alternate; }
         .circle-1 { width: clamp(200px, 40vw, 350px); height: clamp(200px, 40vw, 350px); background: var(--happy-pink); top: -100px; left: -100px; }
         .circle-2 { width: clamp(150px, 30vw, 300px); height: clamp(150px, 30vw, 300px); background: var(--sunny-yellow); bottom: -50px; right: -50px; }
 
         @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.1); } }
 
-        /* 상단 네비게이션 (반응형 최적화) */
         .top-bar {
             width: 100%; max-width: 1000px; margin: 15px 0;
             display: flex; justify-content: space-between; align-items: center;
@@ -50,19 +47,17 @@
         .nav-links a { text-decoration: none; color: var(--happy-pink); font-weight: 900; font-size: clamp(12px, 3.5vw, 14px); }
         .nav-links a.active { color: #d63384; text-decoration: underline; }
 
-        /* 사진 게시판 컨테이너 */
         .photo-container { 
             width: 100%; max-width: 1000px; background: var(--card-white); 
             padding: clamp(15px, 4vw, 30px); 
             border: 2px solid #fff; border-radius: clamp(15px, 5vw, 30px); 
             backdrop-filter: blur(10px);
-            margin-bottom: 40px;
+            margin-bottom: 20px;
         }
         
         .board-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
         .board-header h2 { font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: clamp(1.5rem, 6vw, 2rem); }
 
-        /* 🖼️ 그리드 레이아웃 (PC 4열, 태블릿 3열, 모바일 2열 자동 조절) */
         .photo-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(clamp(140px, 45%, 220px), 1fr));
@@ -75,7 +70,7 @@
             cursor: pointer;
         }
         .photo-card:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
-        .photo-card:active { transform: scale(0.97); } /* 모바일 터치 피드백 */
+        .photo-card:active { transform: scale(0.97); }
         
         .photo-img { width: 100%; aspect-ratio: 1/1; object-fit: cover; background: #f9f9f9; display: block; }
         
@@ -90,11 +85,24 @@
         }
         .btn-write:active { transform: translateY(2px); box-shadow: 0 2px 0px #e05e7a; }
 
-        /* 📱 모바일 특화 스타일 */
+        /* 🔘 페이징 버튼 영역 */
+        .pagination {
+            display: flex; justify-content: center; align-items: center; gap: 15px;
+            margin: 10px 0 40px; width: 100%; max-width: 1000px;
+        }
+        .page-btn {
+            background: white; border: 2px solid var(--happy-pink); color: var(--happy-pink);
+            padding: 10px 20px; border-radius: 25px; font-weight: bold; cursor: pointer;
+            transition: 0.2s; font-size: 14px; box-shadow: 0 3px 6px rgba(0,0,0,0.05);
+        }
+        .page-btn:disabled { border-color: #eee; color: #ccc; cursor: not-allowed; box-shadow: none; }
+        .page-btn:not(:disabled):hover { background: var(--happy-pink); color: white; }
+
         @media (max-width: 480px) {
             .photo-info { padding: 8px; }
             .photo-title { font-size: 13px; }
             .photo-meta { font-size: 10px; }
+            .pagination { gap: 10px; }
         }
     </style>
 </head>
@@ -123,9 +131,14 @@
         </div>
     </div>
 
+    <div class="pagination">
+        <button id="prevBtn" class="page-btn" onclick="location.reload()">처음으로</button>
+        <button id="nextBtn" class="page-btn">다음 사진 더보기</button>
+    </div>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, query, orderBy, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, query, orderBy, limit, startAfter, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCP4Ur--4UGGpNSK_P7qRvnVFDZbqn436A",
@@ -139,42 +152,73 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
+        let lastVisible = null; 
+        
+        // 🟢 [핵심] 기기별 노출 개수 설정 (PC: 6개, 모바일: 4개)
+        const getPageSize = () => {
+            return window.innerWidth <= 768 ? 4 : 6;
+        };
+
         async function loadPhotos() {
             const photoList = document.getElementById("photo-list");
+            const pageSize = getPageSize();
+            
             try {
-                const q = query(
-                    collection(db, "photo_posts"), 
-                    orderBy("createdAt", "desc")
-                );
+                let q;
+                // 'photo_posts' 컬렉션을 사용하여 사진이 안 뜨는 문제 해결
+                const photoRef = collection(db, "photo_posts"); 
                 
+                if (lastVisible) {
+                    q = query(photoRef, orderBy("createdAt", "desc"), startAfter(lastVisible), limit(pageSize));
+                } else {
+                    q = query(photoRef, orderBy("createdAt", "desc"), limit(pageSize));
+                }
+
                 const snapshot = await getDocs(q);
                 
-                let htmlContent = "";
-                let hasAnyPhoto = false;
+                if (snapshot.empty) {
+                    if (!lastVisible) {
+                        photoList.innerHTML = "<p style='grid-column: 1/-1; text-align: center; padding: 50px; color: #bbb;'>아직 등록된 사진이 없어요. 📸</p>";
+                    } else {
+                        alert("마지막 사진입니다! ✨");
+                    }
+                    document.getElementById("nextBtn").disabled = true;
+                    document.getElementById("nextBtn").innerText = "마지막 사진입니다";
+                    return;
+                }
+
+                lastVisible = snapshot.docs[snapshot.docs.length - 1];
+                
+                // 기존 내용을 지우지 않고 뒤에 붙이는 "더보기" 방식으로 구현 (UX 향상)
+                if (!lastVisible || photoList.querySelector('#loading-msg')) {
+                    photoList.innerHTML = "";
+                }
 
                 snapshot.forEach((doc) => {
                     const data = doc.data();
-                    hasAnyPhoto = true;
-                    
-                    const thumb = data.imageUrl || data.thumbnail || (data.images && data.images[0]) || "https://via.placeholder.com/300?text=Mellow+Joyoon";
+                    // 다양한 이미지 필드명 대응 (thumbnail, images[0] 등)
+                    const thumb = data.thumbnail || (data.images && data.images[0]) || "https://via.placeholder.com/300?text=No+Image";
 
-                    htmlContent += `
-                        <div class="photo-card" onclick="location.href='photo-view.html?id=${doc.id}'">
-                            <img src="${thumb}" class="photo-img" alt="post image" onerror="this.src='https://via.placeholder.com/300?text=No+Image'">
-                            <div class="photo-info">
-                                <div class="photo-title">${data.title}</div>
-                                <div class="photo-meta">
-                                    <span>${data.author}</span>
-                                    <span>조회 ${data.views || 0}</span>
-                                </div>
+                    const card = document.createElement("div");
+                    card.className = "photo-card";
+                    card.onclick = () => location.href = `photo-view.html?id=${doc.id}`;
+                    card.innerHTML = `
+                        <img src="${thumb}" class="photo-img" alt="post image" loading="lazy" onerror="this.src='https://via.placeholder.com/300?text=No+Image'">
+                        <div class="photo-info">
+                            <div class="photo-title">${data.title}</div>
+                            <div class="photo-meta">
+                                <span>${data.author}</span>
+                                <span>조회 ${data.views || 0}</span>
                             </div>
-                        </div>`;
+                        </div>
+                    `;
+                    photoList.appendChild(card);
                 });
 
-                if (!hasAnyPhoto) {
-                    photoList.innerHTML = "<p style='grid-column: 1/-1; text-align: center; padding: 50px; color: #bbb;'>아직 등록된 사진이 없어요. 첫 번째 사진을 공유해 주세요! 📸</p>";
-                } else {
-                    photoList.innerHTML = htmlContent;
+                // 가져온 개수가 설정한 페이지 사이즈보다 적으면 마지막 페이지로 간주
+                if (snapshot.docs.length < pageSize) {
+                    document.getElementById("nextBtn").disabled = true;
+                    document.getElementById("nextBtn").innerText = "마지막 사진입니다";
                 }
 
             } catch (e) {
@@ -182,6 +226,11 @@
                 photoList.innerHTML = "<p style='grid-column: 1/-1; text-align: center; padding: 50px;'>데이터를 불러오는 중 오류가 발생했습니다.</p>";
             }
         }
+
+        // 버튼 이벤트
+        document.getElementById("nextBtn").addEventListener("click", loadPhotos);
+
+        // 초기 로딩
         loadPhotos();
     </script>
 </body>
