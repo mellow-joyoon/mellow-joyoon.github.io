@@ -85,7 +85,6 @@
         }
         .btn-write:active { transform: translateY(2px); box-shadow: 0 2px 0px #e05e7a; }
 
-        /* 🔘 페이징 버튼 영역 */
         .pagination {
             display: flex; justify-content: center; align-items: center; gap: 15px;
             margin: 10px 0 40px; width: 100%; max-width: 1000px;
@@ -154,20 +153,18 @@
 
         let lastVisible = null; 
         
-        // 🟢 [핵심] 기기별 노출 개수 설정 (PC: 6개, 모바일: 4개)
-        const getPageSize = () => {
-            return window.innerWidth <= 768 ? 4 : 6;
-        };
+        // PC: 6개, 모바일: 4개 설정 유지
+        const getPageSize = () => window.innerWidth <= 768 ? 4 : 6;
 
         async function loadPhotos() {
             const photoList = document.getElementById("photo-list");
             const pageSize = getPageSize();
             
             try {
-                let q;
-                // 'photo_posts' 컬렉션을 사용하여 사진이 안 뜨는 문제 해결
+                // 아이폰 크롬 안정성을 위해 query 구조를 가장 표준적인 방식으로 작성
                 const photoRef = collection(db, "photo_posts"); 
-                
+                let q;
+
                 if (lastVisible) {
                     q = query(photoRef, orderBy("createdAt", "desc"), startAfter(lastVisible), limit(pageSize));
                 } else {
@@ -187,51 +184,56 @@
                     return;
                 }
 
-                lastVisible = snapshot.docs[snapshot.docs.length - 1];
-                
-                // 기존 내용을 지우지 않고 뒤에 붙이는 "더보기" 방식으로 구현 (UX 향상)
-                if (!lastVisible || photoList.querySelector('#loading-msg')) {
+                // 로딩 메시지 제거 (첫 로드 시에만)
+                if (!lastVisible) {
                     photoList.innerHTML = "";
                 }
 
+                lastVisible = snapshot.docs[snapshot.docs.length - 1];
+
+                // 아이폰 크롬에서 DOM 생성 속도와 렌더링 타이밍을 맞추기 위한 DocumentFragment 사용
+                const fragment = document.createDocumentFragment();
+
                 snapshot.forEach((doc) => {
                     const data = doc.data();
-                    // 다양한 이미지 필드명 대응 (thumbnail, images[0] 등)
-                    const thumb = data.thumbnail || (data.images && data.images[0]) || "https://via.placeholder.com/300?text=No+Image";
+                    const thumb = data.imageUrl || data.thumbnail || (data.images && data.images[0]) || "https://via.placeholder.com/300?text=No+Image";
 
                     const card = document.createElement("div");
                     card.className = "photo-card";
-                    card.onclick = () => location.href = `photo-view.html?id=${doc.id}`;
+                    // 아이폰 터치 이벤트 호환성을 위해 직접 onclick 할당
+                    card.onclick = () => { window.location.href = `photo-view.html?id=${doc.id}`; };
+                    
                     card.innerHTML = `
-                        <img src="${thumb}" class="photo-img" alt="post image" loading="lazy" onerror="this.src='https://via.placeholder.com/300?text=No+Image'">
+                        <img src="${thumb}" class="photo-img" alt="post" loading="lazy" onerror="this.src='https://via.placeholder.com/300?text=No+Image'">
                         <div class="photo-info">
-                            <div class="photo-title">${data.title}</div>
+                            <div class="photo-title">${data.title || '제목 없음'}</div>
                             <div class="photo-meta">
-                                <span>${data.author}</span>
+                                <span>${data.author || '익명'}</span>
                                 <span>조회 ${data.views || 0}</span>
                             </div>
                         </div>
                     `;
-                    photoList.appendChild(card);
+                    fragment.appendChild(card);
                 });
 
-                // 가져온 개수가 설정한 페이지 사이즈보다 적으면 마지막 페이지로 간주
+                photoList.appendChild(fragment);
+
                 if (snapshot.docs.length < pageSize) {
                     document.getElementById("nextBtn").disabled = true;
                     document.getElementById("nextBtn").innerText = "마지막 사진입니다";
                 }
 
             } catch (e) {
-                console.error("불러오기 실패:", e);
-                photoList.innerHTML = "<p style='grid-column: 1/-1; text-align: center; padding: 50px;'>데이터를 불러오는 중 오류가 발생했습니다.</p>";
+                console.error("아이폰 크롬 로드 실패:", e);
+                // 인덱스 문제일 가능성이 있으므로 에러 시 알림 대신 콘솔에 상세 출력 유도
+                photoList.innerHTML = "<p style='grid-column: 1/-1; text-align: center; padding: 50px;'>데이터를 불러오는 데 실패했습니다.</p>";
             }
         }
 
-        // 버튼 이벤트
         document.getElementById("nextBtn").addEventListener("click", loadPhotos);
 
-        // 초기 로딩
-        loadPhotos();
+        // 페이지 로드 시 즉시 실행
+        window.addEventListener('DOMContentLoaded', loadPhotos);
     </script>
 </body>
 </html>
