@@ -27,7 +27,11 @@
         .photo-img { width: 100%; aspect-ratio: 1/1; object-fit: cover; background: #f0f0f0; display: block; border-bottom: 1px solid #eee; }
         .photo-info { padding: 12px; }
         .photo-title { font-size: 14px; font-weight: bold; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .photo-meta { font-size: 11px; color: #888; display: flex; justify-content: space-between; }
+        
+        /* 👁️ [조회수 표시 스타일 추가] */
+        .photo-meta { font-size: 11px; color: #888; display: flex; justify-content: space-between; align-items: center; }
+        .view-count { color: #bbb; font-weight: bold; }
+
         .btn-write { background: var(--happy-pink); color: white; padding: 10px 20px; font-size: clamp(12px, 3.5vw, 14px); font-weight: 900; border-radius: 50px; text-decoration: none; box-shadow: 0 4px 0px #e05e7a; transition: 0.2s; }
         .pagination { display: flex; justify-content: center; gap: 15px; margin: 10px 0 40px; }
         .page-btn { background: white; border: 2px solid var(--happy-pink); color: var(--happy-pink); padding: 10px 20px; border-radius: 25px; font-weight: bold; cursor: pointer; }
@@ -62,7 +66,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getFirestore, collection, query, orderBy, limit, startAfter, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // 🟢 쫌쫌님의 새 프로젝트(mellow-joyoon-final) 정보 - 동기화 완료!
         const firebaseConfig = {
             apiKey: "AIzaSyCbdCDMCCDfAlxgJGnkYrsK5czUmVhi6-c",
             authDomain: "mellow-joyoon-final.firebaseapp.com",
@@ -76,20 +79,15 @@
         const db = getFirestore(app);
         let lastVisible = null;
 
-        // 📸 [핵심 수정] 새 저장 방식에 맞춰 사진 주소를 가져오는 함수
         function getBestImage(data) {
-            // thumbnail 필드가 있으면 최우선으로 사용, 없으면 images 배열의 첫 번째 사용
             if (data.thumbnail) return data.thumbnail;
             if (data.images && data.images.length > 0) return data.images[0];
-            // 둘 다 없으면 기본 이미지
             return "https://via.placeholder.com/300?text=No+Image";
         }
 
         async function loadPhotos(isMore = false) {
             const photoList = document.getElementById("photo-list");
             const pageSize = 8;
-            
-            // 쫌쫌님의 새 데이터 서랍 이름: "photo_posts"
             const photoRef = collection(db, "photo_posts");
             let q;
 
@@ -116,18 +114,22 @@
                     card.className = "photo-card";
                     card.onclick = () => { window.location.href = `photo-view.html?id=${doc.id}`; };
                     
+                    // 🟢 조회수(views) 데이터 매칭 추가
                     card.innerHTML = `
                         <img src="${getBestImage(data)}" class="photo-img" loading="lazy" onerror="this.src='https://via.placeholder.com/300?text=Image+Error'">
                         <div class="photo-info">
                             <div class="photo-title">${data.title || '제목 없음'}</div>
-                            <div class="photo-meta"><span>${data.author || '익명의 팬'}</span></div>
+                            <div class="photo-meta">
+                                <span>${data.author || '익명의 팬'}</span>
+                                <span class="view-count">👁️ ${data.views || 0}</span>
+                            </div>
                         </div>
                     `;
                     photoList.appendChild(card);
                 });
             } catch (e) {
                 console.error("로딩 에러:", e);
-                photoList.innerHTML = "<p style='grid-column: 1/-1; text-align: center; padding: 50px; color: #ff85a1;'>데이터를 불러오는 중 오류가 발생했습니다. (색인 생성 중일 수 있습니다)</p>";
+                photoList.innerHTML = "<p style='grid-column: 1/-1; text-align: center; padding: 50px; color: #ff85a1;'>데이터를 불러오는 중 오류가 발생했습니다.</p>";
             }
         }
 
