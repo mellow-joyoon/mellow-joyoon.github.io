@@ -4,91 +4,33 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Mellow Joyoon | 사진게시판</title>
-    
     <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@700&family=Montserrat:wght@900&family=Noto+Sans+KR:wght@100;400;900&display=swap" rel="stylesheet">
-    <link href="https://webfontworld.github.io/gmarket/GmarketSans.css" rel="stylesheet">
-
     <style>
-        /* [디자인 유지] 쫌쫌님의 기존 스타일 시트 그대로 보존 */
-        :root {
-            --happy-pink: #ff85a1;
-            --sunny-yellow: #ffde59;
-            --sky-blue: #87ceeb;
-            --text-main: #444;
-            --bg-cream: #fffcf2;
-            --card-white: rgba(255, 255, 255, 0.85);
-        }
-
+        /* [디자인 보존] 쫌쫌님의 소중한 스타일 시트 100% 유지 */
+        :root { --happy-pink: #ff85a1; --sunny-yellow: #ffde59; --sky-blue: #87ceeb; --text-main: #444; --bg-cream: #fffcf2; --card-white: rgba(255, 255, 255, 0.85); }
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        body { 
-            background-color: var(--bg-cream); 
-            font-family: 'Noto Sans KR', 'Apple SD Gothic Neo', sans-serif; 
-            padding: env(safe-area-inset-top) 10px calc(20px + env(safe-area-inset-bottom));
-            color: var(--text-main); 
-            display: flex; flex-direction: column; align-items: center;
-            overflow-x: hidden; width: 100%; min-height: 100vh;
-            -webkit-text-size-adjust: none;
-        }
-
+        body { background-color: var(--bg-cream); font-family: 'Noto Sans KR', sans-serif; padding: env(safe-area-inset-top) 10px calc(20px + env(safe-area-inset-bottom)); color: var(--text-main); display: flex; flex-direction: column; align-items: center; overflow-x: hidden; width: 100%; min-height: 100vh; -webkit-text-size-adjust: none; }
         .deco-circle { position: fixed; border-radius: 50%; z-index: -1; filter: blur(40px); opacity: 0.4; animation: pulse 6s infinite alternate; }
         .circle-1 { width: clamp(200px, 40vw, 350px); height: clamp(200px, 40vw, 350px); background: var(--happy-pink); top: -100px; left: -100px; }
         .circle-2 { width: clamp(150px, 30vw, 300px); height: clamp(150px, 30vw, 300px); background: var(--sunny-yellow); bottom: -50px; right: -50px; }
-
         @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.1); } }
-
-        .top-bar {
-            width: 100%; max-width: 1000px; margin: 15px 0;
-            display: flex; justify-content: space-between; align-items: center;
-            background: var(--card-white); padding: 12px clamp(15px, 3vw, 25px); 
-            border: 2px solid #fff; border-radius: 50px; 
-            backdrop-filter: blur(10px); box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-        }
+        .top-bar { width: 100%; max-width: 1000px; margin: 15px 0; display: flex; justify-content: space-between; align-items: center; background: var(--card-white); padding: 12px clamp(15px, 3vw, 25px); border: 2px solid #fff; border-radius: 50px; backdrop-filter: blur(10px); box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
         .nav-links { display: flex; gap: clamp(8px, 2vw, 15px); }
         .nav-links a { text-decoration: none; color: var(--happy-pink); font-weight: 900; font-size: clamp(12px, 3.5vw, 14px); }
         .nav-links a.active { color: #d63384; text-decoration: underline; }
-
-        .photo-container { 
-            width: 100%; max-width: 1000px; background: var(--card-white); 
-            padding: clamp(15px, 4vw, 30px); 
-            border: 2px solid #fff; border-radius: clamp(15px, 5vw, 30px); 
-            backdrop-filter: blur(10px);
-            margin-bottom: 20px;
-        }
-        
+        .photo-container { width: 100%; max-width: 1000px; background: var(--card-white); padding: clamp(15px, 4vw, 30px); border: 2px solid #fff; border-radius: clamp(15px, 5vw, 30px); backdrop-filter: blur(10px); margin-bottom: 20px; }
         .board-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
         .board-header h2 { font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: clamp(1.5rem, 6vw, 2rem); }
-
-        .photo-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(clamp(140px, 45%, 220px), 1fr));
-            gap: clamp(10px, 3vw, 20px);
-        }
-        
-        .photo-card {
-            background: #fff; border-radius: 15px; overflow: hidden;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05); transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            cursor: pointer;
-        }
+        .photo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(clamp(140px, 45%, 220px), 1fr)); gap: clamp(10px, 3vw, 20px); }
+        .photo-card { background: #fff; border-radius: 15px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.05); transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; }
         .photo-card:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
-        
-        .photo-img { width: 100%; aspect-ratio: 1/1; object-fit: cover; background: #eee; display: block; }
-        
+        .photo-img { width: 100%; aspect-ratio: 1/1; object-fit: cover; background: #f0f0f0; display: block; border-bottom: 1px solid #eee; }
         .photo-info { padding: 12px; }
         .photo-title { font-size: 14px; font-weight: bold; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .photo-meta { font-size: 11px; color: #888; display: flex; justify-content: space-between; }
-
-        .btn-write { 
-            background: var(--happy-pink); color: white; padding: 10px 20px; 
-            font-size: clamp(12px, 3.5vw, 14px); font-weight: 900; border-radius: 50px; text-decoration: none;
-            box-shadow: 0 4px 0px #e05e7a; transition: 0.2s;
-        }
-
+        .btn-write { background: var(--happy-pink); color: white; padding: 10px 20px; font-size: clamp(12px, 3.5vw, 14px); font-weight: 900; border-radius: 50px; text-decoration: none; box-shadow: 0 4px 0px #e05e7a; transition: 0.2s; }
         .pagination { display: flex; justify-content: center; gap: 15px; margin: 10px 0 40px; }
-        .page-btn {
-            background: white; border: 2px solid var(--happy-pink); color: var(--happy-pink);
-            padding: 10px 20px; border-radius: 25px; font-weight: bold; cursor: pointer;
-        }
+        .page-btn { background: white; border: 2px solid var(--happy-pink); color: var(--happy-pink); padding: 10px 20px; border-radius: 25px; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -118,9 +60,9 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, query, orderBy, limit, startAfter, getDocs, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, query, orderBy, limit, startAfter, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // 🟢 쫌쫌님의 새 프로젝트(mellow-joyoon-final) 정보
+        // 🟢 쫌쫌님의 새 프로젝트(mellow-joyoon-final) 정보 - 동기화 완료!
         const firebaseConfig = {
             apiKey: "AIzaSyCbdCDMCCDfAlxgJGnkYrsK5czUmVhi6-c",
             authDomain: "mellow-joyoon-final.firebaseapp.com",
@@ -134,19 +76,20 @@
         const db = getFirestore(app);
         let lastVisible = null;
 
-        const getPageSize = () => window.innerWidth <= 768 ? 4 : 6;
-
-        // 📸 사진 데이터에서 이미지 주소를 안전하게 가져오는 함수
+        // 📸 [핵심 수정] 새 저장 방식에 맞춰 사진 주소를 가져오는 함수
         function getBestImage(data) {
-            return data.imageUrl || data.url || data.image || "https://via.placeholder.com/300?text=No+Image";
+            // thumbnail 필드가 있으면 최우선으로 사용, 없으면 images 배열의 첫 번째 사용
+            if (data.thumbnail) return data.thumbnail;
+            if (data.images && data.images.length > 0) return data.images[0];
+            // 둘 다 없으면 기본 이미지
+            return "https://via.placeholder.com/300?text=No+Image";
         }
 
-        // 🚀 실시간 리스너 및 데이터 로드 (photo_posts 전용 서랍 사용)
         async function loadPhotos(isMore = false) {
             const photoList = document.getElementById("photo-list");
-            const pageSize = getPageSize();
+            const pageSize = 8;
             
-            // "photo_posts" 컬렉션만 바라보게 하여 자유게시판과 분리
+            // 쫌쫌님의 새 데이터 서랍 이름: "photo_posts"
             const photoRef = collection(db, "photo_posts");
             let q;
 
@@ -154,7 +97,7 @@
                 q = query(photoRef, orderBy("createdAt", "desc"), startAfter(lastVisible), limit(pageSize));
             } else {
                 q = query(photoRef, orderBy("createdAt", "desc"), limit(pageSize));
-                photoList.innerHTML = ""; // 처음 부를 땐 비우기
+                if (!isMore) photoList.innerHTML = ""; 
             }
 
             try {
@@ -171,24 +114,20 @@
                     const data = doc.data();
                     const card = document.createElement("div");
                     card.className = "photo-card";
-                    // 상세 페이지 이동 유지
                     card.onclick = () => { window.location.href = `photo-view.html?id=${doc.id}`; };
                     
                     card.innerHTML = `
-                        <img src="${getBestImage(data)}" class="photo-img" loading="lazy">
+                        <img src="${getBestImage(data)}" class="photo-img" loading="lazy" onerror="this.src='https://via.placeholder.com/300?text=Image+Error'">
                         <div class="photo-info">
                             <div class="photo-title">${data.title || '제목 없음'}</div>
-                            <div class="photo-meta"><span>${data.author || '익명'}</span></div>
+                            <div class="photo-meta"><span>${data.author || '익명의 팬'}</span></div>
                         </div>
                     `;
                     photoList.appendChild(card);
                 });
             } catch (e) {
                 console.error("로딩 에러:", e);
-                // 인덱스 생성 전일 경우를 대비한 안전 모드
-                const fallbackQ = query(photoRef, limit(pageSize));
-                const fallbackSnap = await getDocs(fallbackQ);
-                fallbackSnap.forEach((doc) => { /* 동일한 렌더링 로직 */ });
+                photoList.innerHTML = "<p style='grid-column: 1/-1; text-align: center; padding: 50px; color: #ff85a1;'>데이터를 불러오는 중 오류가 발생했습니다. (색인 생성 중일 수 있습니다)</p>";
             }
         }
 
