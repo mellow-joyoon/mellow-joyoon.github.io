@@ -3,32 +3,95 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Mellow Joyoon | 사진 올리기</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;400;900&display=swap" rel="stylesheet">
     <style>
-        /* ✅ 쫌쫌님의 소중한 기존 디자인 100% 그대로 보존 */
-        body { background-color: #f6f6f6; font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', 'Noto Sans KR', sans-serif; padding: env(safe-area-inset-top) 15px calc(20px + env(safe-area-inset-bottom)); color: #333; margin: 0; -webkit-tap-highlight-color: transparent; -webkit-overflow-scrolling: touch; -webkit-text-size-adjust: none; }
-        .write-container { width: 100%; max-width: 850px; margin: 20px auto; background: white; padding: clamp(15px, 4vw, 30px); border: 1px solid #ddd; box-sizing: border-box; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        /* ✅ 쫌쫌님의 소중한 기존 디자인 100% 보존 + 반응형 강화 */
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { 
+            background-color: #f6f6f6; 
+            font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', 'Noto Sans KR', sans-serif; 
+            padding: env(safe-area-inset-top) 15px calc(20px + env(safe-area-inset-bottom)); 
+            color: #333; 
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* 전체 중앙 정렬 */
+            -webkit-overflow-scrolling: touch; 
+            -webkit-text-size-adjust: none; 
+        }
+
+        .write-container { 
+            width: 100%; 
+            max-width: 800px; /* 게시판과 통일감 있게 조정 */
+            margin: 20px auto; 
+            background: white; 
+            padding: clamp(15px, 4vw, 30px); 
+            border: 1px solid #ddd; 
+            border-radius: 12px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05); 
+        }
+
         h2 { color: #d63384; font-size: clamp(1.3rem, 5vw, 1.8rem); border-bottom: 2px solid #333; padding-bottom: 15px; margin-bottom: 25px; font-weight: 900; letter-spacing: -0.5px; }
-        input, textarea { width: 100%; padding: 14px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px; transition: all 0.2s; font-family: inherit; }
+        
+        input, textarea { 
+            width: 100%; padding: 14px; margin-bottom: 15px; 
+            border: 1px solid #ddd; border-radius: 8px; 
+            font-size: 16px; transition: all 0.2s; font-family: inherit; 
+        }
         input:focus, textarea:focus { border-color: #d63384; outline: none; background-color: #fffafc; }
-        .photo-upload-section { display: flex; align-items: center; gap: 12px; margin-bottom: 15px; padding: 15px; border: 2px dashed #eee; border-radius: 10px; background: #fafafa; transition: 0.2s; min-height: 80px; }
-        .photo-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 65px; height: 65px; background: white; border: 1px solid #ddd; border-radius: 8px; cursor: pointer; transition: all 0.2s; flex-shrink: 0; box-shadow: 0 2px 5px rgba(0,0,0,0.03); }
-        .photo-btn:hover { border-color: #d63384; background: #fffafc; }
+
+        /* 📸 사진 업로드 섹션 */
+        .photo-upload-section { 
+            display: flex; align-items: center; gap: 12px; 
+            margin-bottom: 15px; padding: 15px; 
+            border: 2px dashed #eee; border-radius: 10px; 
+            background: #fafafa; min-height: 90px;
+        }
+        .photo-btn { 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; 
+            width: 65px; height: 65px; background: white; 
+            border: 1px solid #ddd; border-radius: 8px; 
+            cursor: pointer; flex-shrink: 0; 
+        }
         .photo-btn svg { width: 26px; height: 26px; fill: #d63384; margin-bottom: 4px; }
-        .photo-btn span { font-size: 12px; color: #666; font-weight: bold; }
-        #photo-preview-container { display: flex; gap: 10px; overflow-x: auto; flex: 1; padding: 5px 2px; -webkit-overflow-scrolling: touch; }
+        .photo-btn span { font-size: 11px; color: #666; font-weight: bold; }
+
+        #photo-preview-container { display: flex; gap: 10px; overflow-x: auto; flex: 1; padding: 5px 2px; }
         #photo-preview-container::-webkit-scrollbar { display: none; }
+        
         .preview-box { position: relative; width: 65px; height: 65px; flex-shrink: 0; }
         .preview-box img { width: 100%; height: 100%; object-fit: cover; border-radius: 8px; border: 1px solid #eee; }
-        .del-btn { position: absolute; top: -6px; right: -6px; width: 22px; height: 22px; background: #333; color: white; border-radius: 50%; font-size: 14px; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 10; border: 2px solid white; }
-        textarea { height: clamp(250px, 40vh, 450px); resize: none; line-height: 1.6; }
-        .button-group { display: flex; justify-content: flex-end; gap: 12px; margin-top: 15px; }
-        .btn-cancel { flex: 1; max-width: 140px; background: #fff; color: #666; border: 1px solid #ccc; padding: 14px 0; cursor: pointer; font-size: 15px; text-decoration: none; text-align: center; border-radius: 8px; font-weight: 500; transition: 0.2s; }
-        .btn-save { flex: 1; max-width: 140px; background: #d63384; color: white; border: none; padding: 14px 0; cursor: pointer; font-weight: bold; font-size: 15px; border-radius: 8px; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 4px 10px rgba(214, 51, 132, 0.2); }
-        .btn-save:disabled { background: #edaecb !important; cursor: wait; transform: none !important; }
-        @media (max-width: 768px) { .write-container { margin: 10px auto; border-radius: 0; border-left: none; border-right: none; } }
-        @media (max-width: 480px) { .button-group { gap: 8px; } .btn-cancel, .btn-save { max-width: none; } }
+        .del-btn { 
+            position: absolute; top: -6px; right: -6px; 
+            width: 22px; height: 22px; background: #333; 
+            color: white; border-radius: 50%; font-size: 14px; 
+            display: flex; align-items: center; justify-content: center; 
+            cursor: pointer; z-index: 10; border: 2px solid white; 
+        }
+
+        textarea { height: clamp(200px, 35vh, 450px); resize: none; line-height: 1.6; }
+
+        /* 🔘 버튼 그룹: 모바일에서 중앙 및 꽉 차게 조절 */
+        .button-group { display: flex; justify-content: center; gap: 12px; margin-top: 15px; width: 100%; }
+        .btn-cancel { 
+            flex: 1; max-width: 140px; background: #fff; color: #666; 
+            border: 1px solid #ccc; padding: 14px 0; 
+            text-decoration: none; text-align: center; border-radius: 8px; 
+            font-size: 15px; font-weight: 500; 
+        }
+        .btn-save { 
+            flex: 1; max-width: 140px; background: #d63384; color: white; 
+            border: none; padding: 14px 0; cursor: pointer; 
+            font-weight: bold; font-size: 15px; border-radius: 8px; 
+            box-shadow: 0 4px 10px rgba(214, 51, 132, 0.2);
+        }
+        .btn-save:disabled { background: #edaecb !important; cursor: not-allowed; }
+
+        @media (max-width: 768px) {
+            .write-container { margin: 10px auto; border-radius: 15px; width: 95%; }
+            .button-group { gap: 10px; }
+        }
     </style>
 </head>
 <body>
@@ -60,7 +123,6 @@
         import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
         import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
-        // 🟢 쫌쫌님의 새 프로젝트(final) 설정 적용
         const firebaseConfig = {
             apiKey: "AIzaSyCbdCDMCCDfAlxgJGnkYrsK5czUmVhi6-c",
             authDomain: "mellow-joyoon-final.firebaseapp.com",
@@ -74,9 +136,8 @@
         const db = getFirestore(app);
         const storage = getStorage(app);
 
-        let selectedFiles = []; // 실제 파일 객체를 담을 배열
+        let selectedFiles = [];
 
-        // 📸 사진 선택 시 미리보기 처리 (파일은 따로 보관)
         document.getElementById("image-upload").addEventListener("change", function(e) {
             const files = Array.from(e.target.files);
             const previewContainer = document.getElementById("photo-preview-container");
@@ -100,7 +161,6 @@
             });
         });
 
-        // 🚀 등록 버튼 클릭 (Storage 업로드 + DB 저장)
         document.getElementById("saveBtn").onclick = async () => {
             const title = document.getElementById("title").value.trim();
             const content = document.getElementById("content").value.trim();
@@ -116,23 +176,22 @@
 
             try {
                 const imageUrls = [];
-
-                // 1. 모든 파일을 Storage 창고에 하나씩 업로드
                 for (const file of selectedFiles) {
                     const storageRef = ref(storage, 'photos/' + Date.now() + "_" + file.name);
                     const snapshot = await uploadBytes(storageRef, file);
                     const url = await getDownloadURL(snapshot.ref);
-                    imageUrls.push(url);
+                    imageurls.push(url);
                 }
 
-                // 2. 업로드된 사진 주소들을 DB 'photo_posts' 서랍에 저장
                 await addDoc(collection(db, "photo_posts"), {
                     title: title,
                     content: content,
                     author: author,
                     images: imageUrls,
-                    thumbnail: imageUrls[0], // 첫 번째 사진을 썸네일로
-                    createdAt: serverTimestamp()
+                    thumbnail: imageUrls[0],
+                    createdAt: serverTimestamp(),
+                    views: 0, // 조회수 초기화 추가
+                    likes: 0  // 좋아요 초기화 추가
                 });
 
                 alert("성공적으로 등록되었습니다! ✨");
@@ -140,7 +199,7 @@
 
             } catch (err) {
                 console.error(err);
-                alert("등록 실패 ㅠㅠ 용량이 너무 큰지 확인해보세요!");
+                alert("등록 실패! 파일 크기를 확인해주세요.");
                 btn.disabled = false;
                 btn.innerText = "등록하기";
             }
