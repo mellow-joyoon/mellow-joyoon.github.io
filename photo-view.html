@@ -37,12 +37,11 @@
         .header-top-line { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
         .post-category { color: var(--happy-pink); font-size: 14px; font-weight: bold; }
         
-        /* ✅ 버튼 그룹 스타일 */
+        /* ✅ 버튼 그룹 (수정, 삭제 순서) */
         .admin-buttons { display: none; gap: 8px; align-items: center; }
         .btn-edit, .btn-delete { 
             background: #fff; border: 1px solid #ddd; padding: 6px 14px; 
             font-size: 13px; cursor: pointer; color: #666; border-radius: 6px; font-weight: bold;
-            transition: all 0.2s ease;
         }
         .btn-edit:hover { border-color: var(--happy-pink); color: var(--happy-pink); background: #fff0f3; }
         .btn-delete:hover { border-color: #333; color: #fff; background: #333; }
@@ -142,16 +141,20 @@
         const postId = urlParams.get('id');
         const ADMIN_EMAIL = "yun786692@gmail.com"; 
 
+        // 로그인 감지 로직 강화
         onAuthStateChanged(auth, (user) => {
-            if (postId) { loadPostDetail(user); }
-            else { location.href = "photo-board.html"; }
+            if (postId) { 
+                loadPostDetail(user); 
+            } else { 
+                location.href = "photo-board.html"; 
+            }
         });
 
         async function loadPostDetail(currentUser) {
             const postRef = doc(db, "photo_posts", postId);
             
             try {
-                // 조회수 상승
+                // 데이터 가져오기 및 조회수 증가
                 await updateDoc(postRef, { views: increment(1) });
                 const docSnap = await getDoc(postRef);
                 
@@ -177,13 +180,17 @@
                         });
                     }
 
-                    // ✅ 버튼 노출 로직 (관리자 이메일 일치 OR 글 작성자 UID 일치)
+                    // ✅ 버튼 노출 로직 (더 직관적이고 강력하게 수정)
+                    const adminBtnBox = document.getElementById("adminButtons");
+                    
                     if (currentUser) {
-                        const isAuthor = data.authorId && (currentUser.uid === data.authorId);
-                        const isAdmin = currentUser.email === ADMIN_EMAIL;
-                        
-                        if (isAuthor || isAdmin) {
-                            document.getElementById("adminButtons").style.display = "flex";
+                        // 1. 관리자 이메일인 경우 무조건 노출
+                        if (currentUser.email === ADMIN_EMAIL) {
+                            adminBtnBox.style.display = "flex";
+                        } 
+                        // 2. 게시글 데이터에 authorId가 있고, 현재 유저 UID와 같은 경우 노출
+                        else if (data.authorId && currentUser.uid === data.authorId) {
+                            adminBtnBox.style.display = "flex";
                         }
                     }
 
@@ -194,19 +201,18 @@
                 }
             } catch (error) { 
                 console.error("오류 상세:", error);
-                document.getElementById("loading").innerText = "게시글을 불러올 수 없습니다."; 
+                document.getElementById("loading").innerText = "오류가 발생했습니다."; 
             }
         }
 
         function attachEvents(postRef) {
-            // 좋아요
             document.getElementById("likeBtn").onclick = async () => {
                 await updateDoc(postRef, { likes: increment(1) });
                 document.getElementById("likeCount").innerText = parseInt(document.getElementById("likeCount").innerText) + 1;
                 document.getElementById("likeBtn").classList.add("active");
             };
 
-            // 삭제 (순서대로 배치된 버튼 이벤트)
+            // 삭제 버튼
             document.getElementById("deleteBtn").onclick = async () => {
                 if (confirm("정말로 삭제하시겠습니까?")) {
                     await deleteDoc(postRef);
@@ -215,7 +221,7 @@
                 }
             };
 
-            // 수정 (순서대로 배치된 버튼 이벤트)
+            // 수정 버튼
             document.getElementById("editBtn").onclick = () => {
                 location.href = `photo-edit.html?id=${postId}`;
             };
