@@ -3,149 +3,148 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Mellow Joyoon | 사진게시판</title>
-    <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@700&family=Montserrat:wght@900&family=Noto+Sans+KR:wght@100;400;900&display=swap" rel="stylesheet">
+    <title>Mellow Joyoon | 사진 보기</title>
+    <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@700&family=Noto+Sans+KR:wght@100;400;900&display=swap" rel="stylesheet">
     <style>
-        :root { --happy-pink: #ff85a1; --sunny-yellow: #ffde59; --sky-blue: #87ceeb; --text-main: #444; --bg-cream: #fffcf2; --card-white: rgba(255, 255, 255, 0.85); }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background-color: var(--bg-cream); font-family: 'Noto Sans KR', sans-serif; padding: env(safe-area-inset-top) 10px calc(20px + env(safe-area-inset-bottom)); color: var(--text-main); display: flex; flex-direction: column; align-items: center; overflow-x: hidden; width: 100%; min-height: 100vh; }
-        
-        .deco-circle { position: fixed; border-radius: 50%; z-index: -1; filter: blur(40px); opacity: 0.4; animation: pulse 6s infinite alternate; }
-        .circle-1 { width: clamp(200px, 40vw, 350px); height: clamp(200px, 40vw, 350px); background: var(--happy-pink); top: -100px; left: -100px; }
-        .circle-2 { width: clamp(150px, 30vw, 300px); height: clamp(150px, 30vw, 300px); background: var(--sunny-yellow); bottom: -50px; right: -50px; }
-        @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.1); } }
-
-        .top-bar { width: 100%; max-width: 1000px; margin: 15px 0; display: flex; justify-content: space-between; align-items: center; background: var(--card-white); padding: 12px 20px; border: 2px solid #fff; border-radius: 50px; backdrop-filter: blur(10px); }
-        .nav-links { display: flex; gap: 12px; }
-        .nav-links a { text-decoration: none; color: var(--happy-pink); font-weight: 900; font-size: 13px; }
-        .nav-links a.active { color: #d63384; text-decoration: underline; }
-
-        .photo-container { width: 100%; max-width: 1000px; background: var(--card-white); padding: 20px; border: 2px solid #fff; border-radius: 25px; backdrop-filter: blur(10px); margin-bottom: 15px; }
-        .board-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .board-header h2 { font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 1.5rem; }
-
-        /* 📸 그리드 설정: PC 3열(6개 노출), 모바일 2열(4개 노출) 최적화 */
-        .photo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
-        @media (max-width: 600px) { 
-            .photo-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; } 
-            .photo-container { padding: 15px; }
-        }
-
-        .photo-card { background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.05); cursor: pointer; }
-        .photo-img { width: 100%; aspect-ratio: 1/1; object-fit: cover; display: block; border-bottom: 1px solid #eee; }
-        .photo-info { padding: 8px 10px; }
-        .photo-title { font-size: 13px; font-weight: bold; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .photo-meta { font-size: 10px; color: #888; display: flex; justify-content: space-between; }
-
-        .btn-write { background: var(--happy-pink); color: white; padding: 8px 16px; font-size: 12px; font-weight: 900; border-radius: 50px; text-decoration: none; box-shadow: 0 3px 0px #e05e7a; }
-
-        .pagination { display: flex; justify-content: center; gap: 8px; margin: 10px 0 30px; }
-        .page-num { background: white; border: 2px solid var(--happy-pink); color: var(--happy-pink); width: 32px; height: 32px; border-radius: 50%; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px; }
-        .page-num.active { background: var(--happy-pink); color: white; }
+        :root { --happy-pink: #ff85a1; --bg-cream: #f6f6f6; }
+        body { background-color: var(--bg-cream); font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', 'Noto Sans KR', sans-serif; padding: env(safe-area-inset-top) 15px calc(20px + env(safe-area-inset-bottom)) 15px; color: #333; margin: 0; line-height: 1.6; word-break: break-all; }
+        .view-container { width: 100%; max-width: 850px; margin: 20px auto; background: white; padding: clamp(20px, 5vw, 40px); border: 1px solid #ddd; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); box-sizing: border-box; }
+        .post-header { border-bottom: 2px solid #f0f0f0; padding-bottom: 20px; margin-bottom: 20px; position: relative; }
+        .header-top-line { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .post-category { color: var(--happy-pink); font-size: 14px; font-weight: bold; }
+        .admin-buttons { display: none; gap: 8px; align-items: center; }
+        .btn-edit, .btn-delete { background: #fff; border: 1px solid #ddd; padding: 6px 14px; font-size: 13px; cursor: pointer; color: #666; border-radius: 6px; font-weight: bold; }
+        .post-title { font-size: clamp(1.5rem, 5vw, 2.2rem); font-weight: 800; margin-bottom: 15px; line-height: 1.3; color: #1a1a1a; }
+        .post-info { display: flex; flex-wrap: wrap; align-items: center; font-size: 13px; color: #888; gap: 12px; }
+        .post-content { font-size: 17px; min-height: 100px; white-space: pre-wrap; padding: 20px 0; color: #444; }
+        #post-images { display: flex; flex-direction: column; gap: 20px; margin: 20px 0; }
+        #post-images img { width: 100%; max-width: 100%; height: auto; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); display: block; }
+        .post-footer { padding-top: 30px; border-top: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
+        .btn-like { background: #fff; border: 1.5px solid #eee; padding: 12px 24px; cursor: pointer; border-radius: 35px; font-size: 16px; display: flex; align-items: center; gap: 8px; }
+        .btn-like.active { border-color: var(--happy-pink); color: var(--happy-pink); background: #fff0f3; }
+        .btn-list { background: #f8f8f8; border: 1px solid #ddd; color: #555; padding: 12px 24px; text-decoration: none; font-size: 15px; border-radius: 8px; }
     </style>
 </head>
 <body>
-    <div class="deco-circle circle-1"></div>
-    <div class="top-bar">
-        <div class="nav-links">
-            <a href="index.html">Home</a>
-            <a href="joyoon-list.html">Filmo</a>
-            <a href="board.html">자유게시판</a>
-            <a href="photo-board.html" class="active">사진게시판</a>
-        </div>
-    </div>
-
-    <div class="photo-container">
-        <div class="board-header">
-            <h2>PHOTO</h2>
-            <a href="photo-write.html" class="btn-write">사진 올리기</a>
-        </div>
-        <div id="photo-list" class="photo-grid">
+    <div class="view-container">
+        <div id="loading" style="text-align:center; padding:100px 0; color: #999;"><p>게시글을 불러오는 중입니다... ✨</p></div>
+        <div id="post-detail" style="display:none;">
+            <div class="post-header">
+                <div class="header-top-line">
+                    <div class="post-category">PHOTO GALLERY</div>
+                    <div class="admin-buttons" id="adminButtons">
+                        <button class="btn-edit" id="editBtn">수정</button>
+                        <button class="btn-delete" id="deleteBtn">삭제</button>
+                    </div>
+                </div>
+                <h1 class="post-title" id="title"></h1>
+                <div class="post-info">
+                    <span class="author" id="author"></span>
+                    <span id="date"></span>
+                    <span>조회 <b id="viewCount">0</b></span>
+                </div>
             </div>
+            <div class="post-content" id="content"></div>
+            <div id="post-images"></div>
+            <div class="post-footer">
+                <button class="btn-like" id="likeBtn">❤️ 좋아요 <span id="likeCount">0</span></button>
+                <a href="photo-board.html" class="btn-list">목록보기</a>
+            </div>
+        </div>
     </div>
-
-    <div id="pagination" class="pagination"></div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, query, orderBy, limit, getDocs, startAfter, getCountFromServer } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, updateDoc, increment, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
+        // ✅ 하이브리드 설정 (사용자님이 주신 write 페이지 설정과 일치시켰습니다)
         const firebaseConfig = {
-            apiKey: "AIzaSyCbdCDMCCDfAlxgJGnkYrsK5czUmVhi6-c",
-            authDomain: "mellow-joyoon-final.firebaseapp.com",
-            projectId: "mellow-joyoon-final",
-            storageBucket: "mellow-joyoon-final.firebasestorage.app",
-            messagingSenderId: "947377190182",
-            appId: "1:947377190182:web:051cef6c2c810dc0a63de7"
+            apiKey: "AIzaSyCP4Ur--4UGGpNSK_P7qRvnVFDZbqn436A",
+            authDomain: "mellow-joyoon.firebaseapp.com",
+            projectId: "mellow-joyoon",
+            appId: "1:556097417487:web:0dca0eb26ba28d893c4e7a",
+            storageBucket: "mellow-joyoon-final.firebasestorage.app" 
         };
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        
-        // 🟢 기기 너비에 따라 페이지 당 게시물 수 결정
-        const getPageSize = () => window.innerWidth <= 600 ? 4 : 6;
-        let currentPage = 1;
-        let lastDoc = null; 
+        const auth = getAuth(app);
 
-        async function loadPhotos(page) {
-            const photoList = document.getElementById("photo-list");
-            const pageSize = getPageSize();
-            const photoRef = collection(db, "photo_posts");
-            
-            // 전체 개수 확인 및 페이지네이션 버튼 생성
-            const totalSnap = await getCountFromServer(photoRef);
-            const totalCount = totalSnap.data().count;
-            renderPagination(Math.ceil(totalCount / pageSize), page);
+        const urlParams = new URLSearchParams(window.location.search);
+        const postId = urlParams.get('id');
 
-            // 해당 페이지 데이터 가져오기 (간소화를 위해 페이지마다 새로 쿼리)
-            // 실제 서비스에서는 커서 관리가 복잡하므로 offset 기반 처럼 동작하게 구현
-            let q = query(photoRef, orderBy("createdAt", "desc"), limit(page * pageSize));
-            const snapshot = await getDocs(q);
-            const allDocs = snapshot.docs;
-            
-            // 현재 페이지에 해당하는 데이터만 추출
-            const pageDocs = allDocs.slice((page - 1) * pageSize, page * pageSize);
+        onAuthStateChanged(auth, (user) => {
+            if (postId) { loadPostDetail(user); } 
+            else { location.href = "photo-board.html"; }
+        });
 
-            photoList.innerHTML = "";
-            pageDocs.forEach(doc => {
-                const data = doc.data();
-                const imgUrl = data.thumbnail || (data.images && data.images[0]) || "https://via.placeholder.com/300";
-                const card = document.createElement("div");
-                card.className = "photo-card";
-                card.onclick = () => location.href = `photo-view.html?id=${doc.id}`;
-                card.innerHTML = `
-                    <img src="${imgUrl}" class="photo-img">
-                    <div class="photo-info">
-                        <div class="photo-title">${data.title || '제목 없음'}</div>
-                        <div class="photo-meta">
-                            <span>${data.author || 'Fan'}</span>
-                            <span>👁️ ${data.views || 0}</span>
-                        </div>
-                    </div>
-                `;
-                photoList.appendChild(card);
-            });
-        }
+        async function loadPostDetail(currentUser) {
+            const postRef = doc(db, "photo_posts", postId);
+            try {
+                const docSnap = await getDoc(postRef);
+                if (docSnap.exists()) {
+                    await updateDoc(postRef, { views: increment(1) });
+                    const data = docSnap.data();
+                    
+                    document.getElementById("title").innerText = data.title || "제목 없음";
+                    document.getElementById("author").innerText = data.author || "익명";
+                    document.getElementById("content").innerText = data.content || "";
+                    document.getElementById("viewCount").innerText = (data.views || 0) + 1;
+                    document.getElementById("likeCount").innerText = data.likes || 0;
+                    
+                    const dateObj = data.createdAt ? new Date(data.createdAt.seconds * 1000) : new Date();
+                    document.getElementById("date").innerText = dateObj.toLocaleString('ko-KR');
 
-        function renderPagination(totalPages, activePage) {
-            const container = document.getElementById("pagination");
-            container.innerHTML = "";
-            for (let i = 1; i <= totalPages; i++) {
-                const btn = document.createElement("div");
-                btn.className = `page-num ${i === activePage ? 'active' : ''}`;
-                btn.innerText = i;
-                btn.onclick = () => {
-                    currentPage = i;
-                    loadPhotos(i);
-                    window.scrollTo(0, 0);
-                };
-                container.appendChild(btn);
+                    // 🖼️ 이미지 출력
+                    const imageContainer = document.getElementById("post-images");
+                    imageContainer.innerHTML = "";
+                    if (data.images && Array.isArray(data.images)) {
+                        data.images.forEach(imgUrl => {
+                            const imgTag = document.createElement("img");
+                            imgTag.src = imgUrl;
+                            // 💡 이미지가 안 나올 경우 콘솔에 로그를 찍어 원인을 파악합니다.
+                            imgTag.onerror = () => {
+                                console.error("사진 로드 실패 주소:", imgUrl);
+                                imgTag.alt = "사진을 불러올 수 없습니다 (권한 또는 경로 문제)";
+                            };
+                            imageContainer.appendChild(imgTag);
+                        });
+                    }
+
+                    const adminBtnBox = document.getElementById("adminButtons");
+                    if (currentUser && (currentUser.email === "yun786692@gmail.com" || currentUser.uid === data.authorId)) {
+                        adminBtnBox.style.display = "flex";
+                    }
+
+                    document.getElementById("loading").style.display = "none";
+                    document.getElementById("post-detail").style.display = "block";
+                    attachEvents(postRef);
+                } else {
+                    document.getElementById("loading").innerHTML = "글을 찾을 수 없습니다.";
+                }
+            } catch (error) { 
+                console.error("Error:", error);
+                document.getElementById("loading").innerText = "데이터 로딩 중 오류 발생"; 
             }
         }
 
-        window.onload = () => loadPhotos(1);
-        // 화면 크기 바뀔 때 대응
-        window.onresize = () => loadPhotos(currentPage);
+        function attachEvents(postRef) {
+            document.getElementById("likeBtn").onclick = async () => {
+                await updateDoc(postRef, { likes: increment(1) });
+                document.getElementById("likeCount").innerText = parseInt(document.getElementById("likeCount").innerText) + 1;
+                document.getElementById("likeBtn").classList.add("active");
+            };
+            document.getElementById("deleteBtn").onclick = async () => {
+                if (confirm("삭제하시겠습니까?")) {
+                    await deleteDoc(postRef);
+                    location.href = "photo-board.html";
+                }
+            };
+            document.getElementById("editBtn").onclick = () => {
+                location.href = `photo-write.html?id=${postId}`; // edit 대신 write로 id값 전달 (사용자님 코드 구조 반영)
+            };
+        }
     </script>
 </body>
 </html>
