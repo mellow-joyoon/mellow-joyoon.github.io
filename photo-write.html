@@ -72,14 +72,13 @@
         import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-        // ✅ [하이브리드 설정 적용 완료]
-        // 회원정보는 기존 프로젝트(mellow-joyoon)에서, 사진 저장은 새 프로젝트(mellow-joyoon-final)로 연결합니다.
+        // ✅ [하이브리드 설정 적용 완료] - 제가 직접 수정했습니다.
         const firebaseConfig = {
-            apiKey: "여기에_기존_자유게시판_API_KEY를_넣으세요", 
+            apiKey: "AIzaSyCP4Ur--4UGGpNSK_P7qRvnVFDZbqn436A", 
             authDomain: "mellow-joyoon.firebaseapp.com",
             projectId: "mellow-joyoon",
-            appId: "여기에_기존_자유게시판_APP_ID를_넣으세요",
-            // 👇 사진 저장 위치만 'final' 프로젝트 저장소로 지정
+            appId: "1:556097417487:web:0dca0eb26ba28d893c4e7a",
+            // 사진 저장 위치만 새 프로젝트 저장소로 유지
             storageBucket: "mellow-joyoon-final.firebasestorage.app"
         };
 
@@ -98,7 +97,6 @@
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 currentUID = user.uid;
-                // 닉네임이 있으면 닉네임을, 없으면 이메일 앞부분을 표시
                 document.getElementById("author").value = user.displayName || user.email.split('@')[0];
                 if (postId) { await loadPostData(); }
                 document.getElementById("loading-overlay").style.display = "none";
@@ -166,7 +164,6 @@
             try {
                 const urls = [...existingImages];
                 for (const file of selectedFiles) {
-                    // storageBucket 설정에 의해 mellow-joyoon-final 프로젝트로 업로드됨
                     const sRef = ref(storage, `photos/${Date.now()}_${file.name}`);
                     const snap = await uploadBytes(sRef, file);
                     urls.push(await getDownloadURL(snap.ref));
