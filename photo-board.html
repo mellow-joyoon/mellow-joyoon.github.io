@@ -2,73 +2,178 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Mellow Joyoon | 사진게시판</title>
+    <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@700&family=Montserrat:wght@900&family=Noto+Sans+KR:wght@100;400;900&display=swap" rel="stylesheet">
     <style>
-        /* 목록 전용 스타일 */
-        body { background-color: #f6f6f6; font-family: sans-serif; padding: 20px; }
-        .container { max-width: 800px; margin: 0 auto; background: white; padding: 20px; border-radius: 12px; }
-        .post-item { display: flex; align-items: center; padding: 15px; border-bottom: 1px solid #eee; cursor: pointer; text-decoration: none; color: #333; }
-        .post-item:hover { background: #fffafc; }
-        .thumb { width: 80px; height: 80px; object-fit: cover; border-radius: 8px; margin-right: 15px; background: #eee; }
-        .post-info h3 { margin: 0 0 5px 0; font-size: 16px; }
-        .post-info p { margin: 0; font-size: 13px; color: #888; }
-        .btn-write { display: inline-block; background: #d63384; color: white; padding: 10px 20px; text-decoration: none; border-radius: 8px; margin-bottom: 20px; font-weight: bold; }
+        :root { --happy-pink: #ff85a1; --sunny-yellow: #ffde59; --sky-blue: #87ceeb; --text-main: #444; --bg-cream: #fffcf2; --card-white: rgba(255, 255, 255, 0.85); }
+        
+        /* 📱 전 브라우저 공통 초기화 (크롬, 사파리, 웨일 등) */
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-font-smoothing: antialiased; }
+        body { 
+            background-color: var(--bg-cream); 
+            font-family: 'Noto Sans KR', sans-serif; 
+            padding: env(safe-area-inset-top) 10px calc(20px + env(safe-area-inset-bottom)); 
+            color: var(--text-main); 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; /* 전체 중앙 정렬 */
+            width: 100%; 
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ✨ 배경 효과 */
+        .deco-circle { position: fixed; border-radius: 50%; z-index: -1; filter: blur(40px); opacity: 0.4; animation: pulse 6s infinite alternate; }
+        .circle-1 { width: clamp(200px, 40vw, 350px); height: clamp(200px, 40vw, 350px); background: var(--happy-pink); top: -100px; left: -100px; }
+        .circle-2 { width: clamp(150px, 30vw, 300px); height: clamp(150px, 30vw, 300px); background: var(--sunny-yellow); bottom: -50px; right: -50px; }
+        @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.1); } }
+
+        /* 🛸 네비게이션: 중앙 배치 */
+        .top-bar { 
+            width: 100%; max-width: 800px; margin: 15px auto; 
+            display: flex; justify-content: center; align-items: center; 
+            background: var(--card-white); padding: 12px 20px; 
+            border: 2px solid #fff; border-radius: 50px; 
+            backdrop-filter: blur(10px); box-shadow: 0 5px 15px rgba(0,0,0,0.05); 
+        }
+        .nav-links { display: flex; gap: 15px; }
+        .nav-links a { text-decoration: none; color: var(--happy-pink); font-weight: 900; font-size: 13px; }
+        .nav-links a.active { color: #d63384; text-decoration: underline; }
+
+        /* 📦 메인 컨테이너 */
+        .photo-container { 
+            width: 100%; max-width: 800px; 
+            background: var(--card-white); padding: clamp(15px, 4vw, 25px); 
+            border: 2px solid #fff; border-radius: 25px; 
+            backdrop-filter: blur(10px); margin: 0 auto 20px;
+        }
+        .board-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .board-header h2 { font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 1.5rem; color: var(--happy-pink); }
+
+        /* 📸 핵심 그리드: PC(3열) / 태블릿&모바일(2열) */
+        .photo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; width: 100%; }
+        
+        @media (max-width: 768px) { /* 태블릿 & 모바일 공통 */
+            .photo-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+            .photo-container { border-radius: 20px; }
+        }
+
+        /* 🃏 사진 카드 */
+        .photo-card { background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.05); cursor: pointer; transition: 0.3s; }
+        .photo-img { width: 100%; aspect-ratio: 1/1; object-fit: cover; display: block; }
+        .photo-info { padding: 10px; }
+        .photo-title { font-size: 13px; font-weight: bold; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .photo-meta { font-size: 10px; color: #888; display: flex; justify-content: space-between; }
+
+        .btn-write { background: var(--happy-pink); color: white; padding: 8px 16px; font-size: 12px; font-weight: 900; border-radius: 50px; text-decoration: none; box-shadow: 0 3px 0px #e05e7a; }
+
+        /* 🔢 페이지네이션 */
+        .pagination { display: flex; justify-content: center; gap: 8px; margin: 10px 0 40px; }
+        .page-num { background: white; border: 2px solid var(--happy-pink); color: var(--happy-pink); width: 34px; height: 34px; border-radius: 50%; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+        .page-num.active { background: var(--happy-pink); color: white; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h2>📷 사진게시판</h2>
-        <a href="photo-write.html" class="btn-write">글쓰기</a>
-        <div id="post-list">
-            <p style="text-align:center; padding:20px;">목록을 불러오는 중...</p>
+    <div class="deco-circle circle-1"></div>
+    <div class="deco-circle circle-2"></div>
+
+    <div class="top-bar">
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="joyoon-list.html">Filmo</a>
+            <a href="board.html">자유게시판</a>
+            <a href="photo-board.html" class="active">사진게시판</a>
         </div>
     </div>
 
+    <div class="photo-container">
+        <div class="board-header">
+            <h2>PHOTO</h2>
+            <a href="photo-write.html" class="btn-write">사진 올리기</a>
+        </div>
+        <div id="photo-list" class="photo-grid"></div>
+    </div>
+
+    <div id="pagination" class="pagination"></div>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, query, orderBy, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, query, orderBy, limit, getDocs, getCountFromServer } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
-            apiKey: "AIzaSyCP4Ur--4UGGpNSK_P7qRvnVFDZbqn436A",
-            authDomain: "mellow-joyoon.firebaseapp.com",
-            projectId: "mellow-joyoon",
-            appId: "1:556097417487:web:0dca0eb26ba28d893c4e7a"
+            apiKey: "AIzaSyCbdCDMCCDfAlxgJGnkYrsK5czUmVhi6-c",
+            authDomain: "mellow-joyoon-final.firebaseapp.com",
+            projectId: "mellow-joyoon-final",
+            storageBucket: "mellow-joyoon-final.firebasestorage.app",
+            messagingSenderId: "947377190182",
+            appId: "1:947377190182:web:051cef6c2c810dc0a63de7"
         };
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+        
+        // 🟢 기기 체크: 모바일/태블릿은 4개, PC는 6개
+        const getPageSize = () => window.innerWidth <= 768 ? 4 : 6;
+        let currentPage = 1;
 
-        async function loadPosts() {
-            const listContainer = document.getElementById("post-list");
-            try {
-                const q = query(collection(db, "photo_posts"), orderBy("createdAt", "desc"));
-                const querySnapshot = await getDocs(q);
-                listContainer.innerHTML = "";
+        async function loadPhotos(page) {
+            const photoList = document.getElementById("photo-list");
+            const pageSize = getPageSize();
+            const photoRef = collection(db, "photo_posts");
+            
+            const totalSnap = await getCountFromServer(photoRef);
+            const totalCount = totalSnap.data().count;
+            renderPagination(Math.ceil(totalCount / pageSize), page);
 
-                if (querySnapshot.empty) {
-                    listContainer.innerHTML = "<p style='text-align:center;'>등록된 사진이 없습니다.</p>";
-                    return;
-                }
+            // 전체에서 현재 페이지 구간 데이터 추출
+            const q = query(photoRef, orderBy("createdAt", "desc"), limit(page * pageSize));
+            const snapshot = await getDocs(q);
+            const pageDocs = snapshot.docs.slice((page - 1) * pageSize, page * pageSize);
 
-                querySnapshot.forEach((doc) => {
-                    const data = doc.data();
-                    const postHtml = `
-                        <a href="photo-view.html?id=${doc.id}" class="post-item">
-                            <img src="${data.thumbnail || 'https://via.placeholder.com/80'}" class="thumb">
-                            <div class="post-info">
-                                <h3>${data.title}</h3>
-                                <p>${data.author} | 조회 ${data.views || 0}</p>
-                            </div>
-                        </a>
-                    `;
-                    listContainer.innerHTML += postHtml;
-                });
-            } catch (e) {
-                listContainer.innerHTML = "목록 로드 실패: " + e.message;
+            photoList.innerHTML = "";
+            pageDocs.forEach(doc => {
+                const data = doc.data();
+                const imgUrl = data.thumbnail || (data.images && data.images[0]) || "https://via.placeholder.com/300";
+                const card = document.createElement("div");
+                card.className = "photo-card";
+                card.onclick = () => location.href = `photo-view.html?id=${doc.id}`;
+                card.innerHTML = `
+                    <img src="${imgUrl}" class="photo-img" loading="lazy">
+                    <div class="photo-info">
+                        <div class="photo-title">${data.title || '제목 없음'}</div>
+                        <div class="photo-meta">
+                            <span>${data.author || 'Fan'}</span>
+                            <span>👁️ ${data.views || 0}</span>
+                        </div>
+                    </div>
+                `;
+                photoList.appendChild(card);
+            });
+        }
+
+        function renderPagination(totalPages, activePage) {
+            const container = document.getElementById("pagination");
+            container.innerHTML = "";
+            for (let i = 1; i <= totalPages; i++) {
+                const btn = document.createElement("div");
+                btn.className = `page-num ${i === activePage ? 'active' : ''}`;
+                btn.innerText = i;
+                btn.onclick = () => {
+                    currentPage = i;
+                    loadPhotos(i);
+                    window.scrollTo({top: 0, behavior: 'smooth'});
+                };
+                container.appendChild(btn);
             }
         }
-        loadPosts();
+
+        window.onload = () => loadPhotos(1);
+        let resizeTimer;
+        window.onresize = () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(() => loadPhotos(currentPage), 250);
+        };
     </script>
 </body>
 </html>
