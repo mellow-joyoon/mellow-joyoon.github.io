@@ -31,13 +31,10 @@
             box-sizing: border-box;
         }
         
-        /* 📌 헤더 영역: 수정/삭제 버튼 우측 상단 고정 */
         .post-header { border-bottom: 2px solid #f0f0f0; padding-bottom: 20px; margin-bottom: 20px; position: relative; }
-        
         .header-top-line { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
         .post-category { color: var(--happy-pink); font-size: 14px; font-weight: bold; }
         
-        /* ✅ 버튼 그룹 (수정, 삭제 순서) */
         .admin-buttons { display: none; gap: 8px; align-items: center; }
         .btn-edit, .btn-delete { 
             background: #fff; border: 1px solid #ddd; padding: 6px 14px; 
@@ -124,13 +121,14 @@
         import { getFirestore, doc, getDoc, updateDoc, increment, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
+        // ✅ 하이브리드 설정 적용: 글 정보는 기존 프로젝트에서, 저장소 주소는 새 프로젝트로!
         const firebaseConfig = {
-            apiKey: "AIzaSyCbdCDMCCDfAlxgJGnkYrsK5czUmVhi6-c",
-            authDomain: "mellow-joyoon-final.firebaseapp.com",
-            projectId: "mellow-joyoon-final",
-            storageBucket: "mellow-joyoon-final.firebasestorage.app",
-            messagingSenderId: "947377190182",
-            appId: "1:947377190182:web:051cef6c2c810dc0a63de7"
+            apiKey: "AIzaSyCP4Ur--4UGGpNSK_P7qRvnVFDZbqn436A",
+            authDomain: "mellow-joyoon.firebaseapp.com",
+            projectId: "mellow-joyoon",
+            appId: "1:556097417487:web:0dca0eb26ba28d893c4e7a",
+            // 📌 여기가 중요! 사진을 불러올 새 저장소 주소입니다.
+            storageBucket: "mellow-joyoon-final.firebasestorage.app"
         };
 
         const app = initializeApp(firebaseConfig);
@@ -141,7 +139,6 @@
         const postId = urlParams.get('id');
         const ADMIN_EMAIL = "yun786692@gmail.com"; 
 
-        // 로그인 감지 로직 강화
         onAuthStateChanged(auth, (user) => {
             if (postId) { 
                 loadPostDetail(user); 
@@ -172,6 +169,8 @@
 
                     const imageContainer = document.getElementById("post-images");
                     imageContainer.innerHTML = "";
+                    
+                    // ✅ 새 프로젝트 저장소(Storage)에서 이미지를 정상적으로 불러옵니다.
                     if (data.images && Array.isArray(data.images)) {
                         data.images.forEach(imgUrl => {
                             const imgTag = document.createElement("img");
@@ -180,16 +179,9 @@
                         });
                     }
 
-                    // ✅ 버튼 노출 로직 (더 직관적이고 강력하게 수정)
                     const adminBtnBox = document.getElementById("adminButtons");
-                    
                     if (currentUser) {
-                        // 1. 관리자 이메일인 경우 무조건 노출
-                        if (currentUser.email === ADMIN_EMAIL) {
-                            adminBtnBox.style.display = "flex";
-                        } 
-                        // 2. 게시글 데이터에 authorId가 있고, 현재 유저 UID와 같은 경우 노출
-                        else if (data.authorId && currentUser.uid === data.authorId) {
+                        if (currentUser.email === ADMIN_EMAIL || (data.authorId && currentUser.uid === data.authorId)) {
                             adminBtnBox.style.display = "flex";
                         }
                     }
@@ -201,7 +193,7 @@
                 }
             } catch (error) { 
                 console.error("오류 상세:", error);
-                document.getElementById("loading").innerText = "오류가 발생했습니다."; 
+                document.getElementById("loading").innerText = "데이터를 불러오는 중 오류가 발생했습니다."; 
             }
         }
 
@@ -212,7 +204,6 @@
                 document.getElementById("likeBtn").classList.add("active");
             };
 
-            // 삭제 버튼
             document.getElementById("deleteBtn").onclick = async () => {
                 if (confirm("정말로 삭제하시겠습니까?")) {
                     await deleteDoc(postRef);
@@ -221,7 +212,6 @@
                 }
             };
 
-            // 수정 버튼
             document.getElementById("editBtn").onclick = () => {
                 location.href = `photo-edit.html?id=${postId}`;
             };
