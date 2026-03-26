@@ -3,110 +3,72 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mellow Joyoon | 사진 보기</title>
+    <title>Mellow Joyoon | 사진게시판</title>
     <style>
-        /* 상세보기 전용 스타일 */
-        body { background-color: #f6f6f6; font-family: sans-serif; padding: 20px; margin: 0; }
-        .view-container { max-width: 850px; margin: 20px auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        .post-header { border-bottom: 2px solid #f0f0f0; padding-bottom: 20px; margin-bottom: 20px; }
-        .post-title { font-size: 24px; font-weight: bold; margin-bottom: 10px; }
-        .post-info { font-size: 13px; color: #888; }
-        .post-content { font-size: 16px; line-height: 1.6; margin: 20px 0; white-space: pre-wrap; }
-        #post-images img { width: 100%; border-radius: 10px; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        .btn-list { display: inline-block; padding: 10px 20px; background: #eee; text-decoration: none; color: #333; border-radius: 8px; }
-        .admin-btns { margin-top: 20px; display: none; gap: 10px; }
-        .btn-del { background: #444; color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; }
+        /* 목록 전용 스타일 */
+        body { background-color: #f6f6f6; font-family: sans-serif; padding: 20px; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 20px; border-radius: 12px; }
+        .post-item { display: flex; align-items: center; padding: 15px; border-bottom: 1px solid #eee; cursor: pointer; text-decoration: none; color: #333; }
+        .post-item:hover { background: #fffafc; }
+        .thumb { width: 80px; height: 80px; object-fit: cover; border-radius: 8px; margin-right: 15px; background: #eee; }
+        .post-info h3 { margin: 0 0 5px 0; font-size: 16px; }
+        .post-info p { margin: 0; font-size: 13px; color: #888; }
+        .btn-write { display: inline-block; background: #d63384; color: white; padding: 10px 20px; text-decoration: none; border-radius: 8px; margin-bottom: 20px; font-weight: bold; }
     </style>
 </head>
 <body>
-    <div class="view-container">
-        <div id="loading">불러오는 중... ✨</div>
-        <div id="post-detail" style="display:none;">
-            <div class="post-header">
-                <h1 class="post-title" id="title"></h1>
-                <div class="post-info">
-                    <span id="author" style="font-weight:bold; color: #333;"></span> | 
-                    <span id="date"></span> | 조회 <b id="viewCount">0</b>
-                </div>
-            </div>
-            <div class="post-content" id="content"></div>
-            <div id="post-images"></div>
-            <hr>
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <a href="photo-board.html" class="btn-list">목록으로</a>
-                <div class="admin-btns" id="adminButtons">
-                    <button class="btn-del" id="deleteBtn">삭제</button>
-                </div>
-            </div>
+    <div class="container">
+        <h2>📷 사진게시판</h2>
+        <a href="photo-write.html" class="btn-write">글쓰기</a>
+        <div id="post-list">
+            <p style="text-align:center; padding:20px;">목록을 불러오는 중...</p>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, doc, getDoc, updateDoc, increment, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, collection, query, orderBy, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCP4Ur--4UGGpNSK_P7qRvnVFDZbqn436A",
             authDomain: "mellow-joyoon.firebaseapp.com",
             projectId: "mellow-joyoon",
-            appId: "1:556097417487:web:0dca0eb26ba28d893c4e7a",
-            storageBucket: "mellow-joyoon-final.firebasestorage.app" // 사진은 새 프로젝트!
+            appId: "1:556097417487:web:0dca0eb26ba28d893c4e7a"
         };
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        const auth = getAuth(app);
 
-        const urlParams = new URLSearchParams(window.location.search);
-        const postId = urlParams.get('id');
-
-        onAuthStateChanged(auth, (user) => {
-            if (postId) { loadDetail(user); }
-            else { location.href = "photo-board.html"; }
-        });
-
-        async function loadDetail(currentUser) {
-            const postRef = doc(db, "photo_posts", postId);
+        async function loadPosts() {
+            const listContainer = document.getElementById("post-list");
             try {
-                const docSnap = await getDoc(postRef);
-                if (docSnap.exists()) {
-                    await updateDoc(postRef, { views: increment(1) });
-                    const data = docSnap.data();
+                const q = query(collection(db, "photo_posts"), orderBy("createdAt", "desc"));
+                const querySnapshot = await getDocs(q);
+                listContainer.innerHTML = "";
 
-                    document.getElementById("title").innerText = data.title;
-                    document.getElementById("author").innerText = data.author;
-                    document.getElementById("content").innerText = data.content;
-                    document.getElementById("viewCount").innerText = (data.views || 0) + 1;
-                    
-                    const dateObj = data.createdAt ? new Date(data.createdAt.seconds * 1000) : new Date();
-                    document.getElementById("date").innerText = dateObj.toLocaleString();
-
-                    const imgContainer = document.getElementById("post-images");
-                    if (data.images) {
-                        data.images.forEach(url => {
-                            const img = document.createElement("img");
-                            img.src = url;
-                            imgContainer.appendChild(img);
-                        });
-                    }
-
-                    if (currentUser && (currentUser.email === "yun786692@gmail.com" || currentUser.uid === data.authorId)) {
-                        document.getElementById("adminButtons").style.display = "flex";
-                    }
-
-                    document.getElementById("loading").style.display = "none";
-                    document.getElementById("post-detail").style.display = "block";
-
-                    document.getElementById("deleteBtn").onclick = async () => {
-                        if(confirm("삭제할까요?")) {
-                            await deleteDoc(postRef);
-                            location.href = "photo-board.html";
-                        }
-                    };
+                if (querySnapshot.empty) {
+                    listContainer.innerHTML = "<p style='text-align:center;'>등록된 사진이 없습니다.</p>";
+                    return;
                 }
-            } catch (e) { console.error(e); }
+
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    const postHtml = `
+                        <a href="photo-view.html?id=${doc.id}" class="post-item">
+                            <img src="${data.thumbnail || 'https://via.placeholder.com/80'}" class="thumb">
+                            <div class="post-info">
+                                <h3>${data.title}</h3>
+                                <p>${data.author} | 조회 ${data.views || 0}</p>
+                            </div>
+                        </a>
+                    `;
+                    listContainer.innerHTML += postHtml;
+                });
+            } catch (e) {
+                listContainer.innerHTML = "목록 로드 실패: " + e.message;
+            }
         }
+        loadPosts();
     </script>
 </body>
 </html>
