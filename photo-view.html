@@ -121,13 +121,13 @@
         import { getFirestore, doc, getDoc, updateDoc, increment, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-        // ✅ 하이브리드 설정 적용: 글 정보는 기존 프로젝트에서, 저장소 주소는 새 프로젝트로!
+        // ✅ 하이브리드 최적화 설정
         const firebaseConfig = {
-            apiKey: "AIzaSyCP4Ur--4UGGpNSK_P7qRvnVFDZbqn436A",
+            apiKey: "AIzaSyCP4Ur--4UGGpNSK_P7qRvnVFDZbqn436A", // 기존 프로젝트 키
             authDomain: "mellow-joyoon.firebaseapp.com",
             projectId: "mellow-joyoon",
             appId: "1:556097417487:web:0dca0eb26ba28d893c4e7a",
-            // 📌 여기가 중요! 사진을 불러올 새 저장소 주소입니다.
+            // 📌 저장소 주소만 새 프로젝트로 고정!
             storageBucket: "mellow-joyoon-final.firebasestorage.app"
         };
 
@@ -152,16 +152,16 @@
             
             try {
                 // 데이터 가져오기 및 조회수 증가
-                await updateDoc(postRef, { views: increment(1) });
                 const docSnap = await getDoc(postRef);
                 
                 if (docSnap.exists()) {
+                    await updateDoc(postRef, { views: increment(1) });
                     const data = docSnap.data();
                     
                     document.getElementById("title").innerText = data.title || "제목 없음";
                     document.getElementById("author").innerText = data.author || "익명";
                     document.getElementById("content").innerText = data.content || "";
-                    document.getElementById("viewCount").innerText = (data.views || 0);
+                    document.getElementById("viewCount").innerText = (data.views || 0) + 1; // 업데이트 반영값
                     document.getElementById("likeCount").innerText = data.likes || 0;
                     
                     const dateObj = data.createdAt ? new Date(data.createdAt.seconds * 1000) : new Date();
@@ -170,11 +170,14 @@
                     const imageContainer = document.getElementById("post-images");
                     imageContainer.innerHTML = "";
                     
-                    // ✅ 새 프로젝트 저장소(Storage)에서 이미지를 정상적으로 불러옵니다.
+                    // ✅ 새 프로젝트 저장소(Storage)의 이미지 주소를 정상적으로 렌더링
                     if (data.images && Array.isArray(data.images)) {
                         data.images.forEach(imgUrl => {
                             const imgTag = document.createElement("img");
                             imgTag.src = imgUrl;
+                            imgTag.alt = "포스트 이미지";
+                            // 이미지 로드 실패 시 콘솔 기록 (디버깅용)
+                            imgTag.onerror = () => console.error("이미지를 불러올 수 없습니다:", imgUrl);
                             imageContainer.appendChild(imgTag);
                         });
                     }
@@ -190,25 +193,36 @@
                     document.getElementById("post-detail").style.display = "block";
 
                     attachEvents(postRef);
+                } else {
+                    document.getElementById("loading").innerHTML = "<p>게시글을 찾을 수 없습니다. 😢</p>";
                 }
             } catch (error) { 
                 console.error("오류 상세:", error);
-                document.getElementById("loading").innerText = "데이터를 불러오는 중 오류가 발생했습니다."; 
+                document.getElementById("loading").innerText = "데이터를 불러오는 중 오류가 발생했습니다: " + error.message; 
             }
         }
 
         function attachEvents(postRef) {
             document.getElementById("likeBtn").onclick = async () => {
-                await updateDoc(postRef, { likes: increment(1) });
-                document.getElementById("likeCount").innerText = parseInt(document.getElementById("likeCount").innerText) + 1;
-                document.getElementById("likeBtn").classList.add("active");
+                try {
+                    await updateDoc(postRef, { likes: increment(1) });
+                    const currentLikes = parseInt(document.getElementById("likeCount").innerText);
+                    document.getElementById("likeCount").innerText = currentLikes + 1;
+                    document.getElementById("likeBtn").classList.add("active");
+                } catch (e) {
+                    alert("좋아요 처리에 실패했습니다.");
+                }
             };
 
             document.getElementById("deleteBtn").onclick = async () => {
                 if (confirm("정말로 삭제하시겠습니까?")) {
-                    await deleteDoc(postRef);
-                    alert("삭제되었습니다.");
-                    location.href = "photo-board.html";
+                    try {
+                        await deleteDoc(postRef);
+                        alert("삭제되었습니다.");
+                        location.href = "photo-board.html";
+                    } catch (e) {
+                        alert("삭제 권한이 없거나 오류가 발생했습니다.");
+                    }
                 }
             };
 
