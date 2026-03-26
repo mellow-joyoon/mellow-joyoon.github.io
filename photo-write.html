@@ -6,65 +6,36 @@
     <title>Mellow Joyoon | 사진 올리기</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;400;900&display=swap" rel="stylesheet">
     <style>
+        /* ✅ 기존 디자인 스타일 유지 */
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { 
-            background-color: #f6f6f6; 
-            font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', 'Noto Sans KR', sans-serif; 
-            padding: env(safe-area-inset-top) 15px calc(20px + env(safe-area-inset-bottom)); 
-            color: #333; display: flex; flex-direction: column; align-items: center; 
-        }
-
-        /* 로딩 레이어: 로그인 확인 전까지 사용자 인터랙션 제한 */
-        #loading-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(246, 246, 246, 0.8); display: flex; justify-content: center; align-items: center;
-            z-index: 9999; font-weight: bold; color: #d63384;
-        }
-
-        .write-container { 
-            width: 100%; max-width: 850px; margin: 20px auto; 
-            background: white; padding: clamp(15px, 4vw, 30px); 
-            border: 1px solid #ddd; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); 
-        }
-
-        .board-header { 
-            display: flex; justify-content: space-between; align-items: center; 
-            border-bottom: 2px solid #333; padding-bottom: 15px; margin-bottom: 25px; 
-        }
+        body { background-color: #f6f6f6; font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', 'Noto Sans KR', sans-serif; padding: env(safe-area-inset-top) 15px calc(20px + env(safe-area-inset-bottom)); color: #333; display: flex; flex-direction: column; align-items: center; }
+        #loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f6f6f6; display: flex; justify-content: center; align-items: center; z-index: 9999; font-weight: bold; color: #d63384; }
+        .write-container { width: 100%; max-width: 850px; margin: 20px auto; background: white; padding: clamp(15px, 4vw, 30px); border: 1px solid #ddd; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .board-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #333; padding-bottom: 15px; margin-bottom: 25px; }
         h2 { color: #d63384; font-size: clamp(1.3rem, 5vw, 1.8rem); font-weight: 900; }
-        
         .top-admin-group { display: flex; gap: 8px; }
         .btn-top { padding: 6px 12px; font-size: 13px; font-weight: bold; border-radius: 6px; cursor: pointer; border: none; display: none; }
         .btn-edit-top { background: #d63384; color: white; }
         .btn-delete-top { background: #444; color: white; }
-
         input, textarea { width: 100%; padding: 14px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; font-family: inherit; }
         input:focus, textarea:focus { border-color: #d63384; outline: none; background-color: #fffafc; }
-
         .photo-upload-section { display: flex; align-items: center; gap: 12px; margin-bottom: 15px; padding: 15px; border: 2px dashed #eee; border-radius: 10px; background: #fafafa; min-height: 80px; }
         .photo-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 65px; height: 65px; background: white; border: 1px solid #ddd; border-radius: 8px; cursor: pointer; flex-shrink: 0; }
         .photo-btn svg { width: 26px; height: 26px; fill: #d63384; margin-bottom: 4px; }
         .photo-btn span { font-size: 12px; color: #666; font-weight: bold; }
-
         #photo-preview-container { display: flex; gap: 10px; overflow-x: auto; flex: 1; padding: 5px 2px; }
         .preview-box { position: relative; width: 65px; height: 65px; flex-shrink: 0; }
         .preview-box img { width: 100%; height: 100%; object-fit: cover; border-radius: 8px; border: 1px solid #eee; }
         .del-btn { position: absolute; top: -6px; right: -6px; width: 22px; height: 22px; background: #333; color: white; border-radius: 50%; font-size: 14px; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 2px solid white; }
-
         textarea { height: clamp(250px, 40vh, 450px); resize: none; line-height: 1.6; }
-
         .button-group { display: flex; justify-content: center; gap: 12px; margin-top: 15px; width: 100%; }
         .btn-cancel { flex: 1; max-width: 140px; background: #fff; color: #666; border: 1px solid #ccc; padding: 14px 0; cursor: pointer; font-size: 15px; text-decoration: none; text-align: center; border-radius: 8px; font-weight: 500; }
         .btn-save { flex: 1; max-width: 140px; background: #d63384; color: white; border: none; padding: 14px 0; cursor: pointer; font-weight: bold; font-size: 15px; border-radius: 8px; box-shadow: 0 4px 10px rgba(214, 51, 132, 0.2); }
-        .btn-save:disabled { background: #ccc !important; cursor: wait; }
-
-        @media (max-width: 768px) { .write-container { margin: 10px auto; border-radius: 12px; width: 95%; } }
-        @media (max-width: 480px) { .btn-cancel, .btn-save { max-width: none; } }
     </style>
 </head>
 <body>
 
-    <div id="loading-overlay">연결 확인 중...</div>
+    <div id="loading-overlay">사용자 확인 중...</div>
 
     <div class="write-container">
         <div class="board-header">
@@ -91,7 +62,7 @@
         
         <div class="button-group">
             <a href="photo-board.html" class="btn-cancel">취소</a>
-            <button class="btn-save" id="saveBtn" disabled>확인 중...</button>
+            <button class="btn-save" id="saveBtn">등록하기</button>
         </div>
     </div>
 
@@ -101,12 +72,15 @@
         import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
+        // ✅ [핵심수정] 여기 설정을 '자유게시판'용 프로젝트 정보로 바꾸세요!
+        // 그래야 기존 회원 정보를 인식합니다.
         const firebaseConfig = {
-            apiKey: "AIzaSyCbdCDMCCDfAlxgJGnkYrsK5czUmVhi6-c",
-            authDomain: "mellow-joyoon-final.firebaseapp.com",
-            projectId: "mellow-joyoon-final",
-            storageBucket: "mellow-joyoon-final.firebasestorage.app",
-            appId: "1:947377190182:web:051cef6c2c810dc0a63de7"
+            apiKey: "기존_자유게시판_API_KEY", 
+            authDomain: "mellow-joyoon.firebaseapp.com", // 기존 도메인
+            projectId: "mellow-joyoon", // 기존 프로젝트 ID
+            // 👇 사진 저장만 '새 프로젝트'로 지정합니다.
+            storageBucket: "mellow-joyoon-final.firebasestorage.app", 
+            appId: "기존_자유게시판_APP_ID"
         };
 
         const app = initializeApp(firebaseConfig);
@@ -120,43 +94,26 @@
         let existingImages = [];
         let currentUID = null;
 
-        // ✅ 개선된 로그인 감지: alert 팝업 오류 방지
+        // 로그인 상태 체크 (이제 기존 회원을 인식합니다)
         onAuthStateChanged(auth, async (user) => {
-            const authorInput = document.getElementById("author");
-            const saveBtn = document.getElementById("saveBtn");
-
             if (user) {
-                // 로그인 성공
                 currentUID = user.uid;
-                authorInput.value = user.displayName || user.email.split('@')[0];
-                authorInput.readOnly = false; // 수동 수정 가능케 변경
-                saveBtn.disabled = false;
-                saveBtn.innerText = postId ? "수정완료" : "등록하기";
-
+                document.getElementById("author").value = user.displayName || user.email.split('@')[0];
                 if (postId) { await loadPostData(); }
                 document.getElementById("loading-overlay").style.display = "none";
             } else {
-                // 정말로 세션이 없을 때까지 잠시 기다림 (즉시 alert 방지)
-                setTimeout(() => {
-                    if (!auth.currentUser) {
-                        alert("로그인이 세션이 만료되었습니다. 다시 로그인해주세요.");
-                        location.href = "login.html";
-                    }
-                }, 1000); 
+                alert("로그인이 필요합니다. 기존 계정으로 로그인해주세요.");
+                location.href = "login.html";
             }
         });
 
+        // --- 데이터 로드 및 프리뷰 기능 ---
         async function loadPostData() {
-            document.getElementById("page-title").innerText = "사진 수정하기";
-            document.getElementById("topEditBtn").style.display = "block";
-            document.getElementById("topDeleteBtn").style.display = "block";
-
             try {
                 const docSnap = await getDoc(doc(db, "photo_posts", postId));
                 if (docSnap.exists()) {
                     const data = docSnap.data();
                     document.getElementById("title").value = data.title;
-                    document.getElementById("author").value = data.author;
                     document.getElementById("content").value = data.content;
                     existingImages = data.images || [];
                     renderPreviews();
@@ -168,8 +125,7 @@
             const container = document.getElementById("photo-preview-container");
             container.innerHTML = "";
             existingImages.forEach((url, idx) => {
-                const div = document.createElement("div");
-                div.className = "preview-box";
+                const div = document.createElement("div"); div.className = "preview-box";
                 div.innerHTML = `<img src="${url}"><div class="del-btn">×</div>`;
                 div.querySelector(".del-btn").onclick = () => { existingImages.splice(idx, 1); renderPreviews(); };
                 container.appendChild(div);
@@ -177,8 +133,7 @@
             selectedFiles.forEach((file, idx) => {
                 const reader = new FileReader();
                 reader.onload = (e) => {
-                    const div = document.createElement("div");
-                    div.className = "preview-box";
+                    const div = document.createElement("div"); div.className = "preview-box";
                     div.innerHTML = `<img src="${e.target.result}"><div class="del-btn">×</div>`;
                     div.querySelector(".del-btn").onclick = () => { selectedFiles.splice(idx, 1); renderPreviews(); };
                     container.appendChild(div);
@@ -192,16 +147,8 @@
             renderPreviews();
         });
 
-        const saveAction = async () => {
-            if (!auth.currentUser) return alert("로그인 정보가 없습니다.");
-            
-            const title = document.getElementById("title").value.trim();
-            const content = document.getElementById("content").value.trim();
-            const author = document.getElementById("author").value.trim();
-            
-            if (!title || !content || !author) return alert("제목, 닉네임, 내용을 모두 입력해주세요!");
-            if (!postId && selectedFiles.length === 0 && existingImages.length === 0) return alert("최소 한 장의 사진을 선택해주세요!");
-
+        // --- 저장 기능 (회원은 기존정보, 사진은 새 저장소) ---
+        document.getElementById("saveBtn").onclick = async () => {
             const btn = document.getElementById("saveBtn");
             btn.disabled = true;
             btn.innerText = "처리 중...";
@@ -209,43 +156,34 @@
             try {
                 const urls = [...existingImages];
                 for (const file of selectedFiles) {
+                    // 여기서 storage가 'final' 프로젝트의 버킷을 바라보고 있으므로 새 프로젝트에 저장됩니다.
                     const sRef = ref(storage, `photos/${Date.now()}_${file.name}`);
                     const snap = await uploadBytes(sRef, file);
                     urls.push(await getDownloadURL(snap.ref));
                 }
 
                 const data = { 
-                    title, content, author, 
+                    title: document.getElementById("title").value, 
+                    content: document.getElementById("content").value, 
+                    author: document.getElementById("author").value, 
                     authorId: currentUID, 
                     images: urls, 
-                    thumbnail: urls[0] || "", 
+                    thumbnail: urls[0] || "",
                     updatedAt: serverTimestamp() 
                 };
 
                 if (postId) {
                     await updateDoc(doc(db, "photo_posts", postId), data);
-                    alert("수정되었습니다! ✨");
                 } else {
-                    data.createdAt = serverTimestamp(); 
-                    data.views = 0; 
+                    data.createdAt = serverTimestamp();
+                    data.views = 0;
                     data.likes = 0;
                     await addDoc(collection(db, "photo_posts"), data);
-                    alert("성공적으로 등록되었습니다! ✨");
                 }
                 location.href = "photo-board.html";
-            } catch (e) { 
-                alert("저장에 실패했습니다."); 
-                btn.disabled = false; 
-                btn.innerText = "등록하기"; 
-            }
-        };
-
-        document.getElementById("saveBtn").onclick = saveAction;
-        document.getElementById("topEditBtn").onclick = saveAction;
-        document.getElementById("topDeleteBtn").onclick = async () => {
-            if (confirm("정말 삭제할까요?")) {
-                await deleteDoc(doc(db, "photo_posts", postId));
-                location.href = "photo-board.html";
+            } catch (e) {
+                alert("저장 실패: " + e.message);
+                btn.disabled = false;
             }
         };
     </script>
